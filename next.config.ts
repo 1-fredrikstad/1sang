@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+	outputFileTracingRoot: __dirname,
+	/* config options here */
 };
 
 export default nextConfig;
