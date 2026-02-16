@@ -46,6 +46,6 @@ jobs:
         run: pnpm -r test || true
 
       # Build frontend
-      - name: Build
+      - name: Build frontend
         working-directory: frontend
-        run: NEXT_EXPERIMENTAL_TURBOPACK=false pnpm build
+        run: pnpm build
