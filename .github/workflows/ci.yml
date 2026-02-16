@@ -2,9 +2,9 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [main, dev, '**']   # '**' allows testing on any branch
+    branches: [main, dev]   # '**' allows testing on any branch
   pull_request:
-    branches: [main, dev, '**']
+    branches: [main, dev]
 
 jobs:
   ci:
