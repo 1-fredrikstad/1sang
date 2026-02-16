@@ -10,25 +10,21 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      # 1. Checkout repo
+      # Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Setup Node.js
+      # Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      # 3. Install pnpm
+      # Install pnpm
       - name: Install pnpm
         run: npm install -g pnpm
 
-      # 4. Allow pnpm build scripts non-interactively
-      - name: Allow pnpm build scripts
-        run: pnpm env set PNPM_ALLOW_BUILD_SCRIPTS true
-
-      # 4. Cache pnpm dependencies
+      # Cache pnpm dependencies
       # - name: Cache pnpm store
       #   uses: actions/cache@v3
       #   with:
@@ -37,23 +33,25 @@ jobs:
       #     restore-keys: |
       #       ${{ runner.os }}-pnpm-
 
-      # 5. Install project dependencies
+      # Install project dependencies
       - name: Install dependencies
         run: pnpm install
+        env:
+          PNPM_ALLOW_BUILD_SCRIPTS: true
 
-      # 6. Lint frontend & backend
+      # Lint frontend & backend
       - name: Lint frontend & backend
         run: |
           pnpm --filter frontend lint
           pnpm --filter backend lint
 
-      # 7. Test frontend & backend
+      # Test frontend & backend
       - name: Test frontend & backend
         run: |
           pnpm --filter frontend test
           pnpm --filter backend test
 
-      # 8. Build frontend & backend
+      # Build frontend & backend
       - name: Build frontend & backend
         run: |
           pnpm --filter frontend build
