@@ -36,8 +36,6 @@ jobs:
       # Install project dependencies
       - name: Install dependencies
         run: pnpm install
-        env:
-          PNPM_ALLOW_BUILD_SCRIPTS: true
 
       # Lint frontend & backend
       - name: Lint frontend & backend
