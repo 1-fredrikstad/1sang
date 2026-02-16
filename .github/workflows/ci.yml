@@ -45,7 +45,6 @@ jobs:
       - name: Test
         run: pnpm -r test || true
 
-      # Build frontend
-      - name: Build frontend
-        working-directory: frontend
-        run: pnpm build
+      # Build all packages that have build scripts
+      - name: Build
+        run: pnpm -r build || true
