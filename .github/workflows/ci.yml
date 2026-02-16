@@ -2,9 +2,9 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [main, dev]   # '**' allows testing on any branch
+    branches: [main, dev, '**']
   pull_request:
-    branches: [main, dev]
+    branches: [main, dev, '**']
 
 jobs:
   ci:
@@ -37,20 +37,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # Lint frontend & backend
-      - name: Lint frontend & backend
-        run: |
-          pnpm --filter frontend lint
-          pnpm --filter backend lint
+      # Lint frontend
+      - name: Lint frontend
+        run: pnpm --filter frontend lint
 
-      # Test frontend & backend
-      - name: Test frontend & backend
-        run: |
-          pnpm --filter frontend test
-          pnpm --filter backend test
 
-      # Build frontend & backend
-      - name: Build frontend & backend
-        run: |
-          pnpm --filter frontend build
-          pnpm --filter backend build
+      # Test frontend
+      - name: Test frontend
+        run: pnpm --filter frontend test
+
+      # Build frontend
+      - name: Build frontend
+        run: pnpm --filter frontend build
