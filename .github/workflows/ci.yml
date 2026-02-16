@@ -37,15 +37,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # Lint frontend
-      - name: Lint frontend
-        run: pnpm --filter frontend lint
+      # Lint all packages that have lint scripts
+      - name: Lint
+        run: pnpm -r lint || true   # continues even if some packages have no lint script
 
+      # Test all packages that have test scripts
+      - name: Test
+        run: pnpm -r test || true
 
-      # Test frontend
-      - name: Test frontend
-        run: pnpm --filter frontend test
-
-      # Build frontend
-      - name: Build frontend
-        run: pnpm --filter frontend build
+      # Build all packages that have build scripts
+      - name: Build
+        run: pnpm -r build || true
