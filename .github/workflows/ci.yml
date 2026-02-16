@@ -20,18 +20,22 @@ jobs:
         with:
           node-version: 18
 
-      # 3. Install pnpm
+      # 3. Allow pnpm build scripts non-interactively
+      - name: Allow pnpm build scripts
+        run: pnpm env set PNPM_ALLOW_BUILD_SCRIPTS true
+
+      # 4. Install pnpm
       - name: Install pnpm
         run: npm install -g pnpm
 
       # 4. Cache pnpm dependencies
-      - name: Cache pnpm store
-        uses: actions/cache@v3
-        with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
+      # - name: Cache pnpm store
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ~/.pnpm-store
+      #     key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pnpm-
 
       # 5. Install project dependencies
       - name: Install dependencies
