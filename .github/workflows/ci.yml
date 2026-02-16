@@ -20,13 +20,13 @@ jobs:
         with:
           node-version: 18
 
-      # 3. Allow pnpm build scripts non-interactively
-      - name: Allow pnpm build scripts
-        run: pnpm env set PNPM_ALLOW_BUILD_SCRIPTS true
-
-      # 4. Install pnpm
+      # 3. Install pnpm
       - name: Install pnpm
         run: npm install -g pnpm
+
+      # 4. Allow pnpm build scripts non-interactively
+      - name: Allow pnpm build scripts
+        run: pnpm env set PNPM_ALLOW_BUILD_SCRIPTS true
 
       # 4. Cache pnpm dependencies
       # - name: Cache pnpm store
