@@ -39,10 +39,12 @@ jobs:
 
       # Lint all packages that have lint scripts
       - name: Lint
-        run: pnpm -r lint || true   # continues even if some packages have no lint script
+        working-directory: frontend
+        run: pnpm run lint   # continues even if some packages have no lint script
 
       # Run Prettier check
       - name: Prettier
+        working-directory: frontend
         run: pnpm run format:check
 
       # Test all packages that have test scripts
