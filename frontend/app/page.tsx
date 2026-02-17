@@ -9,7 +9,7 @@
 // 	);
 // }
 
-import "./globals.css";
+import './globals.css';
 import { createClient } from '../src/lib/supabase/server';
 import { Suspense } from 'react';
 
