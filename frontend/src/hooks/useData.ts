@@ -33,7 +33,8 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
 
   const sync = useCallback(
     async (forceFresh = false) => {
-      if (!navigator.onLine && !forceFresh) return;
+      const online = typeof navigator !== 'undefined' ? navigator.onLine : true;
+      if (!online && !forceFresh) return;
 
       try {
         setIsLoading(true);
@@ -67,6 +68,7 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
   // periodic sync while online
   useEffect(() => {
     if (!isOnline) return;
+    if (typeof window === 'undefined') return;
     const id = window.setInterval(() => sync(), maxAgeMins * 60 * 1000);
     return () => window.clearInterval(id);
   }, [isOnline, maxAgeMins, sync]);
