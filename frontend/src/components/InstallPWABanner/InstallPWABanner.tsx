@@ -6,10 +6,10 @@ import { DismissButton } from './DismissButton';
 import { InstallButton } from './InstallButton';
 
 export default function InstallPWAButton() {
-  const { install, dismiss, showInstallButton, showFallback, isReady } = usePWAInstall();
+  const { install, dismiss, showInstallButton, showFallback } = usePWAInstall();
 
   // --- Render checks ---
-  if (!isReady) return null;
+  if (typeof window === 'undefined') return null;
   if (!showInstallButton && !showFallback) return null;
 
   return (
@@ -25,7 +25,7 @@ export default function InstallPWAButton() {
         {showFallback && (
           // TODO: Text on how to install on browsers not Chromium? I'm not confident in this, want to check on iOS device
           <span className="text-gray-700 text-sm">
-            For å installere appen, bruk "Legg til på Hjem-skjerm"
+            For å installere appen, bruk &quot;Legg til på Hjem-skjerm&quot;
           </span>
         )}
       </section>
