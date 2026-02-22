@@ -16,7 +16,11 @@ import { Suspense } from 'react';
 import { useSongs } from '@/src/hooks/useData';
 
 function SongDataDisplay() {
-  const { data: songs, isLoading, error } = useSongs({
+  const {
+    data: songs,
+    isLoading,
+    error,
+  } = useSongs({
     maxAgeMins: 5,
     syncOnMount: true,
   });
@@ -26,9 +30,7 @@ function SongDataDisplay() {
 
   return (
     <div>
-      <div>
-        {isLoading && <span>Synkroniserer med supabase...</span>}
-      </div>
+      <div>{isLoading && <span>Synkroniserer med supabase...</span>}</div>
       <pre>{JSON.stringify(songs, null, 2)}</pre>
     </div>
   );
