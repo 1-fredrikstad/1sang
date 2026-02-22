@@ -2,68 +2,109 @@
 
 import { useState, useEffect } from 'react';
 
+const DISMISSED_KEY = 'pwaBannerDismissed';
+
+interface IBeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
+
 export function usePWAInstall() {
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [isOpenedInApp, setIsOpenedInApp] = useState(false);
-  const [isBannerDismissed, setIsBannerDismissed] = useState(false);
+  const [promptEvent, setPromptEvent] = useState<IBeforeInstallPromptEvent | null>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
+  const [supportsPrompt, setSupportsPrompt] = useState<boolean>(false);
   const [isReady, setIsReady] = useState(false);
 
+  // --- Render checks ---
+
+  // Only render when component is ready
   useEffect(() => {
-    setIsReady(true);
+    setIsReady(true); // Client is ready
+  }, []);
 
-    // Check dismissal
-    if (sessionStorage.getItem('pwaBannerDismissed') === 'true') setIsBannerDismissed(true);
+  useEffect(() => {
+    // --- Initial checks ---
 
-    // Check if opened as a standalone app / running as PWA
+    // Browser support
+    setSupportsPrompt('onbeforeinstallprompt' in window);
+
+    // Banner dismissal
+    if (localStorage.getItem(DISMISSED_KEY) === 'true') setIsDismissed(true);
+
+    // Standalone / PWA installed or running
     const checkStandalone = () => {
       const isStandalone =
         window.matchMedia('(display-mode: standalone)').matches ||
         (window.navigator as any).standalone === true ||
-        document.referrer.includes('anroid-app://');
+        document.referrer.includes('android-app://');
 
-      setIsOpenedInApp(isStandalone);
+      setIsInstalled(isStandalone);
     };
 
     checkStandalone();
+
+    // --- Event handlers ---
+
+    // Install prompt
+    const handleBeforeInstallPrompt = (e: IBeforeInstallPromptEvent) => {
+      e.preventDefault();
+      setPromptEvent(e);
+    };
+
+    // App installed
+    const handleAppInstalled = () => {
+      setPromptEvent(null);
+      setIsInstalled(true);
+    };
+
+    // Display-mode changes
     const mediaQuery = window.matchMedia('(display-mode: standalone)');
     mediaQuery.addEventListener('change', checkStandalone);
 
-    const handleBeforeInstallPrompt = (e: any) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-
-    const handleAppInstalled = () => {
-      setDeferredPrompt(null);
-      setIsOpenedInApp(true);
-    };
-
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt as any);
     window.addEventListener('appinstalled', handleAppInstalled);
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt as any);
       window.removeEventListener('appinstalled', handleAppInstalled);
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       mediaQuery.removeEventListener('change', checkStandalone);
     };
   }, []);
 
-  const install = async () => {
-    if (!deferredPrompt) return;
+  // --- Actions ---
 
-    deferredPrompt.prompt();
-    const choiceResult = await deferredPrompt.userChoice;
+  const install = async () => {
+    if (!promptEvent) return;
+
+    promptEvent.prompt();
+    const choiceResult = await promptEvent.userChoice;
 
     if (choiceResult.outcome === 'accepted') {
-      setDeferredPrompt(null);
-      setIsOpenedInApp(true);
+      setPromptEvent(null);
+      setIsInstalled(true);
     }
   };
 
   const dismiss = () => {
-    sessionStorage.setItem('pwaBannerDismissed', 'true');
-    setIsBannerDismissed(true);
+    localStorage.setItem(DISMISSED_KEY, 'true');
+    setIsDismissed(true);
   };
 
-  return { deferredPrompt, install, isOpenedInApp, isBannerDismissed, dismiss, isReady };
+  // --- Derived booleans ---
+
+  const showInstallButton = !!promptEvent && !isInstalled && !isDismissed;
+
+  const isIOS =
+    typeof window !== 'undefined' && /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+
+  const showFallback = (isIOS || !supportsPrompt) && !isInstalled && !isDismissed;
+
+  return {
+    install,
+    dismiss,
+    showInstallButton,
+    showFallback,
+    isReady,
+  };
 }

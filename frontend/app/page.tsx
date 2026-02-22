@@ -12,7 +12,7 @@
 import './globals.css';
 import { createClient } from '../src/lib/supabase/server';
 import { Suspense } from 'react';
-import InstallPWABanner from '@/src/components/InstallPWABanner';
+import InstallPWABanner from '@/src/components/InstallPWABanner/InstallPWABanner';
 
 async function SongData() {
   const supabase = await createClient();
