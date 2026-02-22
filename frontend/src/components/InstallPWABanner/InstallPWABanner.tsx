@@ -6,8 +6,7 @@ import { DismissButton } from './DismissButton';
 import { InstallButton } from './InstallButton';
 
 export default function InstallPWAButton() {
-  const { install, dismiss, showInstallButton, showFallback, isReady } =
-    usePWAInstall();
+  const { install, dismiss, showInstallButton, showFallback, isReady } = usePWAInstall();
 
   // --- Render checks ---
   if (!isReady) return null;
