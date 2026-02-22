@@ -4,33 +4,47 @@ import { useState, useEffect } from 'react';
 
 export function usePWAInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [isInstallable, setIsInstallable] = useState(false);
-  const [isInstalled, setIsInstalled] = useState(false);
-
+  const [isOpenedInApp, setIsOpenedInApp] = useState(false);
+  const [isBannerDismissed, setIsBannerDismissed] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    // If the site is opened as an app (stanalone mode), dont display install mssg
-    if(window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone) {
-        setIsInstalled(true);
-    }
+    setIsReady(true);
 
-    const handler = (e: any) => {
+    // Check dismissal
+    if (sessionStorage.getItem('pwaBannerDismissed') === 'true') setIsBannerDismissed(true);
+
+    // Check if opened as a standalone app / running as PWA
+    const checkStandalone = () => {
+      const isStandalone =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as any).standalone === true ||
+        document.referrer.includes('anroid-app://');
+
+      setIsOpenedInApp(isStandalone);
+    };
+
+    checkStandalone();
+    const mediaQuery = window.matchMedia('(display-mode: standalone)');
+    mediaQuery.addEventListener('change', checkStandalone);
+
+    const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setIsInstallable(true);
     };
 
-    window.addEventListener('beforeinstallprompt', handler);
-
-    const appInstalledHandler = () => {
-      setIsInstalled(true);
-      setIsInstallable(false);
+    const handleAppInstalled = () => {
+      setDeferredPrompt(null);
+      setIsOpenedInApp(true);
     };
-    window.addEventListener('appinstalled', appInstalledHandler);
+
+    window.addEventListener('appinstalled', handleAppInstalled);
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handler);
-      window.removeEventListener('appinstalled', appInstalledHandler);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      mediaQuery.removeEventListener('change', checkStandalone);
     };
   }, []);
 
@@ -38,11 +52,18 @@ export function usePWAInstall() {
     if (!deferredPrompt) return;
 
     deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
+    const choiceResult = await deferredPrompt.userChoice;
 
-    setDeferredPrompt(null);
-    setIsInstallable(false);
+    if (choiceResult.outcome === 'accepted') {
+      setDeferredPrompt(null);
+      setIsOpenedInApp(true);
+    }
   };
 
-  return { isInstallable, install, isInstalled };
+  const dismiss = () => {
+    sessionStorage.setItem('pwaBannerDismissed', 'true');
+    setIsBannerDismissed(true);
+  };
+
+  return { deferredPrompt, install, isOpenedInApp, isBannerDismissed, dismiss, isReady };
 }
