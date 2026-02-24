@@ -81,11 +81,13 @@ All UI elements are implemented as React components using TypeScript (TSX).
 
 The project follows a modular structure inside the `frontend` folder:
 
+```text
 frontend/
 │
-├── app/ #Next.js app router (layouts and routing)
-├── public/ #Static assets
+├── app/                 # Next.js app router (layouts and routing)
+├── public/              # Static assets
 ├── src/
-│ ├── components/ #Reusable UI components
-│ ├── pages/ # Pages of the app
-│ └── lib/ #Utility functions and Supabase setup
+│   ├── components/      # Reusable UI components
+│   ├── pages/           # Pages of the app
+│   └── lib/             # Utility functions and Supabase setup
+```
