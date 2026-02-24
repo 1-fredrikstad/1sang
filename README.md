@@ -24,6 +24,14 @@ pnpm install
 
 ### 2. Run development server
 
+Go to the `frontend` folder:
+
+```bash
+cd frontend
+```
+
+And run:
+
 ```bash
 pnpm dev
 ```
@@ -32,18 +40,32 @@ Open [http://localhost:3000](http://localhost:3000) with your browser.
 
 ### 3. Build for production
 
+Go to the `frontend` folder:
+
 ```bash
-pnpm run build
+cd frontend
+```
+
+And run:
+
+```bash
+pnpm build
 pnpm start
 ```
 
-TODO: Fjern det vi ikke skal ha av dette og skriv om det vi skal ha med (av backend, .env osv):
+### Environment variables
 
-Mention environment variables (`.env.local`)
+This project requires Supabase environment variables to run.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create a `.env.local` file inside the `frontend` folder and add:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+
+You can find these values in your Supabase Dashboard under:
+Project Settings → API.
+
+Do not commit your .env.local file to GitHub.
 
 ## Naming conventions
 
