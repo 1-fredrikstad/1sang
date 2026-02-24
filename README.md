@@ -36,7 +36,7 @@ And run:
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser.
+Then open [http://localhost:3000](http://localhost:3000) with your browser.
 
 ### 3. Build for production
 
@@ -60,6 +60,7 @@ This project requires Supabase environment variables to run.
 Create a `.env.local` file inside the `frontend` folder and add:
 
 NEXT_PUBLIC_SUPABASE_URL=
+
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 
 You can find these values in your Supabase Dashboard under:
@@ -77,3 +78,14 @@ All UI elements are implemented as React components using TypeScript (TSX).
 - **Types and interfaces**: PascalCase
 
 ## Component structure
+
+The project follows a modular structure inside the `frontend` folder:
+
+frontend/
+│
+├── app/ #Next.js app router (layouts and routing)
+├── public/ #Static assets
+├── src/
+│ ├── components/ #Reusable UI components
+│ ├── pages/ # Pages of the app
+│ └── lib/ #Utility functions and Supabase setup
