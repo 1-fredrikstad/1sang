@@ -15,6 +15,10 @@ interface NavigatorStandalone extends Navigator {
 
 export function usePWAInstall() {
   const [promptEvent, setPromptEvent] = useState<IBeforeInstallPromptEvent | null>(null);
+  const [supportsPrompt, setSupportsPrompt] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return 'onbeforeinstallprompt' in window;
+  });
   const [isInstalled, setIsInstalled] = useState(false);
   const [isDismissed, setIsDismissed] = useState(() => {
     if (typeof window === 'undefined') return false;
@@ -23,10 +27,17 @@ export function usePWAInstall() {
 
   // --- Initial checks ---
 
-  const supportsPrompt = typeof window !== 'undefined' && 'onbeforeinstallprompt' in window;
-
   const isIOS =
-    typeof window !== 'undefined' && /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    typeof window !== 'undefined' &&
+    (/iphone|ipad|ipod/i.test(window.navigator.userAgent) ||
+      // iPadOS 13+ reports as Mac; detect via userAgent string + touch support
+      (/MacIntel/.test(window.navigator.userAgent) && (navigator as any).maxTouchPoints > 1));
+
+  const isSafari =
+    typeof window !== 'undefined' &&
+    /Safari/.test(window.navigator.userAgent) &&
+    !/Chrome|CriOS|Chromium|Edg|OPR|FxiOS/.test(window.navigator.userAgent);
+  const isAndroid = typeof window !== 'undefined' && /android/i.test(window.navigator.userAgent);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -49,6 +60,7 @@ export function usePWAInstall() {
     const handleBeforeInstallPrompt = (e: IBeforeInstallPromptEvent) => {
       e.preventDefault();
       setPromptEvent(e);
+      setSupportsPrompt(true);
     };
 
     // App installed
@@ -93,12 +105,20 @@ export function usePWAInstall() {
   // --- Derived booleans ---
   const showInstallButton = !!promptEvent && !isInstalled && !isDismissed;
 
-  const showFallback = (isIOS || !supportsPrompt) && !isInstalled && !isDismissed;
+  // Show fallback when the beforeinstallprompt flow is not available (non-Chromium),
+  // or when running Safari/iOS where the browser provides an alternate install UX.
+  const showFallback =
+    !showInstallButton && !isInstalled && !isDismissed && (isIOS || !supportsPrompt || isSafari);
 
   return {
     install,
     dismiss,
     showInstallButton,
     showFallback,
+    // platform hints for UI
+    isIOS,
+    isSafari,
+    isAndroid,
+    supportsPrompt,
   };
 }
