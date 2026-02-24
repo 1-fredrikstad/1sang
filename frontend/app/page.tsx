@@ -10,7 +10,6 @@
 // }
 
 import './globals.css';
-import Link from "next/link";
 import { createClient } from '../src/lib/supabase/server';
 import { Suspense } from 'react';
 
@@ -19,17 +18,7 @@ async function SongData() {
   const supabase = await createClient();
   const { data: songs } = await supabase.from('songs').select();
 
-    return (
-    <ul>
-      {songs?.map((song) => (
-        <li key={song.id}>
-          <Link href={`/songs/${song.id}`}>
-            {song.title}
-          </Link>
-        </li>
-      ))}
-    </ul>
-  );
+    return <pre>{JSON.stringify(songs, null, 2)}</pre>;
 }
 
 export default function Songs() {
