@@ -9,7 +9,7 @@ This is a digital songbook Progressive Web App (PWA) for browsing and viewing sc
 - **TypeScript** – Adds static typing to JavaScript for better reliability and maintainability.
 - **Tailwind CSS** – Utility-first CSS framework used for styling the application.
 - **Supabase** - Backend and database.
-- **IndexedDB + Dexie** - Offline storage and caching og songs.
+- **IndexedDB + Dexie** - Offline storage and caching of songs.
 - **Vercel** - Hosting platform used to deploy and run the application.
 
 ## How to run the project
@@ -49,9 +49,9 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 All UI elements are implemented as React components using TypeScript (TSX).
 
-- React components: PascalCase
-- Files: PascalCase for components and pages, lowercase for route files
-- Variables and functions: camelCase
-- Types and interfaces: PascalCase
+- **React components**: PascalCase
+- **Files**: PascalCase for components and pages, lowercase for route files
+- **Variables and functions**: camelCase
+- **Types and interfaces**: PascalCase
 
 ## Component structure
