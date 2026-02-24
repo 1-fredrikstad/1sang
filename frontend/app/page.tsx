@@ -13,6 +13,7 @@ import './globals.css';
 import { createClient } from '../src/lib/supabase/server';
 import { Suspense } from 'react';
 import InstallPWABanner from '@/src/components/InstallPWABanner/InstallPWABanner';
+import ServiceWorkerRegister from '@/src/components/ServiceWorkerRegister';
 
 async function SongData() {
   const supabase = await createClient();
@@ -25,6 +26,7 @@ export default function Songs() {
   return (
     <>
       <InstallPWABanner />
+      <ServiceWorkerRegister />
 
       <Suspense fallback={<div>Loading songs...</div>}>
         <SongData />
