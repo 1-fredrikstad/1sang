@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import ls from 'localstorage-slim';
 
 const DISMISSED_KEY = 'pwaBannerDismissed';
+const DISMISSED_TTL = 7 * 24 * 60 * 60; // 7 days
 
 interface IBeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -15,41 +17,25 @@ interface NavigatorStandalone extends Navigator {
 
 export function usePWAInstall() {
   const [promptEvent, setPromptEvent] = useState<IBeforeInstallPromptEvent | null>(null);
-  const [supportsPrompt, setSupportsPrompt] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    return 'onbeforeinstallprompt' in window;
-  });
+
   const [isInstalled, setIsInstalled] = useState(false);
-  const [isDismissed, setIsDismissed] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return localStorage.getItem(DISMISSED_KEY) === 'true';
-  });
+
+  const [isDismissed, setIsDismissed] = useState(false);
 
   // --- Initial checks ---
 
-  const isIOS =
-    typeof window !== 'undefined' &&
-    (/iphone|ipad|ipod/i.test(window.navigator.userAgent) ||
-      // iPadOS 13+ reports as Mac; detect via userAgent string + touch support
-      (/MacIntel/.test(window.navigator.userAgent) && (navigator as any).maxTouchPoints > 1));
-
-  const isSafari =
-    typeof window !== 'undefined' &&
-    /Safari/.test(window.navigator.userAgent) &&
-    !/Chrome|CriOS|Chromium|Edg|OPR|FxiOS/.test(window.navigator.userAgent);
-  const isAndroid = typeof window !== 'undefined' && /android/i.test(window.navigator.userAgent);
-
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    // Banner dismissed in ls
+    const dismissed = ls.get(DISMISSED_KEY); // Returns NULL if 7 days has passed, TRUE if not
+    setIsDismissed(!!dismissed);
 
     // Standalone / PWA installed or running
     const checkStandalone = () => {
-      const isStandalone =
+      setIsInstalled(
         window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as NavigatorStandalone).standalone === true ||
-        document.referrer.includes('android-app://');
-
-      setIsInstalled(isStandalone);
+          (window.navigator as NavigatorStandalone).standalone === true ||
+          document.referrer.includes('android-app://')
+      );
     };
 
     checkStandalone();
@@ -60,7 +46,6 @@ export function usePWAInstall() {
     const handleBeforeInstallPrompt = (e: IBeforeInstallPromptEvent) => {
       e.preventDefault();
       setPromptEvent(e);
-      setSupportsPrompt(true);
     };
 
     // App installed
@@ -98,27 +83,16 @@ export function usePWAInstall() {
   };
 
   const dismiss = () => {
-    localStorage.setItem(DISMISSED_KEY, 'true');
+    ls.set(DISMISSED_KEY, true, { ttl: DISMISSED_TTL });
     setIsDismissed(true);
   };
 
-  // --- Derived booleans ---
+  // --- Derived boolean ---
+
   const showInstallButton = !!promptEvent && !isInstalled && !isDismissed;
-
-  // Show fallback when the beforeinstallprompt flow is not available (non-Chromium),
-  // or when running Safari/iOS where the browser provides an alternate install UX.
-  const showFallback =
-    !showInstallButton && !isInstalled && !isDismissed && (isIOS || !supportsPrompt || isSafari);
-
   return {
     install,
     dismiss,
     showInstallButton,
-    showFallback,
-    // platform hints for UI
-    isIOS,
-    isSafari,
-    isAndroid,
-    supportsPrompt,
   };
 }
