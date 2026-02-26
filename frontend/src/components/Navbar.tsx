@@ -41,9 +41,9 @@ export default function Navbar() {
               aria-current={isActive ? 'page' : undefined}
             >
               <Icon
-                className={`h-6 w-6 text-white transition-opacity duration-200 ${
+                className={`h-6 w-6 text-white transition-all duration-200 ${
                   isActive ? 'opacity-100' : 'opacity-70'
-                }`}
+                } hover:opacity-100`}
               />
               {isActive && <span className="absolute bottom-1 h-0.5 w-6 rounded-full bg-white" />}
             </Link>
