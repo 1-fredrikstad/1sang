@@ -1,5 +1,3 @@
-import React from 'react';
-
 // Navbar icons
 
 export type IconProps = {
