@@ -1,4 +1,5 @@
 import { db } from './db';
+import { createClient } from './supabase/client';
 
 type TableName =
   | 'songs'
@@ -13,13 +14,12 @@ type TableName =
 type SyncOptions = { forceFresh?: boolean };
 
 class SyncService {
+  private supabase: ReturnType<typeof createClient> | null = null;
   private syncing = new Set<TableName>();
 
-  private apiUrlFor(tableName: TableName, params?: Record<string, string>) {
-    const search = params
-      ? '?' + new URLSearchParams(params).toString()
-      : '';
-    return `/api/${tableName}${search}`;
+  private getSupabase() {
+    if (!this.supabase) this.supabase = createClient();
+    return this.supabase;
   }
 
   async syncTable(tableName: TableName, options: SyncOptions = {}) {
@@ -27,19 +27,14 @@ class SyncService {
 
     this.syncing.add(tableName);
     try {
-      const url = this.apiUrlFor(tableName);
-      const res = await fetch(url, { cache: 'no-store' });
-      const body = await res.json();
+      const supabase = this.getSupabase();
 
-      if (!res.ok || !body.ok) {
-        const err = body?.error || `Failed to fetch ${tableName}`;
-        throw new Error(typeof err === 'string' ? err : JSON.stringify(err));
-      }
+      const { data, error } = await supabase.from(tableName).select('*');
+      if (error) throw error;
 
-      const data = body.data;
-
-      if (Array.isArray(data)) {
-        const table = db.table(tableName as any);
+      // update dexie cache with fresh data
+      if (data) {
+        const table = db.table(tableName);
         await table.clear();
         await table.bulkPut(data);
       }
