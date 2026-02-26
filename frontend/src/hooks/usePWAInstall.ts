@@ -20,15 +20,15 @@ export function usePWAInstall() {
 
   const [isInstalled, setIsInstalled] = useState(false);
 
-  const [isDismissed, setIsDismissed] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const dismissed = ls.get(DISMISSED_KEY); // Returns NULL if 7 days has passed, TRUE if not
+    return !!dismissed;
+  });
 
   // --- Initial checks ---
 
   useEffect(() => {
-    // Banner dismissed in ls
-    const dismissed = ls.get(DISMISSED_KEY); // Returns NULL if 7 days has passed, TRUE if not
-    setIsDismissed(!!dismissed);
-
     // Standalone / PWA installed or running
     const checkStandalone = () => {
       setIsInstalled(
