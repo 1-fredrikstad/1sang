@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import clsx from 'clsx';
 
 // Figma-exported icon components
 import { HomeIcon, SongsIcon, AddIcon, FavoritesIcon, SettingsIcon } from './icons/Icons';
@@ -27,11 +26,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className={clsx(
-        'fixed inset-x-0 bottom-0 z-50',
-        'bg-[#69869F]',
-        'pb-[env(safe-area-inset-bottom)]'
-      )}
+      className="fixed inset-x-0 bottom-0 z-50 bg-[#69869F] pb-[env(safe-area-inset-bottom)]"
       aria-label="Bottom navigation"
     >
       <div className="mx-auto grid max-w-md grid-cols-5">
@@ -42,21 +37,15 @@ export default function Navbar() {
             <Link
               key={id}
               href={href}
-              className={clsx(
-                'relative flex items-center justify-center',
-                'py-4 transition-opacity duration-200'
-              )}
+              className="relative flex items-center justify-center py-4 transition-opacity duration-200"
               aria-current={isActive ? 'page' : undefined}
             >
               <Icon
-                className={clsx(
-                  'h-6 w-6 text-white transition-opacity duration-200',
+                className={`h-6 w-6 text-white transition-opacity duration-200 ${
                   isActive ? 'opacity-100' : 'opacity-70'
-                )}
+                }`}
               />
-              {isActive && (
-                <span className={clsx('absolute bottom-1 h-0.5 w-6 rounded-full bg-white')} />
-              )}
+              {isActive && <span className="absolute bottom-1 h-0.5 w-6 rounded-full bg-white" />}
             </Link>
           );
         })}
