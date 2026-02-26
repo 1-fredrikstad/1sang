@@ -9,7 +9,10 @@ export async function GET(req: Request) {
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
     if (!supabaseUrl || !anonKey) {
-      return NextResponse.json({ ok: false, error: 'Missing Supabase env variables' }, { status: 500 });
+      return NextResponse.json(
+        { ok: false, error: 'Missing Supabase env variables' },
+        { status: 500 }
+      );
     }
 
     const target = `${supabaseUrl}/rest/v1/song_suggestions?select=*${limit ? `&limit=${limit}` : ''}`;
