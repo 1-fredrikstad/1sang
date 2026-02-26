@@ -9,17 +9,33 @@
 // 	);
 // }
 
+'use client';
+
 import './globals.css';
-import { createClient } from '../src/lib/supabase/server';
 import { Suspense } from 'react';
 import ServiceWorkerRegister from '@/src/components/ServiceWorkerRegister';
 import InstallPWABanner from '@/src/components/InstallPWABanner/InstallPWABanner';
+import { useSongs } from '@/src/hooks/useData';
 
-async function SongData() {
-  const supabase = await createClient();
-  const { data: songs } = await supabase.from('songs').select();
+function SongDataDisplay() {
+  const {
+    data: songs,
+    isLoading,
+    error,
+  } = useSongs({
+    maxAgeMins: 5,
+    syncOnMount: true,
+  });
 
-  return <pre>{JSON.stringify(songs, null, 2)}</pre>;
+  if (error) return <div>Error: {error.message}</div>;
+  if (!songs) return <div>Laster data...</div>;
+
+  return (
+    <div>
+      <div>{isLoading && <span>Synkroniserer med supabase...</span>}</div>
+      <pre>{JSON.stringify(songs, null, 2)}</pre>
+    </div>
+  );
 }
 
 export default function Songs() {
@@ -27,8 +43,8 @@ export default function Songs() {
     <>
       <ServiceWorkerRegister />
       <InstallPWABanner />
-      <Suspense fallback={<div>Loading songs...</div>}>
-        <SongData />
+      <Suspense fallback={<div>Henter sanger...</div>}>
+        <SongDataDisplay />
       </Suspense>
     </>
   );
