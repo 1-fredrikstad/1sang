@@ -14,7 +14,6 @@
 import './globals.css';
 import { Suspense } from 'react';
 import { useSongs } from '@/src/hooks/useData';
-import AddSongPage from './pages/AddSongPage';
 
 function SongDataDisplay() {
   const {
@@ -40,7 +39,7 @@ function SongDataDisplay() {
 export default function Songs() {
   return (
     <Suspense fallback={<div>Henter sanger...</div>}>
-      <AddSongPage />
+      <SongDataDisplay />
     </Suspense>
   );
 }
