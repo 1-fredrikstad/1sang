@@ -118,7 +118,7 @@ export default function SongForm() {
         ></input>
 
         {/* Author */}
-        <label className="text-black">Av</label>
+        <label className="text-black">Låtskriver</label>
         <input
           {...register('author', shortAndOptionalValidation)}
           className="bg-[#FFFDFB] mb-5 p-1 outline outline-[#E6E4E2]  rounded-sm  text-black"
