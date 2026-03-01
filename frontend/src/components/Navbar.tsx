@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-// Figma-exported icon components
 import { HomeIcon, SongsIcon, AddIcon, FavoritesIcon, SettingsIcon } from './icons/Icons';
 
 type NavItem = {
@@ -12,7 +11,7 @@ type NavItem = {
   Icon: React.ComponentType<{ className?: string }>;
 };
 
-//TODO: add actual href when more pages are implemented
+//TODO: links are placeholders, add actual href when the pages are implemented
 const navItems: NavItem[] = [
   { id: 'home', href: '/', Icon: HomeIcon },
   { id: 'songs', href: '/songs', Icon: SongsIcon },
@@ -26,7 +25,14 @@ export default function Navbar() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-50 bg-[#69869F] pb-[env(safe-area-inset-bottom)]"
+      // Navbar has 18px extra bottom padding on mobile devices to account for iOS Safari's bottom search bar, which overlaps fixed elements
+      className="
+        fixed inset-x-0 bottom-0 z-50 
+        bg-[var(--background)]
+        shadow-[0_-1px_3px_rgba(0,0,0,0.12)]
+        dark:shadow-[0_-1px_4px_rgba(255,255,255,0.12)]
+        pb-[calc(env(safe-area-inset-bottom)+18px)] md:pb-0
+      "
       aria-label="Bottom navigation"
     >
       <div className="mx-auto grid max-w-md grid-cols-5">
@@ -41,11 +47,13 @@ export default function Navbar() {
               aria-current={isActive ? 'page' : undefined}
             >
               <Icon
-                className={`h-6 w-6 text-white transition-all duration-200 ${
+                className={`h-6 w-6 text-[var(--foreground)] transition-all duration-200 ${
                   isActive ? 'opacity-100' : 'opacity-70'
                 } hover:opacity-100`}
               />
-              {isActive && <span className="absolute bottom-1 h-0.5 w-6 rounded-full bg-white" />}
+              {isActive && (
+                <span className="absolute bottom-1 h-0.5 w-6 rounded-full bg-[var(--foreground)]" />
+              )}
             </Link>
           );
         })}
