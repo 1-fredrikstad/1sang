@@ -6,11 +6,12 @@ export default function Header() {
     <header className="w-full bg-[#69869F]">
       <div className="mx-auto flex max-w-md items-center px-4 py-3">
         <Link href="/" className="flex items-center gap-2" aria-label="Go to homepage">
-          <Image src="/ScoutLogo.png" alt="Scout Logo" width={58} height={58} priority />
-          <span className="flex flex-col leading-tight text-white text-sm">
+          <Image src="/ScoutLogo.png" alt="Scout Logo" width={50} height={50} priority />
+
+          <span className="flex flex-col leading-tight text-white text-base">
             <span>Sanger</span>
-            <span>Under</span>
-            <span>Liljen</span>
+            <span>under</span>
+            <span>liljen</span>
           </span>
         </Link>
       </div>
