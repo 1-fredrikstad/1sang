@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import ServiceWorkerRegister from '@/src/components/ServiceWorkerRegister';
 import InstallPWABanner from '@/src/components/InstallPWABanner/InstallPWABanner';
 import { useSongs } from '@/src/hooks/useData';
-import { HomePage } from './pages/HomePage';
+import { HomePage } from '../pages/HomePage';
 
 function SongDataDisplay() {
   const {
