@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import Navbar from '../src/components/Navbar';
-import Header from '../src/components/Header';
+import ConditionalHeader from '@/src/components/global/ConditionalHeader';
+import ConditionalNavbar from '@/src/components/global/ConditionalNavbar';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -29,11 +29,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
-        <Header />
+        <ConditionalHeader />
 
         <main className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20">{children}</main>
 
-        <Navbar />
+        <ConditionalNavbar />
       </body>
     </html>
   );

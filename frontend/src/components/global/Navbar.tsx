@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { HomeIcon, SongsIcon, AddIcon, FavoritesIcon, SettingsIcon } from './icons/Icons';
+import { HomeIcon, SongsIcon, AddIcon, FavoritesIcon, SettingsIcon } from '../icons/Icons';
 
 type NavItem = {
   id: string;
@@ -26,12 +26,12 @@ export default function Navbar() {
   return (
     <nav
       className="
-        fixed inset-x-0 bottom-0 z-50 
-        bg-[var(--background)]
-        shadow-[0_-1px_3px_rgba(0,0,0,0.12)]
-        dark:shadow-[0_-1px_4px_rgba(255,255,255,0.12)]
-        pb-[env(safe-area-inset-bottom)] md:pb-0
-      "
+          fixed inset-x-0 bottom-0 z-50 
+          bg-[var(--background)]
+          shadow-[0_-1px_3px_rgba(0,0,0,0.12)]
+          dark:shadow-[0_-1px_4px_rgba(255,255,255,0.12)]
+          pb-[env(safe-area-inset-bottom)] md:pb-0
+        "
       aria-label="Bottom navigation"
     >
       <div className="mx-auto grid max-w-md grid-cols-5">
