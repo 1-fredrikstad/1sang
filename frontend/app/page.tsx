@@ -1,12 +1,40 @@
 'use client';
 
 import { Suspense } from 'react';
+import ServiceWorkerRegister from '@/src/components/ServiceWorkerRegister';
+import InstallPWABanner from '@/src/components/InstallPWABanner/InstallPWABanner';
+import { useSongs } from '@/src/hooks/useData';
+
+function SongDataDisplay() {
+  const {
+    data: songs,
+    isLoading,
+    error,
+  } = useSongs({
+    maxAgeMins: 5,
+    syncOnMount: true,
+  });
+
+  if (error) return <div>Error: {error.message}</div>;
+  if (!songs) return <div>Laster data...</div>;
+
+  return (
+    <div>
+      <div>{isLoading && <span>Synkroniserer med supabase...</span>}</div>
+      <pre>{JSON.stringify(songs, null, 2)}</pre>
+    </div>
+  );
+}
 import { HomePage } from './pages/HomePage';
 
 export default function Page() {
   return (
-    <Suspense fallback={<div>Laster...</div>}>
-      <HomePage />
-    </Suspense>
+    <>
+      <ServiceWorkerRegister />
+      <InstallPWABanner />
+      <Suspense fallback={<div>Henter sanger...</div>}>
+        <SongDataDisplay />
+      </Suspense>
+    </>
   );
 }
