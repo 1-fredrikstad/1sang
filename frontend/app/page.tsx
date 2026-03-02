@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import ServiceWorkerRegister from '@/src/components/ServiceWorkerRegister';
 import InstallPWABanner from '@/src/components/InstallPWABanner/InstallPWABanner';
 import { useSongs } from '@/src/hooks/useData';
+import { HomePage } from './pages/HomePage';
 
 function SongDataDisplay() {
   const {
@@ -20,12 +21,10 @@ function SongDataDisplay() {
 
   return (
     <div>
-      <div>{isLoading && <span>Synkroniserer med supabase...</span>}</div>
-      <pre>{JSON.stringify(songs, null, 2)}</pre>
+      <HomePage />
     </div>
   );
 }
-import { HomePage } from './pages/HomePage';
 
 export default function Page() {
   return (

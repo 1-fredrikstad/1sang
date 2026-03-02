@@ -58,3 +58,24 @@ pre {
   font-weight: 300;
   font-style: normal;
 }
+
+@font-face {
+  font-family: 'DINOT';
+  src: url('/DINOT/DINOT-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DINOT';
+  src: url('/DINOT/DINOT-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DINOT';
+  src: url('/DINOT/DINOT-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
