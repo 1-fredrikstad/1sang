@@ -1,17 +1,5 @@
-// import ServiceWorkerRegister from "@/src/components/ServiceWorkerRegister";
-
-// export default function Home() {
-// 	return (
-// 		<main>
-// 			<h1>Test</h1>
-// 			<ServiceWorkerRegister></ServiceWorkerRegister>
-// 		</main>
-// 	);
-// }
-
 'use client';
 
-import './globals.css';
 import { Suspense } from 'react';
 import ServiceWorkerRegister from '@/src/components/ServiceWorkerRegister';
 import InstallPWABanner from '@/src/components/InstallPWABanner/InstallPWABanner';
@@ -37,8 +25,9 @@ function SongDataDisplay() {
     </div>
   );
 }
+import { HomePage } from './pages/HomePage';
 
-export default function Songs() {
+export default function Page() {
   return (
     <>
       <ServiceWorkerRegister />
