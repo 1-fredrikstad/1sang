@@ -35,9 +35,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
         <Header />
 
-        <main className="pb-[calc(80px+env(safe-area-inset-bottom)+18px)] md:pb-20">
-          {children}
-        </main>
+        <main className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20">{children}</main>
 
         <Navbar />
       </body>

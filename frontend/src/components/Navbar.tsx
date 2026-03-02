@@ -25,13 +25,12 @@ export default function Navbar() {
 
   return (
     <nav
-      // Navbar has 18px extra bottom padding on mobile devices to account for iOS Safari's bottom search bar, which overlaps fixed elements
       className="
         fixed inset-x-0 bottom-0 z-50 
         bg-[var(--background)]
         shadow-[0_-1px_3px_rgba(0,0,0,0.12)]
         dark:shadow-[0_-1px_4px_rgba(255,255,255,0.12)]
-        pb-[calc(env(safe-area-inset-bottom)+18px)] md:pb-0
+        pb-[env(safe-area-inset-bottom)] md:pb-0
       "
       aria-label="Bottom navigation"
     >
