@@ -68,25 +68,25 @@ Project Settings → API.
 
 Do not commit your .env.local file to GitHub.
 
-## How to install the PWA as app
+## How to install the PWA as an app
 
 This application can be installed as a Progressive Web App (PWA) on supported devices.
 
 When opening the PWA in browser, a button for downloading the PWA should appear. Click this button to download.
 
-If the download button don't appear, follow these steps:
+If the download button doesn't appear, follow these steps:
 
 ### iPhone (Safari)
 
 1. Open the deployed app in Safari.
-2. Tap the Share button.
+2. Click the Share button.
 3. Select “Add to Home Screen”.
-4. Tap Add.
+4. Click Add.
 
 ### Android (Chrome)
 
 1. Open the deployed app in Chrome.
-2. Tap the three dots menu.
+2. Click the three dots menu.
 3. Select “Install app” or “Add to Home Screen”.
 4. Confirm installation.
 
