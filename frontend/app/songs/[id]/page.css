@@ -1,16 +1,9 @@
-body {
-  display: flex;
+.song-page {
   text-align: center;
-  justify-content: center;
-  font-family: 'DINOT', georgia;
-}
-
-main {
-  position: relative;
   width: min(1200px, 100%);
 }
 
-h1 {
+.song-page h1 {
   text-align: center;
   justify-content: center;
   margin-top: 100px;
@@ -18,7 +11,7 @@ h1 {
   font-size: xx-large;
 }
 
-pre {
+.song-page pre {
   display: flex;
   align-items: center;
   text-align: center;
@@ -26,14 +19,14 @@ pre {
   margin-top: 30px;
 }
 
-#arrow-back {
+.song-page #arrow-back {
   position: absolute;
   top: 100px;
   left: 20px;
   cursor: pointer;
 }
 
-#forfatter {
+.song-page #forfatter {
   display: flex;
   align-items: center;
   justify-content: center;
