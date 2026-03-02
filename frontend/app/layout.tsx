@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+import Navbar from '../src/components/Navbar';
+import Header from '../src/components/Header';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -25,11 +27,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
+        <Header />
+
+        <main className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20">{children}</main>
+
+        <Navbar />
+      </body>
     </html>
   );
 }
