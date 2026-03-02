@@ -3,9 +3,8 @@ import { createClient } from '../../lib/supabase/client';
 import Image from 'next/image';
 
 export default function GoogleLoginButton() {
-  const supabase = createClient();
-
   const handleLogin = async () => {
+    const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
