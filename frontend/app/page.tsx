@@ -12,19 +12,19 @@
 import './globals.css';
 import { createClient } from '../src/lib/supabase/server';
 import { Suspense } from 'react';
-
+import { HomePage } from './pages/HomePage';
 
 async function SongData() {
   const supabase = await createClient();
   const { data: songs } = await supabase.from('songs').select();
 
-    return <pre>{JSON.stringify(songs, null, 2)}</pre>;
+  return <pre>{JSON.stringify(songs, null, 2)}</pre>;
 }
 
 export default function Songs() {
   return (
     <Suspense fallback={<div>Loading songs...</div>}>
-      <SongData />
+      <HomePage />
     </Suspense>
   );
 }
