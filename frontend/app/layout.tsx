@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { useTheme } from '@/src/hooks/useTheme';
 import './globals.css';
 
 const geistSans = Geist({
@@ -23,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
