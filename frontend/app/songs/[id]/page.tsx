@@ -13,7 +13,7 @@ export default function SongPage() {
   if (!song) return <div>Laster sang...</div>;
 
   return (
-    <main>
+    <main className="song-page">
       <h1>{song.title}</h1>
       <BackButton />
       <div>
