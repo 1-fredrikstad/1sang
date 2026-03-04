@@ -1,45 +1,45 @@
 'use client';
 
 // TODO make into switch case
+import { useThemeMode } from '../context/ThemeProvider';
 
-import { useTheme } from '../hooks/useTheme';
 export default function SwitchThemeButton() {
-  const { changeTheme } = useTheme();
+  const { setHeaderColor } = useThemeMode();
   return (
     <div className="flex space-x-1">
       <button
         title="Dark"
-        onClick={() => changeTheme('dark')}
+        onClick={() => setHeaderColor('dark_gray')}
         className="w-5 h-5 bg-[#2E2E2E] rounded-full outline-1 outline-[#e6e4e2] mr-1"
       ></button>
       <button
         title="Småspeider"
-        onClick={() => changeTheme(null)}
+        onClick={() => setHeaderColor('light_yellow')}
         className="w-5 h-5 bg-[#FFF292] rounded-full outline-1 outline-[#e6e4e2] mr-1"
       ></button>
       <button
         title="Bever"
-        onClick={() => changeTheme('brown')}
+        onClick={() => setHeaderColor('brown')}
         className="w-5 h-5 bg-[#917931] rounded-full outline-1 outline-[#e6e4e2] mr-1"
       ></button>
       <button
         title="Stifinner"
-        onClick={() => changeTheme('blue')}
+        onClick={() => setHeaderColor('dark_blue')}
         className="w-5 h-5 bg-[#69869F] rounded-full outline-1 outline-[#e6e4e2] mr-1"
       ></button>
       <button
         title="Vandrer"
-        onClick={() => changeTheme('green')}
+        onClick={() => setHeaderColor('light_green')}
         className="w-5 h-5 bg-[#91C575] rounded-full outline-1 outline-[#e6e4e2] mr-1"
       ></button>
       <button
         title="Rover"
-        onClick={() => changeTheme('pink')}
+        onClick={() => setHeaderColor('pink')}
         className="w-5 h-5 bg-[#C475A8] rounded-full outline-1 outline-[#e6e4e2] mr-1"
       ></button>
       <button
         title="Leder"
-        onClick={() => changeTheme('turqouise')}
+        onClick={() => setHeaderColor('turquoise')}
         className="w-5 h-5 bg-[#82DCF2] rounded-full outline-1 outline-[#e6e4e2] mr-1"
       ></button>
     </div>

@@ -14,7 +14,7 @@ export default function Header() {
           >
             <Image src="/favicon/favicon.svg" alt="Scout Logo" width={50} height={50} priority />
 
-            <span className="text-white text-base leading-tight flex flex-col lg:flex-row lg:items-baseline lg:gap-2 lg:text-lg">
+            <span className="text-navbar-title text-base leading-tight flex flex-col lg:flex-row lg:items-baseline lg:gap-2 lg:text-lg">
               <span>Sanger</span>
               <span>under</span>
               <span>liljen</span>

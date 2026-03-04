@@ -1,11 +1,9 @@
 @import 'tailwindcss';
 
 /// --- Default theme: Light yellow ---
-
 :root {
   --background: #fffdfb;
   --foreground: #171717;
-  --navbar-bg: #69869f;
 }
 
 @theme inline {
@@ -16,14 +14,60 @@
   --color-border: var(--color-border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-navbar-bg: var(--navbar-bg);
+  --color-navbar-title: var(--navbar-title);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #2e2e2e;
-    --foreground: #ededed;
-    --navbar-bg: #3f3f3f;
-  }
+[data-mode='dark_mode'] {
+  --background: #2e2e2e;
+  --foreground: #ededed;
+}
+
+[data-mode='light_mode'] {
+  --background: #fffdfb;
+  --foreground: #171717;
+}
+
+// --- Themes for header ---
+
+[data-theme='undefined'] {
+  --navbar-bg: #00000000;
+  --navbar-title: #00000000;
+}
+
+[data-theme='light_yellow'] {
+  --navbar-bg: #fff292;
+  --navbar-title: #294862;
+}
+
+[data-theme='dark_blue'] {
+  --navbar-bg: #69869f;
+  --navbar-title: #ffffff;
+}
+
+[data-theme='light_green'] {
+  --navbar-bg: #91c575;
+  --navbar-title: #294862;
+}
+
+[data-theme='pink'] {
+  --navbar-bg: #c475a8;
+  --navbar-title: #ffffff;
+}
+
+[data-theme='turquoise'] {
+  --navbar-bg: #7fd4e8;
+  --navbar-title: #294862;
+}
+
+[data-theme='brown'] {
+  --navbar-bg: #b49f5fbf;
+  --navbar-title: #ffffff;
+}
+
+[data-theme='dark_gray'] {
+  --navbar-bg: #3f3f3f;
+  --navbar-title: #ffffff;
 }
 
 body {
@@ -31,6 +75,13 @@ body {
   color: var(--foreground);
   font-family: 'DINOT', georgia;
   overscroll-behavior-x: none;
+}
+
+* {
+  transition:
+    background-color 400ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 400ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 html,
@@ -43,6 +94,7 @@ pre {
   font-family: 'DINOT', Arial, Georgia;
 }
 
+// -- Fonts ---
 @font-face {
   font-family: 'DINOT';
   src: url('/DINOT/DINOT-Regular.otf') format('opentype');
