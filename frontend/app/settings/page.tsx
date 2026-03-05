@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { useAuth } from '@/src/context/AuthContext';
 import Spinner from '@/src/components/login/Spinner';
-import SwitchThemeButton from '@/src/components/SwitchHeaderColorButton';
+import ChangeColorHeaderForm from '@/src/components/ChangeColorHeaderForm';
 import ThemeToggleButton from '@/src/components/ThemeToggleButton';
 
 export default function Settings() {
@@ -25,7 +25,7 @@ export default function Settings() {
   return (
     <main className="flex flex-col justify-center items-center gap-2 mt-20">
       <ThemeToggleButton />
-      <SwitchThemeButton />
+      <ChangeColorHeaderForm />
       {user ? (
         <>
           <p className="text-lg">Logget inn som:</p>
