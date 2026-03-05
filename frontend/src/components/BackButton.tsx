@@ -6,7 +6,7 @@ export default function BackButton() {
 
   return (
     <button id="arrow-back" onClick={() => router.back()} className="hover:cursor-pointer">
-      <span className="hidden md:block"> Tilbake</span>
+      <span className="hidden md:block">Tilbake</span>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
