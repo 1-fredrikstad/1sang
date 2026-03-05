@@ -1,9 +1,18 @@
 @import 'tailwindcss';
+@custom-variant dark (&:where(.dark, .dark *));
 
-/// --- Default theme: Light yellow ---
+/// --- Default mode: light
 :root {
   --background: #fffdfb;
   --foreground: #171717;
+  --list-background: #fffdfb;
+}
+
+/// Dark mode
+.dark {
+  --background: #2e2e2e;
+  --foreground: #ededed;
+  --list-background: #3f3f3f;
 }
 
 @theme inline {
@@ -18,18 +27,7 @@
   --color-navbar-title: var(--navbar-title);
 }
 
-[data-mode='dark_mode'] {
-  --background: #2e2e2e;
-  --foreground: #ededed;
-}
-
-[data-mode='light_mode'] {
-  --background: #fffdfb;
-  --foreground: #171717;
-}
-
-// --- Themes for header ---
-
+/// --- Themes for header ---
 [data-theme='undefined'] {
   --navbar-bg: #00000000;
   --navbar-title: #00000000;

@@ -4,55 +4,71 @@ import { useState, useContext, useEffect, createContext } from 'react';
 import Cookies from 'js-cookie';
 import type { ColorHeader } from '../types/theme';
 
-type Mode = 'light_mode' | 'dark_mode';
+type Mode = 'light' | 'dark';
 
 type ThemeContextType = {
   mode: Mode;
   toggleMode: () => void;
   colorHeader: ColorHeader;
-  setHeaderColor: (color: ColorHeader) => void;
+  setHeaderColor: (color: ColorHeader | null) => void;
 };
 
-// Context object - a global shared react state that avoids prop drilling
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
-// Provider object - component that wraps app. owns and distributes state
-export function ThemeProvider({
-  children,
-  initialMode,
-}: {
-  children: React.ReactNode;
-  initialMode: Mode;
-}) {
-  const [mode, setMode] = useState<Mode>(initialMode);
-
-  const [colorHeader, setColorHeaderState] = useState<ColorHeader>(() => {
-    const cookie = Cookies.get('headerTheme') as ColorHeader | undefined;
-    const initial = cookie ?? (initialMode === 'dark_mode' ? 'dark_gray' : 'light_yellow');
-
-    // Apply immediately
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  // Detect system preference initially
+  const [mode, setMode] = useState<Mode>(() => {
     if (typeof window !== 'undefined') {
-      document.documentElement.dataset.theme = initial;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
-
-    return initial;
+    return 'light';
   });
 
-  useEffect(() => {
-    document.documentElement.dataset.mode = mode;
-    document.documentElement.dataset.theme = colorHeader;
+  // Manual override stored in cookie
+  const [manualHeaderColor, setManualHeaderColor] = useState<ColorHeader | null>(() => {
+    return (Cookies.get('headerTheme') as ColorHeader) ?? null;
+  });
 
-    Cookies.set('theme', mode, { expires: 7, path: '/' });
-    Cookies.set('headerTheme', colorHeader, { expires: 7, path: '/' });
-  }, [mode, colorHeader]);
+  // Derived header color
+  const colorHeader: ColorHeader =
+    manualHeaderColor ?? (mode === 'dark' ? 'dark_gray' : 'light_yellow');
+
+  // apply dark class when mode changes
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', mode === 'dark');
+  }, [mode]);
+
+  // apply header theme when it changes
+  useEffect(() => {
+    document.documentElement.dataset.theme = colorHeader;
+  }, [colorHeader]);
+
+  // Listen for system preference changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      setMode(e.matches ? 'dark' : 'light');
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
 
   function toggleMode() {
-    setMode((prev) => (prev === 'dark_mode' ? 'light_mode' : 'dark_mode'));
+    setMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
   }
 
-  const setHeaderColor = (color: ColorHeader) => {
-    setColorHeaderState(color);
-  };
+  function setHeaderColor(color: ColorHeader | null) {
+    // if (color === null) {
+    //   Cookies.remove('headerTheme');
+    //   setManualHeaderColor(null);
+    //   return;
+    // }
+    if (color != null) {
+      Cookies.set('headerTheme', color, { expires: 7, path: '/' });
+      setManualHeaderColor(color);
+    }
+  }
 
   return (
     <ThemeContext.Provider value={{ mode, toggleMode, colorHeader, setHeaderColor }}>

@@ -11,8 +11,8 @@ export default function ThemeToggleButton() {
       onClick={toggleMode}
       className="px-4 py-2 rounded bg-background text-foreground flex items-center gap-2"
     >
-      {mode === 'dark_mode' ? <SunIcon className="w-6 h-6" /> : <MoonIcon className="w-6 h-6" />}
-      {mode === 'dark_mode' ? 'Light Mode' : 'Dark Mode'}
+      {mode === 'dark' ? <SunIcon className="w-6 h-6" /> : <MoonIcon className="w-6 h-6" />}
+      {mode === 'dark' ? 'Light Mode' : 'Dark Mode'}
     </button>
   );
 }

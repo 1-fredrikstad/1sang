@@ -4,7 +4,7 @@ import Image from 'next/image';
 export default function Header() {
   // Responsive header: centered for desktop (lg) and left-aligned for mobile
   return (
-    <header className="w-full bg-[var(--navbar-bg)]">
+    <header className="w-full  bg-navbar-bg">
       <div className="mx-auto px-4 py-3">
         <div className="mx-auto max-w-md lg:max-w-4xl">
           <Link
