@@ -30,9 +30,34 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <link rel="manifest" href="/manifest.webmanifest" />
           <link rel="icon" href="/favicon.ico" sizes="32x32" />
           <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                  (function () {
+                    try {
+                      const stored = localStorage.getItem('theme');
+
+                      if (stored === 'dark') {
+                        document.documentElement.classList.add('dark');
+                        return;
+                      }
+
+                      if (stored === 'light') {
+                        document.documentElement.classList.remove('dark');
+                        return;
+                      }
+
+                      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        document.documentElement.classList.add('dark');
+                      }
+                    } catch (e) {}
+                  })();
+                  `,
+            }}
+          />
         </head>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
+          className={`${geistSans.variable} ${geistMono.variable}  antialiased overflow-x-hidden`}
         >
           <ThemeProvider>
             <ConditionalHeader />
