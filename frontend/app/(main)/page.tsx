@@ -7,17 +7,18 @@ import { useSongs } from '@/src/hooks/useData';
 import { HomePage } from '../pages/HomePage';
 
 function SongDataDisplay() {
-  const { data: songs, error } = useSongs({
+  const {
+    data: songs,
+    isLoading,
+    error,
+  } = useSongs({
     maxAgeMins: 5,
     syncOnMount: true,
   });
 
-  if (error) return <div>Error: {error.message}</div>;
-  if (!songs) return <div>Laster data...</div>;
-
   return (
     <div>
-      <HomePage />
+      <HomePage songs={songs} isLoading={isLoading} error={error} />
     </div>
   );
 }

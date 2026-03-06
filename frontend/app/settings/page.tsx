@@ -2,15 +2,17 @@
 import Link from 'next/link';
 import { useAuth } from '@/src/context/AuthContext';
 import Spinner from '@/src/components/login/Spinner';
+import { useRouter } from 'next/navigation';
 import HeaderColorForm from '@/src/components/HeaderColorForm';
 import ThemeToggleButton from '@/src/components/ThemeToggleButton';
 
 export default function Settings() {
   const { user, isLoading, logout } = useAuth();
+  const router = useRouter();
 
   const handleLogout = async () => {
     await logout();
-    window.location.href = '/settings';
+    router.replace('/settings');
   };
 
   if (isLoading) {

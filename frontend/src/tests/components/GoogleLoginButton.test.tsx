@@ -24,7 +24,7 @@ beforeEach(() => {
 });
 
 describe('GoogleLoginButton', () => {
-  test('renders button with ARIA label and logo', () => {
+  test('renders button with logo', () => {
     render(<GoogleLoginButton />);
     const button = screen.getByRole('button', { name: /logg inn med google/i });
     expect(button).toBeInTheDocument();

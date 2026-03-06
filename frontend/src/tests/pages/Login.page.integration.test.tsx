@@ -33,7 +33,6 @@ describe('Login Page (Integration)', () => {
 
     expect(screen.getByRole('img', { name: 'logo' })).toBeInTheDocument();
 
-    // this assumes your real GoogleLoginButton renders visible text
     expect(screen.getByRole('button', { name: /google/i })).toBeInTheDocument();
   });
 });
