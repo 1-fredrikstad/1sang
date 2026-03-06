@@ -4,7 +4,7 @@ import Spinner from '@/src/components/login/Spinner';
 import { useAuth } from '@/src/context/AuthContext';
 import Image from 'next/image';
 
-export default function Login() {
+export default function LoginPage() {
   const { user, isLoading } = useAuth();
 
   if (isLoading || user) {

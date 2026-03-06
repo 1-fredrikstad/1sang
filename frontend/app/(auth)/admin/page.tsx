@@ -1,6 +1,6 @@
 'use client';
 import BackButton from '@/src/components/BackButton';
-import Login from '@/src/components/pages/LoginPage';
+import LoginPage from '@/src/components/pages/LoginPage';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
@@ -35,7 +35,7 @@ export default function Admin() {
           </button>
         </section>
       ) : (
-        <Login />
+        <LoginPage />
       )}
     </main>
   );
