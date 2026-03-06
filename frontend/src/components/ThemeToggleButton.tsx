@@ -1,18 +1,48 @@
 'use client';
 
 import { useThemeMode } from '../context/ThemeProvider';
-import { SunIcon, MoonIcon } from './icons/Icons';
+import Switch from '@mui/material/Switch';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 
 export default function ThemeToggleButton() {
   const { mode, toggleMode } = useThemeMode();
+  const isDark = mode === 'dark';
 
   return (
-    <button
-      onClick={toggleMode}
-      className="px-4 py-2 rounded flex items-center gap-2 bg-background"
-    >
-      {mode === 'dark' ? <SunIcon className="w-6 h-6" /> : <MoonIcon className="w-6 h-6" />}
-      {mode === 'dark' ? 'Light Mode' : 'Dark Mode'}
-    </button>
+    <main className="flex justify-center gap-2 w-full">
+      <section className=" w-full max-w-3xs justify-between flex items-center">
+        <span className="whitespace-nowrap">
+          {isDark ? 'Bytt til lys modus' : 'Bytt til mørk modus'}
+        </span>
+        <Switch
+          onChange={toggleMode}
+          checked={isDark}
+          icon={
+            <LightModeIcon
+              fontSize="small"
+              style={{
+                color: 'white',
+                backgroundColor: '#d8d8d8',
+                borderRadius: '50%',
+                padding: '3px',
+              }}
+            />
+          }
+          checkedIcon={
+            <DarkModeIcon
+              fontSize="small"
+              style={{
+                color: '#161616',
+                backgroundColor: 'white',
+                borderRadius: '50%',
+                padding: '3px',
+              }}
+            />
+          }
+          color={'default'}
+        />
+      </section>
+    </main>
   );
 }
