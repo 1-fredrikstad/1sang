@@ -5,7 +5,7 @@ export default function BackButton() {
   const router = useRouter();
 
   return (
-    <button id="arrow-back" onClick={() => router.back()} className="hover:cursor-pointer">
+    <button id="arrow-back" onClick={() => router.push('/')} className="hover:cursor-pointer">
       <span className="hidden md:block">Tilbake</span>
       <svg
         xmlns="http://www.w3.org/2000/svg"

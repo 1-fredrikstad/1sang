@@ -44,7 +44,7 @@ describe('GoogleLoginButton', () => {
     expect(mockSignIn).toHaveBeenCalledTimes(1);
     expect(mockSignIn).toHaveBeenCalledWith({
       provider: 'google',
-      options: { redirectTo: 'http://localhost/settings' },
+      options: { redirectTo: 'http://localhost/admin' },
     });
   });
 

@@ -8,7 +8,7 @@ export default function GoogleLoginButton() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/settings`, // redirect here after login
+        redirectTo: `${window.location.origin}/admin`, // redirect here after login
       },
     });
     if (error) console.error('Login error:', error);
@@ -17,7 +17,7 @@ export default function GoogleLoginButton() {
   return (
     <button
       onClick={handleLogin}
-      className="flex items-center gap-2 bg-[#F2F2F2] rounded-3xl py-2 px-3 hover:cursor-pointer"
+      className="flex items-center gap-2 bg-[#F2F2F2] rounded-3xl py-2 px-3 hover:cursor-pointer text-black"
     >
       <Image src="/google_logo.png" alt="Google logo" width={20} height={20} />
       Logg inn med Google
