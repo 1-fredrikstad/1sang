@@ -4,6 +4,7 @@ import './globals.css';
 import ConditionalHeader from '@/src/components/global/ConditionalHeader';
 import ConditionalNavbar from '@/src/components/global/ConditionalNavbar';
 import { AuthProvider } from '@/src/context/AuthContext';
+import { ThemeProvider } from '@/src/context/ThemeProvider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -23,21 +24,45 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <head>
           <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
           <link rel="manifest" href="/manifest.webmanifest" />
           <link rel="icon" href="/favicon.ico" sizes="32x32" />
           <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                  (function () {
+                    try {
+                      const stored = localStorage.getItem('mode');
+                      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+                      if (stored === 'dark' || (!stored && systemDark)) {
+                        document.documentElement.classList.add('dark');
+                        document.documentElement.style.colorScheme = 'dark';
+                      } else {
+                        document.documentElement.classList.remove('dark');
+                        document.documentElement.style.colorScheme = 'light';
+                        }
+                    } catch (e) {}
+                  })();
+                  `,
+            }}
+          />
         </head>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
+          className={`${geistSans.variable} ${geistMono.variable}  antialiased overflow-x-hidden`}
         >
-          <ConditionalHeader />
+          <ThemeProvider>
+            <ConditionalHeader />
 
-          <main className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20">{children}</main>
+            <main className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20 m-5">
+              {children}
+            </main>
 
-          <ConditionalNavbar />
+            <ConditionalNavbar />
+          </ThemeProvider>
         </body>
       </html>
     </AuthProvider>
