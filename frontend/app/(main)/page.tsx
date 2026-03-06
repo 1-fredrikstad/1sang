@@ -16,12 +16,9 @@ function SongDataDisplay() {
     syncOnMount: true,
   });
 
-  if (error) return <div>Error: {error.message}</div>;
-  if (!songs) return <div>Laster data...</div>;
-
   return (
     <div>
-      <HomePage />
+      <HomePage songs={songs} isLoading={isLoading} error={error} />
     </div>
   );
 }

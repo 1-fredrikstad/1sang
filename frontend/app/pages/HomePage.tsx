@@ -1,18 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useSongs } from '@/src/hooks/useData';
+import { Song } from '@/src/lib/db';
+import { HomePageProps } from '@/src/types/homepage';
 
-export function HomePage() {
-  const {
-    data: songs,
-    isLoading,
-    error,
-  } = useSongs({
-    maxAgeMins: 5,
-    syncOnMount: true,
-  });
-
+export function HomePage({ songs = [], isLoading, error }: HomePageProps) {
   if (error) return <div>Error: {error.message}</div>;
   if (!songs) return <div>Laster data...</div>;
 
@@ -23,7 +15,7 @@ export function HomePage() {
       {isLoading && <p>Synkroniserer med supabase...</p>}
 
       <ul className="w-full space-y-4">
-        {songs.map((song) => (
+        {songs.map((song: Song) => (
           <li
             key={song.id}
             className="bg-[#3F3F3F] rounded-xl shadow hover:shadow-md active:scale-[0.99] transition"
