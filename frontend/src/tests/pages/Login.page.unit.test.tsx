@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, test, expect, vi, beforeEach, Mock } from 'vitest';
-import Login from '@/app/(auth)/login/page';
+import Login from '@/app/(auth)/admin/page';
 import { useAuth } from '@/src/context/AuthContext';
 
 // ---- mocks ----
