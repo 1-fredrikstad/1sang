@@ -15,21 +15,21 @@ export default function HeaderColorForm() {
     defaultValues: { headerColor },
   });
 
-  // Reset form when context headerColor changes
-  useEffect(() => {
-    reset({ headerColor });
-  }, [headerColor, reset]);
-
   // Track the current selected color in the form
   const selectedColor = useWatch({
     control,
     name: 'headerColor',
   });
 
+  // Reset form when context headerColor changes
   useEffect(() => {
-    if (selectedColor && selectedColor !== headerColor) {
-      setHeaderColor(selectedColor);
-    }
+    if (selectedColor !== headerColor) reset({ headerColor });
+    // Ignore lint error bc selectedcolor is just used as a guard, not a trigger
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [headerColor, reset]);
+
+  useEffect(() => {
+    if (selectedColor && selectedColor !== headerColor) setHeaderColor(selectedColor);
   }, [selectedColor, headerColor, setHeaderColor]);
 
   return (

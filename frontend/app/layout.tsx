@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <head>
           <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
           <link rel="manifest" href="/manifest.webmanifest" />
@@ -35,21 +35,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               __html: `
                   (function () {
                     try {
-                      const stored = localStorage.getItem('theme');
+                      const stored = localStorage.getItem('mode');
+                      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-                      if (stored === 'dark') {
+                      if (stored === 'dark' || (!stored && systemDark)) {
                         document.documentElement.classList.add('dark');
-                        return;
-                      }
-
-                      if (stored === 'light') {
+                        document.documentElement.style.colorScheme = 'dark';
+                      } else {
                         document.documentElement.classList.remove('dark');
-                        return;
-                      }
-
-                      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                        document.documentElement.classList.add('dark');
-                      }
+                        document.documentElement.style.colorScheme = 'light';
+                        }
                     } catch (e) {}
                   })();
                   `,

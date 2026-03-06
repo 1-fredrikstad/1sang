@@ -41,7 +41,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', mode === 'dark');
-    ls.set('theme', mode);
+    ls.set('mode', mode);
   }, [mode]);
 
   useEffect(() => {
