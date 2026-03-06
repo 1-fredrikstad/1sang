@@ -62,7 +62,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ThemeProvider>
             <ConditionalHeader />
 
-            <main className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20">{children}</main>
+            <main className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20 m-5">
+              {children}
+            </main>
 
             <ConditionalNavbar />
           </ThemeProvider>
