@@ -17,7 +17,7 @@ export function HomePage() {
   if (!songs) return <div>Laster data...</div>;
 
   return (
-    <div className="max-w-3xl mx-auto mt-10">
+    <div className="max-w-3xl mx-auto mt-10 bg-background">
       <h1>Sanger</h1>
 
       {isLoading && <p>Synkronisesrer med supabase...</p>}

@@ -9,7 +9,7 @@ export default function ThemeToggleButton() {
   return (
     <button
       onClick={toggleMode}
-      className="px-4 py-2 rounded bg-background text-foreground flex items-center gap-2"
+      className="px-4 py-2 rounded flex items-center gap-2 bg-background"
     >
       {mode === 'dark' ? <SunIcon className="w-6 h-6" /> : <MoonIcon className="w-6 h-6" />}
       {mode === 'dark' ? 'Light Mode' : 'Dark Mode'}
