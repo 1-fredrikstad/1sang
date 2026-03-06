@@ -2,6 +2,8 @@
 import Link from 'next/link';
 import { useAuth } from '@/src/context/AuthContext';
 import Spinner from '@/src/components/login/Spinner';
+import HeaderColorForm from '@/src/components/HeaderColorForm';
+import ThemeToggleButton from '@/src/components/ThemeToggleButton';
 
 export default function Settings() {
   const { user, isLoading, logout } = useAuth();
@@ -22,6 +24,8 @@ export default function Settings() {
 
   return (
     <main className="flex flex-col justify-center items-center gap-2 mt-20">
+      <ThemeToggleButton />
+      <HeaderColorForm />
       {user ? (
         <>
           <p className="text-lg">Logget inn som:</p>

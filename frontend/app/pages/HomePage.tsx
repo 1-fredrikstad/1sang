@@ -17,16 +17,16 @@ export function HomePage() {
   if (!songs) return <div>Laster data...</div>;
 
   return (
-    <div className="max-w-3xl mx-auto mt-10">
-      <h1>Sanger</h1>
+    <div>
+      <h1 className="mb-5">Alle sanger</h1>
 
-      {isLoading && <p>Synkroniserer med supabase...</p>}
+      {isLoading && <p>Synkronisesrer med supabase...</p>}
 
-      <ul className="w-full space-y-4">
+      <ul className="flex flex-col gap-2">
         {songs.map((song) => (
           <li
             key={song.id}
-            className="bg-[#3F3F3F] rounded-xl shadow hover:shadow-md active:scale-[0.99] transition"
+            className="rounded-sm outline-1 dark:bg-list-bg outline-[#0000001a] dark:shadow-xs dark:shadow-black hover:shadow-sm active:scale-[0.99] transition"
           >
             <Link href={`/songs/${song.id}`} className="block w-full py-4 pr-30 pl-4 text-left">
               {song.title ?? '(uten tittel)'}
