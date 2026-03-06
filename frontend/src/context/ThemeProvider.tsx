@@ -1,77 +1,73 @@
 'use client';
 
 import { useState, useContext, useEffect, createContext } from 'react';
-import Cookies from 'js-cookie';
-import type { ColorHeader } from '../types/theme';
+import ls from 'localstorage-slim';
+import type { HeaderColor } from '../types/theme';
 
 type Mode = 'light' | 'dark';
 
 type ThemeContextType = {
   mode: Mode;
   toggleMode: () => void;
-  colorHeader: ColorHeader;
-  setHeaderColor: (color: ColorHeader | null) => void;
+  headerColor: HeaderColor;
+  setHeaderColor: (color: HeaderColor | null) => void;
 };
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Detect system preference initially
+  // --- Mode ---
+
   const [mode, setMode] = useState<Mode>(() => {
-    if (typeof window !== 'undefined') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    return 'light';
+    if (typeof window === 'undefined') return 'light';
+
+    const stored = ls.get('mode');
+    if (stored === 'light' || stored === 'dark') return stored;
+
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
 
-  // Manual override stored in cookie
-  const [manualHeaderColor, setManualHeaderColor] = useState<ColorHeader | null>(() => {
-    return (Cookies.get('headerTheme') as ColorHeader) ?? null;
+  // --- Header color ---
+
+  const [headerOverride, setHeaderOverride] = useState<HeaderColor | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return ls.get('headerColor') as HeaderColor | null;
   });
 
   // Derived header color
-  const colorHeader: ColorHeader =
-    manualHeaderColor ?? (mode === 'dark' ? 'dark_gray' : 'light_yellow');
+  const headerColor = headerOverride ?? (mode === 'dark' ? 'dark_gray' : 'light_yellow');
 
-  // apply dark class when mode changes
+  // --- Apply on change ---
+
   useEffect(() => {
     document.documentElement.classList.toggle('dark', mode === 'dark');
+    ls.set('theme', mode);
   }, [mode]);
 
-  // apply header theme when it changes
   useEffect(() => {
-    document.documentElement.dataset.theme = colorHeader;
-  }, [colorHeader]);
+    document.documentElement.dataset.theme = headerColor;
+  }, [headerColor]);
 
-  // Listen for system preference changes
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = (e: MediaQueryListEvent) => {
-      setMode(e.matches ? 'dark' : 'light');
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, []);
+  // --- Actions ---
 
   function toggleMode() {
     setMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
   }
 
-  function setHeaderColor(color: ColorHeader | null) {
-    // if (color === null) {
-    //   Cookies.remove('headerTheme');
-    //   setManualHeaderColor(null);
-    //   return;
-    // }
-    if (color != null) {
-      Cookies.set('headerTheme', color, { expires: 7, path: '/' });
-      setManualHeaderColor(color);
+  function setHeaderColor(color: HeaderColor | null) {
+    // Reset header color in localstorage
+    if (color === null) {
+      ls.remove('headerColor');
+      setHeaderOverride(null);
+      return;
     }
+
+    ls.set('headerColor', color);
+    setHeaderOverride(color);
   }
 
   return (
-    <ThemeContext.Provider value={{ mode, toggleMode, colorHeader, setHeaderColor }}>
+    <ThemeContext.Provider value={{ mode, toggleMode, headerColor, setHeaderColor }}>
       {children}
     </ThemeContext.Provider>
   );
@@ -79,8 +75,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
 // Helper hook
 export function useThemeMode() {
-  const context = useContext(ThemeContext); //usecontext is the way to read it
-
+  const context = useContext(ThemeContext);
   if (!context) throw new Error('useThemeMode must be used inside ThemeProvider');
   return context;
 }

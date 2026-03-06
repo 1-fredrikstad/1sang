@@ -1,30 +1,18 @@
 @import 'tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *));
 
-/// --- Default mode: light
-:root {
-  --background: #fffdfb;
-  --foreground: #171717;
-  --list-background: #fffdfb;
-}
-
-/// Dark mode
-.dark {
-  --background: #2e2e2e;
-  --foreground: #ededed;
-  --list-background: #3f3f3f;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--color-primary);
-  --color-accent: var(--color-accent);
-  --color-border: var(--color-border);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Tailwind theme tokens - default light mode*/
+@theme {
+  --color-background: #fffdfb;
+  --color-foreground: #171717;
   --color-navbar-bg: var(--navbar-bg);
   --color-navbar-title: var(--navbar-title);
+}
+
+/* Dark mode overrides */
+.dark {
+  --color-background: #2e2e2e;
+  --color-foreground: #ededed;
 }
 
 /// --- Themes for header ---
@@ -69,8 +57,8 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-background);
+  color: var(--color-foreground);
   font-family: 'DINOT', georgia;
   overscroll-behavior-x: none;
 }
