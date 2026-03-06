@@ -1,4 +1,4 @@
-export type ColorHeader =
+export type HeaderColor =
   | 'dark_gray'
   | 'dark_blue'
   | 'light_green'
