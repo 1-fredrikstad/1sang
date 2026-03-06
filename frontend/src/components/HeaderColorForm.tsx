@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useThemeMode } from '../context/ThemeProvider';
 import { HeaderColor, HEADERCOLOR_OPTIONS } from '../types/theme';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 
 type FormValues = {
   headerColor: HeaderColor;
@@ -11,11 +11,20 @@ type FormValues = {
 
 export default function HeaderColorForm() {
   const { headerColor, setHeaderColor } = useThemeMode();
-  const { register, watch } = useForm<FormValues>({
+  const { register, control, reset } = useForm<FormValues>({
     defaultValues: { headerColor },
   });
 
-  const selectedColor = watch('headerColor');
+  // Reset form when context headerColor changes
+  useEffect(() => {
+    reset({ headerColor });
+  }, [headerColor, reset]);
+
+  // Track the current selected color in the form
+  const selectedColor = useWatch({
+    control,
+    name: 'headerColor',
+  });
 
   useEffect(() => {
     if (selectedColor && selectedColor !== headerColor) {

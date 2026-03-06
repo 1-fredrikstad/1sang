@@ -19,7 +19,6 @@ type SongFormProps = {
   submitLabel: string;
   initialValues?: Partial<Inputs>;
   onSubmit: (data: Inputs) => Promise<void> | void;
-  toastSuccessMessage?: string;
 };
 
 // Validation rules
@@ -65,13 +64,7 @@ const lyricsValidation = {
   },
 };
 
-export default function SongForm({
-  heading,
-  submitLabel,
-  initialValues,
-  onSubmit,
-  toastSuccessMessage = 'Lagret',
-}: SongFormProps) {
+export default function SongForm({ heading, submitLabel, initialValues, onSubmit }: SongFormProps) {
   const {
     register,
     handleSubmit,
@@ -106,7 +99,7 @@ export default function SongForm({
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       await onSubmit(data);
-      toast(toastSuccessMessage);
+      notify();
 
       // setIsSubmitting(true);
       //   const res = await fetch('/api/songs', {
