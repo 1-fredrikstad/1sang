@@ -35,8 +35,7 @@ class SyncService {
       // update dexie cache with fresh data
       if (data) {
         const table = db.table(tableName);
-        await table.clear();
-        await table.bulkPut(data);
+        table.bulkPut(data);
       }
 
       await db.sync_metadata.put({
