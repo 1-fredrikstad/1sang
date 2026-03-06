@@ -7,12 +7,14 @@
   --color-foreground: #171717;
   --color-navbar-bg: var(--navbar-bg);
   --color-navbar-title: var(--navbar-title);
+  --color-list-bg: #00000000;
 }
 
 /* Dark mode overrides */
 .dark {
   --color-background: #2e2e2e;
   --color-foreground: #ededed;
+  --color-list-bg: #3f3f3f;
 }
 
 /// --- Themes for header ---
