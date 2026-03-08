@@ -2,7 +2,7 @@
 
 // TODO: Comment in code when API logic is merged
 
-// import { useState } from 'react';
+import { songSuggestionSchema, TEXT_PATTERN } from '@/src/lib/validation/songSuggestionSchema';
 import { useEffect } from 'react';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { ToastContainer, toast } from 'react-toastify';
@@ -24,12 +24,10 @@ type SongFormProps = {
 
 // Validation rules
 
-const TEXT_PATTERN = /^[a-zA-ZæøåÆØÅ0-9\s.\-/:;,'’*!?()"…–]+$/;
-
 const titleValidation = {
   required: 'Du må skrive inn tittel',
   maxLength: {
-    value: 40,
+    value: songSuggestionSchema.title.maxLength,
     message: 'Tittel kan maks være 40 tegn',
   },
   pattern: {
@@ -38,25 +36,36 @@ const titleValidation = {
   },
 };
 
-const shortAndOptionalValidation = {
-  maxlength: {
-    value: 40,
-    message: 'Tittel kan maks være 40 tegn',
+const authorValidation = {
+  maxLength: {
+    value: songSuggestionSchema.author.maxLength,
+    message: 'Låtskriver kan maks være 40 tegn',
   },
   pattern: {
     value: TEXT_PATTERN,
-    message: 'Tittelen inneholder ugyldige tegn',
+    message: 'Låtskriver inneholder ugyldige tegn',
+  },
+};
+
+const melodyValidation = {
+  maxLength: {
+    value: songSuggestionSchema.melody.maxLength,
+    message: 'Melodi kan maks være 40 tegn',
+  },
+  pattern: {
+    value: TEXT_PATTERN,
+    message: 'Melodi inneholder ugyldige tegn',
   },
 };
 
 const lyricsValidation = {
   required: 'Du må skrive inn sangtekst',
   minLength: {
-    value: 20,
+    value: songSuggestionSchema.lyrics.minLength,
     message: 'Sangteksten må være minst 20 tegn',
   },
   maxLength: {
-    value: 3000,
+    value: songSuggestionSchema.lyrics.maxLength,
     message: 'Sangteksten kan maks være 3000 tegn',
   },
   pattern: {
@@ -153,14 +162,14 @@ export default function SongForm({
         {/* Author */}
         <label>Låtskriver</label>
         <input
-          {...register('author', shortAndOptionalValidation)}
+          {...register('author', authorValidation)}
           className="mb-5 p-1 outline outline-[#E6E4E2]  rounded-xs"
         />
 
         {/* Melody */}
         <label>Melodi</label>
         <input
-          {...register('melody', shortAndOptionalValidation)}
+          {...register('melody', melodyValidation)}
           className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
         ></input>
 
