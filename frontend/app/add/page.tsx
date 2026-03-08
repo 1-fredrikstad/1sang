@@ -12,13 +12,19 @@ export default function AddSongPage() {
         submitLabel="Send inn"
         toastSuccessMessage="Sang lagt inn"
         onSubmit={async (data) => {
-          await db.songs.add({
-            id: crypto.randomUUID(),
-            title: data.title,
-            melody: data.melody,
-            author: data.author,
-            lyrics: data.lyrics,
+          const res = await fetch('/api/song_suggestions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
           });
+
+          const body = await res.json();
+
+          if (!res.ok) {
+            throw new Error(typeof body?.error === 'string' ? body.error : JSON.stringify(body));
+          }
         }}
       />
     </Suspense>
