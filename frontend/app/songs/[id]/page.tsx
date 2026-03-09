@@ -27,7 +27,7 @@ export default function SongPage() {
         <BackButton />
       </div>
       {user && (
-        <div className="absolute right-5 top-5">
+        <div className="absolute right-5 top-0">
           <Link href={`/songs/${id}/edit`}>
             <svg
               xmlns="http://www.w3.org/2000/svg"

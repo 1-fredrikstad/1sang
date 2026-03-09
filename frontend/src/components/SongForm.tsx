@@ -2,7 +2,10 @@
 
 // TODO: Comment in code when API logic is merged
 
-import { songSuggestionSchema, TEXT_PATTERN } from '@/src/lib/validation/songSuggestionSchema';
+import {
+  songSuggestionSchema,
+  getFieldValidation,
+} from '@/src/lib/validation/songSuggestionSchema';
 import { useEffect } from 'react';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { ToastContainer, toast } from 'react-toastify';
@@ -20,58 +23,6 @@ type SongFormProps = {
   initialValues?: Partial<Inputs>;
   onSubmit: (data: Inputs) => Promise<void> | void;
   toastSuccessMessage?: string;
-};
-
-// Validation rules
-
-const titleValidation = {
-  required: 'Du må skrive inn tittel',
-  maxLength: {
-    value: songSuggestionSchema.title.maxLength,
-    message: 'Tittel kan maks være 40 tegn',
-  },
-  pattern: {
-    value: TEXT_PATTERN,
-    message: 'Tittelen inneholder ugyldige tegn',
-  },
-};
-
-const authorValidation = {
-  maxLength: {
-    value: songSuggestionSchema.author.maxLength,
-    message: 'Låtskriver kan maks være 40 tegn',
-  },
-  pattern: {
-    value: TEXT_PATTERN,
-    message: 'Låtskriver inneholder ugyldige tegn',
-  },
-};
-
-const melodyValidation = {
-  maxLength: {
-    value: songSuggestionSchema.melody.maxLength,
-    message: 'Melodi kan maks være 40 tegn',
-  },
-  pattern: {
-    value: TEXT_PATTERN,
-    message: 'Melodi inneholder ugyldige tegn',
-  },
-};
-
-const lyricsValidation = {
-  required: 'Du må skrive inn sangtekst',
-  minLength: {
-    value: songSuggestionSchema.lyrics.minLength,
-    message: 'Sangteksten må være minst 20 tegn',
-  },
-  maxLength: {
-    value: songSuggestionSchema.lyrics.maxLength,
-    message: 'Sangteksten kan maks være 3000 tegn',
-  },
-  pattern: {
-    value: TEXT_PATTERN,
-    message: 'Sangteksten inneholder ugyldige tegn',
-  },
 };
 
 export default function SongForm({
@@ -155,21 +106,21 @@ export default function SongForm({
           )}{' '}
         </span>
         <input
-          {...register('title', titleValidation)}
+          {...register('title', getFieldValidation('title'))}
           className=" mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
         ></input>
 
         {/* Author */}
         <label>Låtskriver</label>
         <input
-          {...register('author', authorValidation)}
+          {...register('author', getFieldValidation('author'))}
           className="mb-5 p-1 outline outline-[#E6E4E2]  rounded-xs"
         />
 
         {/* Melody */}
         <label>Melodi</label>
         <input
-          {...register('melody', melodyValidation)}
+          {...register('melody', getFieldValidation('melody'))}
           className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
         ></input>
 
@@ -181,7 +132,7 @@ export default function SongForm({
           )}
         </span>
         <textarea
-          {...register('lyrics', lyricsValidation)}
+          {...register('lyrics', getFieldValidation('lyrics'))}
           className="p-1 outline outline-[#E6E4E2] rounded-sm h-70 resize-y text-left"
         ></textarea>
         <div

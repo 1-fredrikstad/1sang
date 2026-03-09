@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { normalizeSongInput, validateSongInput } from '@/src/lib/validation/songSuggestionSchema';
 
 function getEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -45,11 +46,19 @@ export async function POST(req: Request) {
     const { supabaseUrl, publishableKey } = getEnv();
     const json = await req.json();
 
+    const data = normalizeSongInput(json);
+    const errors = validateSongInput(data);
+
+    const firstError = Object.values(errors)[0];
+    if (firstError) {
+      return NextResponse.json({ ok: false, error: firstError }, { status: 400 });
+    }
+
     const payload = {
-      title: json.title ?? '',
-      melody: json.melody ?? null,
-      author: json.author ?? null,
-      lyrics: json.lyrics ?? '',
+      title: data.title,
+      melody: data.melody || null,
+      author: data.author || null,
+      lyrics: data.lyrics,
     };
 
     const target = `${supabaseUrl}/rest/v1/song_suggestions`;

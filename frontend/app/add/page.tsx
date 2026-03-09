@@ -2,7 +2,6 @@
 
 import SongForm from '@/src/components/SongForm';
 import { Suspense } from 'react';
-import { db } from '@/src/lib/db';
 
 export default function AddSongPage() {
   return (
