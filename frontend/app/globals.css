@@ -17,7 +17,7 @@
   --color-list-bg: #3f3f3f;
 }
 
-/// --- Themes for header ---
+/* --- Themes for header */
 [data-theme='undefined'] {
   --navbar-bg: #00000000;
   --navbar-title: #00000000;
@@ -82,7 +82,7 @@ pre {
   font-family: 'DINOT', Arial, Georgia;
 }
 
-// -- Fonts ---
+/* Fonts */
 @font-face {
   font-family: 'DINOT';
   src: url('/DINOT/DINOT-Regular.otf') format('opentype');
