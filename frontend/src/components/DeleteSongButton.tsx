@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { db } from '@/src/lib/db';
+import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
 
 type Props = {
   songId: string;
@@ -21,10 +22,15 @@ export function DeleteSongButton({
 }: Props) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
+  const isOnline = useOnlineStatus();
 
   const onDelete = async () => {
+    if (!isOnline) {
+      alert('Du er offline. Gå online for å slette sangen');
+      return;
+    }
     if (!songId) {
-      alert('Missing song id');
+      alert('Mangler sang-ID');
       return;
     }
 
