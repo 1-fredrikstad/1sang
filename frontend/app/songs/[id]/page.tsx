@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type Song } from '@/src/lib/db';
 import BackButton from '@/src/components/BackButton';
+import { DeleteSongButton } from '@/src/components/DeleteSongButton';
 
 export default function SongPage() {
   const { id } = useParams<{ id: string }>();
@@ -33,6 +34,9 @@ export default function SongPage() {
       </pre>
 
       {song.author && <p className="opacity-60 mt-1">Skrevet av: {song.author}</p>}
+      <DeleteSongButton songId={song.id} className="danger">
+        Slett
+      </DeleteSongButton>
     </main>
   );
 }
