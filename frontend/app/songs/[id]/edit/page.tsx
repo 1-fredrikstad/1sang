@@ -44,9 +44,9 @@ export default function EditSongPage() {
           router.push(`/songs/${id}`);
         }}
       />
-      <DeleteSongButton songId={song.id} className="danger">
-        Slett
-      </DeleteSongButton>
+      <div className="flex justify-center">
+        <DeleteSongButton songId={song.id} className="danger"></DeleteSongButton>
+      </div>
     </main>
   );
 }

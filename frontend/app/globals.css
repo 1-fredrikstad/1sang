@@ -8,6 +8,8 @@
   --color-navbar-bg: var(--navbar-bg);
   --color-navbar-title: var(--navbar-title);
   --color-list-bg: #00000000;
+  --color-danger: #ff5151;
+  --color-danger-hover: #e64848;
 }
 
 /* Dark mode overrides */

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { db } from '@/src/lib/db';
 import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
@@ -15,9 +16,8 @@ type Props = {
 
 export function DeleteSongButton({
   songId,
-  redirectTo = '/songs',
+  redirectTo = '/',
   className,
-  children = 'Slett sang',
   confirmText = 'Er du sikker på at du vil slette sangen?',
 }: Props) {
   const router = useRouter();
@@ -26,7 +26,7 @@ export function DeleteSongButton({
 
   const onDelete = async () => {
     if (!isOnline) {
-      alert('Du er offline. Gå online for å slette sangen');
+      alert('Du er offline. Gå online for å slette sangen.');
       return;
     }
     if (!songId) {
@@ -62,8 +62,13 @@ export function DeleteSongButton({
   };
 
   return (
-    <button onClick={onDelete} disabled={isDeleting} className={className}>
-      {isDeleting ? 'Sletter...' : children}
+    <button
+      onClick={onDelete}
+      disabled={isDeleting}
+      aria-label="Slett sang"
+      className={`p-3 bg-danger hover:cursor-pointer hover:bg-danger-hover rounded ${className ?? ''}`}
+    >
+      <Image src="/trash.png" alt="" width={20} height={20} />
     </button>
   );
 }

@@ -67,7 +67,7 @@ describe('DeleteSongButton', () => {
     render(<DeleteSongButton songId="abc-123" />);
     await userEvent.click(screen.getByRole('button', { name: /slett sang/i }));
 
-    expect(global.alert).toHaveBeenCalledWith('Du er offline. Gå online for å slette sangen');
+    expect(global.alert).toHaveBeenCalledWith('Du er offline. Gå online for å slette sangen.');
     expect(global.fetch).not.toHaveBeenCalled();
     expect(db.songs.delete).not.toHaveBeenCalled();
     expect(mockPush).not.toHaveBeenCalled();
@@ -99,7 +99,7 @@ describe('DeleteSongButton', () => {
 
     await waitFor(() => {
       expect(db.songs.delete).toHaveBeenCalledWith('abc-123');
-      expect(mockPush).toHaveBeenCalledWith('/songs');
+      expect(mockPush).toHaveBeenCalledWith('/');
       expect(mockRefresh).toHaveBeenCalled();
     });
   });
