@@ -3,6 +3,7 @@
 // TODO: Comment in code when API logic is merged
 
 // import { useState } from 'react';
+import { useEffect } from 'react';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { ToastContainer, toast } from 'react-toastify';
 
@@ -13,9 +14,17 @@ type Inputs = {
   lyrics: string;
 };
 
+type SongFormProps = {
+  heading: string;
+  submitLabel: string;
+  initialValues?: Partial<Inputs>;
+  onSubmit: (data: Inputs) => Promise<void> | void;
+  toastSuccessMessage?: string;
+};
+
 // Validation rules
 
-const TEXT_PATTERN = /^[a-zA-ZæøåÆØÅ0-9\s.\-/:;,'*!?()"…–]+$/;
+const TEXT_PATTERN = /^[a-zA-ZæøåÆØÅ0-9\s.\-/:;,'’*!?()"…–]+$/;
 
 const titleValidation = {
   required: 'Du må skrive inn tittel',
@@ -56,23 +65,49 @@ const lyricsValidation = {
   },
 };
 
-export default function SongForm() {
+export default function SongForm({
+  heading,
+  submitLabel,
+  initialValues,
+  onSubmit,
+  toastSuccessMessage = 'Lagret',
+}: SongFormProps) {
   const {
     register,
     handleSubmit,
     formState: { errors },
     control,
     reset,
-  } = useForm<Inputs>();
+  } = useForm<Inputs>({
+    defaultValues: {
+      title: '',
+      melody: '',
+      author: '',
+      lyrics: '',
+      ...initialValues,
+    },
+  });
+
+  useEffect(() => {
+    if (initialValues) {
+      reset({
+        title: initialValues.title ?? '',
+        melody: initialValues.melody ?? '',
+        author: initialValues.author ?? '',
+        lyrics: initialValues.lyrics ?? '',
+      });
+    }
+  }, [initialValues, reset]);
 
   // const [isSubmitting, setIsSubmitting] = useState(false);
   const lyricsValue = useWatch({ control, name: 'lyrics' }) || '';
-  const notify = () => toast('Sang lagt inn');
+  // const notify = () => toast('Sang lagt inn');
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+  const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
-      console.log('Success in submitting form');
-      console.log(data);
+      await onSubmit(data);
+      // notify();
+      toast(toastSuccessMessage);
 
       // setIsSubmitting(true);
       //   const res = await fetch('/api/songs', {
@@ -86,8 +121,6 @@ export default function SongForm() {
       // const errorData = await res.json();
       // throw new Error(errorData.message || 'Serverfeil');
       //}
-      notify();
-      reset();
     } catch (error) {
       console.error(error);
       toast.error('Noe gikk galt');
@@ -100,47 +133,47 @@ export default function SongForm() {
   return (
     <>
       <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col m-8 gap-1 bg-[#FFFDFB] max-w-2xl md:mx-auto"
+        onSubmit={handleSubmit(handleFormSubmit)}
+        className="flex flex-col m-8 gap-1 max-w-2xl md:mx-auto"
       >
-        <h1 className="text-black text-xl mb-2">Legg til sang</h1>
+        <h1 className=" text-xl mb-2">{heading}</h1>
 
         {/* Title */}
         <span>
-          <label className="text-black">Tittel*</label>
+          <label>Tittel*</label>
           {errors.title && (
             <span className="text-red-500 italic ml-2">{errors.title.message}</span>
           )}{' '}
         </span>
         <input
           {...register('title', titleValidation)}
-          className="bg-[#FFFDFB] mb-5 p-1 outline outline-[#E6E4E2] rounded-sm text-black"
+          className=" mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
         ></input>
 
         {/* Author */}
-        <label className="text-black">Låtskriver</label>
+        <label>Låtskriver</label>
         <input
           {...register('author', shortAndOptionalValidation)}
-          className="bg-[#FFFDFB] mb-5 p-1 outline outline-[#E6E4E2]  rounded-sm  text-black"
+          className="mb-5 p-1 outline outline-[#E6E4E2]  rounded-xs"
         />
 
         {/* Melody */}
-        <label className="text-black">Melodi</label>
+        <label>Melodi</label>
         <input
           {...register('melody', shortAndOptionalValidation)}
-          className="bg-[#FFFDFB] mb-5 p-1 outline outline-[#E6E4E2] rounded-sm  text-black"
+          className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
         ></input>
 
         {/* Lyrics */}
         <span>
-          <label className="text-black">Sangtekst*</label>
+          <label>Sangtekst*</label>
           {errors.lyrics && (
             <span className="text-red-500 italic ml-2">{errors.lyrics.message}</span>
           )}
         </span>
         <textarea
           {...register('lyrics', lyricsValidation)}
-          className="bg-[#FFFDFB] p-1 outline outline-[#E6E4E2] rounded-sm h-70 resize-y text-left text-black"
+          className="p-1 outline outline-[#E6E4E2] rounded-sm h-70 resize-y text-left"
         ></textarea>
         <div
           className={`text-sm text-right mr-2 ${
@@ -151,11 +184,13 @@ export default function SongForm() {
         </div>
 
         {/* Submit */}
-        <input
+        <button
           type="submit"
           // disabled={isSubmitting}
-          className="disabled:opacity-50 bg-[#E3E3E3] hover:bg-[#cbcaca] self-center text-black font-bold py-2 px-4 rounded-sm cursor-pointer"
-        ></input>
+          className="disabled:opacity-50 self-center font-bold py-2 px-4 rounded-xs cursor-pointer"
+        >
+          {submitLabel}
+        </button>
       </form>
 
       {/* Toast */}

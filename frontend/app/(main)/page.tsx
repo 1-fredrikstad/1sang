@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import ServiceWorkerRegister from '@/src/components/ServiceWorkerRegister';
 import InstallPWABanner from '@/src/components/InstallPWABanner/InstallPWABanner';
 import { useSongs } from '@/src/hooks/useData';
-import { HomePage } from '../pages/HomePage';
+import { HomePage } from '../../src/components/pages/HomePage';
 
 function SongDataDisplay() {
   const {
@@ -16,12 +16,9 @@ function SongDataDisplay() {
     syncOnMount: true,
   });
 
-  if (error) return <div>Error: {error.message}</div>;
-  if (!songs) return <div>Laster data...</div>;
-
   return (
     <div>
-      <HomePage />
+      <HomePage songs={songs} isLoading={isLoading} error={error} />
     </div>
   );
 }

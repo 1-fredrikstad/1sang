@@ -24,7 +24,7 @@ beforeEach(() => {
 });
 
 describe('GoogleLoginButton', () => {
-  test('renders button with ARIA label and logo', () => {
+  test('renders button with logo', () => {
     render(<GoogleLoginButton />);
     const button = screen.getByRole('button', { name: /logg inn med google/i });
     expect(button).toBeInTheDocument();
@@ -44,7 +44,7 @@ describe('GoogleLoginButton', () => {
     expect(mockSignIn).toHaveBeenCalledTimes(1);
     expect(mockSignIn).toHaveBeenCalledWith({
       provider: 'google',
-      options: { redirectTo: 'http://localhost/settings' },
+      options: { redirectTo: 'http://localhost/admin' },
     });
   });
 
