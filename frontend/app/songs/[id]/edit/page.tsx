@@ -6,6 +6,7 @@ import { db, type Song } from '@/src/lib/db';
 import SongForm from '@/src/components/SongForm';
 import { useAuth } from '@/src/context/AuthContext';
 import BackButton from '@/src/components/BackButton';
+import { DeleteSongButton } from '@/src/components/DeleteSongButton';
 
 export default function EditSongPage() {
   const { id } = useParams<{ id: string }>();
@@ -43,6 +44,9 @@ export default function EditSongPage() {
           router.push(`/songs/${id}`);
         }}
       />
+      <DeleteSongButton songId={song.id} className="danger">
+        Slett
+      </DeleteSongButton>
     </main>
   );
 }
