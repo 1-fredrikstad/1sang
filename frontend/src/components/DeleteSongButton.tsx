@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { db } from '@/src/lib/db';
 import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
+import { toast } from 'react-toastify';
 
 type Props = {
   songId: string;
@@ -41,6 +42,7 @@ export function DeleteSongButton({
     try {
       setIsDeleting(true);
       onDeletingChange?.(true);
+      toast.success('Sangen ble slettet');
 
       const res = await fetch(`/api/songs/${encodeURIComponent(songId)}`, {
         method: 'DELETE',
