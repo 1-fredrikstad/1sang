@@ -1,22 +1,26 @@
 'use client';
 
-import { useThemeMode } from '../context/ThemeProvider';
 import Switch from '@mui/material/Switch';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
+import { useTheme } from 'next-themes';
+import { useMounted } from '../hooks/useMounted';
 
 export default function ThemeToggleButton() {
-  const { mode, toggleMode } = useThemeMode();
-  const isDark = mode === 'dark';
+  const { theme, setTheme } = useTheme();
+  const mounted = useMounted();
+  const isDark = theme === 'dark';
+
+  if (!mounted) return null;
 
   return (
-    <main className="flex justify-center gap-2 w-full">
+    <div className="flex justify-center gap-2 w-full">
       <section className=" w-full max-w-3xs justify-between flex items-center">
         <span className="whitespace-nowrap">
           {isDark ? 'Bytt til lys modus' : 'Bytt til mørk modus'}
         </span>
         <Switch
-          onChange={toggleMode}
+          onChange={() => setTheme(isDark ? 'light' : 'dark')}
           checked={isDark}
           icon={
             <LightModeIcon
@@ -43,6 +47,6 @@ export default function ThemeToggleButton() {
           color={'default'}
         />
       </section>
-    </main>
+    </div>
   );
 }
