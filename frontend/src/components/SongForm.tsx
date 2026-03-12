@@ -2,10 +2,13 @@
 
 // TODO: Comment in code when API logic is merged
 
-// import { useState } from 'react';
+import {
+  songSuggestionSchema,
+  getFieldValidation,
+} from '@/src/lib/validation/songSuggestionSchema';
 import { useEffect } from 'react';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 type Inputs = {
   title: string;
@@ -20,49 +23,6 @@ type SongFormProps = {
   initialValues?: Partial<Inputs>;
   onSubmit: (data: Inputs) => Promise<void> | void;
   toastSuccessMessage?: string;
-};
-
-// Validation rules
-
-const TEXT_PATTERN = /^[a-zA-ZæøåÆØÅ0-9\s.\-/:;,'’*!?()"…–]+$/;
-
-const titleValidation = {
-  required: 'Du må skrive inn tittel',
-  maxLength: {
-    value: 40,
-    message: 'Tittel kan maks være 40 tegn',
-  },
-  pattern: {
-    value: TEXT_PATTERN,
-    message: 'Tittelen inneholder ugyldige tegn',
-  },
-};
-
-const shortAndOptionalValidation = {
-  maxlength: {
-    value: 40,
-    message: 'Tittel kan maks være 40 tegn',
-  },
-  pattern: {
-    value: TEXT_PATTERN,
-    message: 'Tittelen inneholder ugyldige tegn',
-  },
-};
-
-const lyricsValidation = {
-  required: 'Du må skrive inn sangtekst',
-  minLength: {
-    value: 20,
-    message: 'Sangteksten må være minst 20 tegn',
-  },
-  maxLength: {
-    value: 3000,
-    message: 'Sangteksten kan maks være 3000 tegn',
-  },
-  pattern: {
-    value: TEXT_PATTERN,
-    message: 'Sangteksten inneholder ugyldige tegn',
-  },
 };
 
 export default function SongForm({
@@ -107,7 +67,7 @@ export default function SongForm({
     try {
       await onSubmit(data);
       // notify();
-      toast(toastSuccessMessage);
+      toast.success(toastSuccessMessage);
 
       // setIsSubmitting(true);
       //   const res = await fetch('/api/songs', {
@@ -123,7 +83,7 @@ export default function SongForm({
       //}
     } catch (error) {
       console.error(error);
-      toast.error('Noe gikk galt');
+      toast.error(error instanceof Error ? error.message : 'Noe gikk galt');
     }
     // finally {
     //     setIsSubmitting(false)
@@ -146,21 +106,21 @@ export default function SongForm({
           )}{' '}
         </span>
         <input
-          {...register('title', titleValidation)}
+          {...register('title', getFieldValidation('title'))}
           className=" mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
         ></input>
 
         {/* Author */}
         <label>Låtskriver</label>
         <input
-          {...register('author', shortAndOptionalValidation)}
+          {...register('author', getFieldValidation('author'))}
           className="mb-5 p-1 outline outline-[#E6E4E2]  rounded-xs"
         />
 
         {/* Melody */}
         <label>Melodi</label>
         <input
-          {...register('melody', shortAndOptionalValidation)}
+          {...register('melody', getFieldValidation('melody'))}
           className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
         ></input>
 
@@ -172,7 +132,7 @@ export default function SongForm({
           )}
         </span>
         <textarea
-          {...register('lyrics', lyricsValidation)}
+          {...register('lyrics', getFieldValidation('lyrics'))}
           className="p-1 outline outline-[#E6E4E2] rounded-sm h-70 resize-y text-left"
         ></textarea>
         <div
@@ -192,9 +152,6 @@ export default function SongForm({
           {submitLabel}
         </button>
       </form>
-
-      {/* Toast */}
-      <ToastContainer position="top-center" autoClose={3000} />
     </>
   );
 }

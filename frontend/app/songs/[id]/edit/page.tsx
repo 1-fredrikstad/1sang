@@ -7,6 +7,7 @@ import { db, type Song } from '@/src/lib/db';
 import SongForm from '@/src/components/SongForm';
 import { useAuth } from '@/src/context/AuthContext';
 import BackButton from '@/src/components/BackButton';
+import { createClient } from '@/src/lib/supabase/client';
 import { DeleteSongButton } from '@/src/components/DeleteSongButton';
 
 export default function EditSongPage() {
@@ -17,16 +18,71 @@ export default function EditSongPage() {
 
   const song = useLiveQuery<Song | undefined>(() => (id ? db.songs.get(id) : undefined), [id]);
 
-  if (isLoading) return <p className="text-center mt-10">Laster...</p>;
-  if (!user) return <p className="text-center mt-10">Ingen tilgang.</p>;
+  if (isLoading) {
+    return <p className="text-center mt-10">Laster...</p>;
+  }
+
+  if (!user) {
+    return <p className="text-center mt-10">Ingen tilgang.</p>;
+  }
+
   if (isDeletingSong) return null;
-  if (!song) return <p className="text-center mt-10">Fant ikke sang.</p>;
+  if (!song) {
+    return <p className="text-center mt-10">Fant ikke sang.</p>;
+  }
+
+  const handleSubmit = async (data: {
+    title: string;
+    melody?: string;
+    author?: string;
+    lyrics: string;
+  }) => {
+    const supabase = createClient();
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    console.log('session user id:', session?.user?.id);
+
+    const token = session?.access_token;
+
+    if (!token) {
+      throw new Error('Ikke logget inn');
+    }
+
+    const res = await fetch(`/api/songs/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    const body = await res.json().catch(() => null);
+
+    if (!res.ok) {
+      console.log('Kunne ikke oppdatere sang:', body);
+      alert(typeof body?.error === 'string' ? body.error : 'Kunne ikke oppdatere sang');
+      return;
+    }
+
+    await db.songs.update(id, {
+      title: data.title,
+      melody: data.melody || undefined,
+      author: data.author || undefined,
+      lyrics: data.lyrics,
+    });
+
+    router.push(`/songs/${id}`);
+  };
 
   return (
     <main className="relative w-full max-w-300 mx-auto px-4">
-      <div className="absolute **:left-5 cursor-pointer">
+      <div className="absolute left-5 cursor-pointer">
         <BackButton />
       </div>
+
       <SongForm
         heading="Rediger sang"
         submitLabel="Lagre endringer"
@@ -47,13 +103,6 @@ export default function EditSongPage() {
           router.push(`/songs/${id}`);
         }}
       />
-      <div className="flex justify-center">
-        <DeleteSongButton
-          songId={song.id}
-          className="danger"
-          onDeletingChange={setIsDeletingSong}
-        ></DeleteSongButton>
-      </div>
     </main>
   );
 }

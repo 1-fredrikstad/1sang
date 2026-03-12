@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { isAdminUser } from '@/src/lib/supabase/isAdminUser';
 
 function getEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -34,6 +35,74 @@ export async function GET(_req: Request, ctx: Ctx) {
     if (!song) return NextResponse.json({ ok: false, error: 'Not found' }, { status: 404 });
 
     return NextResponse.json({ ok: true, data: song }, { status: 200 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request, ctx: Ctx) {
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !serviceRoleKey) {
+      throw new Error('Missing Supabase env variables');
+    }
+
+    const { id } = await ctx.params;
+
+    const authHeader = req.headers.get('authorization');
+    const token = authHeader?.replace(/^Bearer\s+/i, '');
+
+    if (!token) {
+      return NextResponse.json({ ok: false, error: 'Mangler token' }, { status: 401 });
+    }
+
+    const json = await req.json();
+
+    const payload = {
+      title: typeof json.title === 'string' ? json.title.trim() : '',
+      melody: typeof json.melody === 'string' ? json.melody.trim() || null : null,
+      author: typeof json.author === 'string' ? json.author.trim() || null : null,
+      lyrics: typeof json.lyrics === 'string' ? json.lyrics.trim() : '',
+    };
+
+    const { isAdmin } = await isAdminUser(token);
+
+    if (!isAdmin) {
+      return NextResponse.json(
+        { ok: false, error: 'Du har ikke tilgang til å redigere sanger' },
+        { status: 403 }
+      );
+    }
+
+    const updateRes = await fetch(`${supabaseUrl}/rest/v1/songs?id=eq.${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Prefer: 'return=representation',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const updateBody = await updateRes.json().catch(() => null);
+
+    if (!updateRes.ok) {
+      return NextResponse.json(
+        { ok: false, error: updateBody ?? 'Kunne ikke oppdatere sang' },
+        { status: updateRes.status }
+      );
+    }
+
+    if (!Array.isArray(updateBody) || updateBody.length === 0) {
+      return NextResponse.json({ ok: false, error: 'Ingen rad ble oppdatert' }, { status: 404 });
+    }
+
+    return NextResponse.json({ ok: true, data: updateBody[0] }, { status: 200 });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
