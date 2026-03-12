@@ -93,16 +93,15 @@ export default function EditSongPage() {
           author: song.author ?? '',
           lyrics: song.lyrics ?? '',
         }}
-        onSubmit={async (data) => {
-          await db.songs.update(id, {
-            title: data.title,
-            melody: data.melody,
-            author: data.author,
-            lyrics: data.lyrics,
-          });
-          router.push(`/songs/${id}`);
-        }}
+        onSubmit={handleSubmit}
       />
+      <div className="flex justify-center">
+        <DeleteSongButton
+          songId={song.id}
+          className="danger"
+          onDeletingChange={setIsDeletingSong}
+        />
+      </div>
     </main>
   );
 }
