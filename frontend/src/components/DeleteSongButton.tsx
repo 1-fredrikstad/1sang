@@ -12,6 +12,7 @@ type Props = {
   className?: string;
   children?: React.ReactNode;
   confirmText?: string;
+  onDeletingChange?: (value: boolean) => void;
 };
 
 export function DeleteSongButton({
@@ -19,6 +20,7 @@ export function DeleteSongButton({
   redirectTo = '/',
   className,
   confirmText = 'Er du sikker på at du vil slette sangen?',
+  onDeletingChange,
 }: Props) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -38,6 +40,7 @@ export function DeleteSongButton({
 
     try {
       setIsDeleting(true);
+      onDeletingChange?.(true);
 
       const res = await fetch(`/api/songs/${encodeURIComponent(songId)}`, {
         method: 'DELETE',
@@ -48,14 +51,13 @@ export function DeleteSongButton({
         throw new Error(text || 'Sletting feilet');
       }
 
+      router.replace(redirectTo);
       // Remove from local offline cache immediately
       await db.songs.delete(songId);
-
-      router.push(redirectTo);
-      router.refresh?.();
     } catch (e) {
       console.error(e);
       alert('Kunne ikke slette sang');
+      onDeletingChange?.(false);
     } finally {
       setIsDeleting(false);
     }

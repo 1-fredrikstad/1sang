@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type Song } from '@/src/lib/db';
@@ -12,11 +13,13 @@ export default function EditSongPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { user, isLoading } = useAuth();
+  const [isDeletingSong, setIsDeletingSong] = useState(false);
 
   const song = useLiveQuery<Song | undefined>(() => (id ? db.songs.get(id) : undefined), [id]);
 
   if (isLoading) return <p className="text-center mt-10">Laster...</p>;
   if (!user) return <p className="text-center mt-10">Ingen tilgang.</p>;
+  if (isDeletingSong) return null;
   if (!song) return <p className="text-center mt-10">Fant ikke sang.</p>;
 
   return (
@@ -45,7 +48,11 @@ export default function EditSongPage() {
         }}
       />
       <div className="flex justify-center">
-        <DeleteSongButton songId={song.id} className="danger"></DeleteSongButton>
+        <DeleteSongButton
+          songId={song.id}
+          className="danger"
+          onDeletingChange={setIsDeletingSong}
+        ></DeleteSongButton>
       </div>
     </main>
   );
