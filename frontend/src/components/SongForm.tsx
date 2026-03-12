@@ -8,7 +8,7 @@ import {
 } from '@/src/lib/validation/songSuggestionSchema';
 import { useEffect } from 'react';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 type Inputs = {
   title: string;
@@ -67,7 +67,7 @@ export default function SongForm({
     try {
       await onSubmit(data);
       // notify();
-      toast(toastSuccessMessage);
+      toast.success(toastSuccessMessage);
 
       // setIsSubmitting(true);
       //   const res = await fetch('/api/songs', {
@@ -83,7 +83,7 @@ export default function SongForm({
       //}
     } catch (error) {
       console.error(error);
-      toast.error('Noe gikk galt');
+      toast.error(error instanceof Error ? error.message : 'Noe gikk galt');
     }
     // finally {
     //     setIsSubmitting(false)
@@ -152,9 +152,6 @@ export default function SongForm({
           {submitLabel}
         </button>
       </form>
-
-      {/* Toast */}
-      <ToastContainer position="top-center" autoClose={3000} />
     </>
   );
 }

@@ -9,13 +9,14 @@ export default function AddSongPage() {
 
   const heading = user ? 'Publiser sang' : 'Send inn sangforslag';
   const submitLabel = user ? 'Publiser' : 'Send inn';
+  const toastMessage = user ? 'Sang lagt inn' : 'Sangforslag sendt';
 
   return (
     <Suspense fallback={<div>Henter skjema...</div>}>
       <SongForm
         heading={heading}
         submitLabel={submitLabel}
-        toastSuccessMessage="Sang lagt inn"
+        toastSuccessMessage={toastMessage}
         onSubmit={async (data) => {
           const endpoint = user ? '/api/songs' : '/api/song_suggestions';
 
@@ -29,10 +30,14 @@ export default function AddSongPage() {
 
           const body = await res.json();
 
-          if (!res.ok) {
-            throw new Error(
-              typeof body?.error === 'string' ? body.error : 'Kunne ikke legge til sang'
-            );
+          if (!res.ok || body?.error) {
+            const errorText = JSON.stringify(body).toLowerCase();
+
+            if (errorText.includes('duplicate')) {
+              throw new Error('Sangen finnes allerede');
+            }
+
+            throw new Error('Kunne ikke legge til sang');
           }
         }}
       />

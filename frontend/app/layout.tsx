@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+import 'react-toastify/dist/ReactToastify.css';
 import ConditionalHeader from '@/src/components/global/ConditionalHeader';
 import ConditionalNavbar from '@/src/components/global/ConditionalNavbar';
 import { AuthProvider } from '@/src/context/AuthContext';
@@ -9,6 +10,7 @@ import { HeaderColorProvider } from '@/src/context/HeaderColorProvider';
 import { getCookie } from 'cookies-next/server';
 import { cookies } from 'next/headers';
 import { HeaderColor, HEADERCOLOR_OPTIONS } from '@/src/types/theme';
+import { ToastContainer } from 'react-toastify';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -26,7 +28,6 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // Fetch headerColor cookie & validate
   const cookie = await getCookie('headerColor', { cookies });
 
   const headerColor = HEADERCOLOR_OPTIONS.map((o) => o.value).includes(cookie as HeaderColor)
@@ -43,7 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
         </head>
         <body
-          className={`${geistSans.variable} ${geistMono.variable}  antialiased overflow-x-hidden`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem enableColorScheme>
             <HeaderColorProvider initialColor={headerColor}>
@@ -54,6 +55,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               </main>
 
               <ConditionalNavbar />
+              <ToastContainer position="top-center" autoClose={3000} />
             </HeaderColorProvider>
           </ThemeProvider>
         </body>
