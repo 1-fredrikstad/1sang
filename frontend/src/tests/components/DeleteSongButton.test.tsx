@@ -14,13 +14,11 @@ import { DeleteSongButton } from '@/src/components/DeleteSongButton';
  */
 
 // Mock router
-const mockPush = vi.fn();
-const mockRefresh = vi.fn();
+const mockReplace = vi.fn();
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: mockPush,
-    refresh: mockRefresh,
+    replace: mockReplace,
   }),
 }));
 
@@ -70,7 +68,7 @@ describe('DeleteSongButton', () => {
     expect(global.alert).toHaveBeenCalledWith('Du er offline. Gå online for å slette sangen.');
     expect(global.fetch).not.toHaveBeenCalled();
     expect(db.songs.delete).not.toHaveBeenCalled();
-    expect(mockPush).not.toHaveBeenCalled();
+    expect(mockReplace).not.toHaveBeenCalled();
   });
 
   test('does nothing when user cancels confirm dialog', async () => {
@@ -82,9 +80,10 @@ describe('DeleteSongButton', () => {
     expect(global.confirm).toHaveBeenCalledWith('Er du sikker på at du vil slette sangen?');
     expect(global.fetch).not.toHaveBeenCalled();
     expect(db.songs.delete).not.toHaveBeenCalled();
+    expect(mockReplace).not.toHaveBeenCalled();
   });
 
-  test('deletes song, removes from db, redirects and refreshes on success', async () => {
+  test('deletes song, removes from db, and redirects on success', async () => {
     vi.mocked(global.confirm).mockReturnValue(true);
     vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
@@ -99,8 +98,7 @@ describe('DeleteSongButton', () => {
 
     await waitFor(() => {
       expect(db.songs.delete).toHaveBeenCalledWith('abc-123');
-      expect(mockPush).toHaveBeenCalledWith('/');
-      expect(mockRefresh).toHaveBeenCalled();
+      expect(mockReplace).toHaveBeenCalledWith('/');
     });
   });
 
@@ -120,7 +118,7 @@ describe('DeleteSongButton', () => {
     });
 
     expect(db.songs.delete).not.toHaveBeenCalled();
-    expect(mockPush).not.toHaveBeenCalled();
+    expect(mockReplace).not.toHaveBeenCalled();
 
     consoleSpy.mockRestore();
   });
