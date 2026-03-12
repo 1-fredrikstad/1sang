@@ -6,6 +6,9 @@
   --navbar-title: #171717;
   --color-background: #fffdfb;
   --color-foreground: #171717;
+  --color-navbar-bg: var(--navbar-bg);
+  --color-navbar-title: var(--navbar-title);
+  --color-list-bg: #00000000;
 }
 
 /* Dark mode overrides */
@@ -65,6 +68,8 @@
   --color-navbar-bg: var(--navbar-bg);
   --color-navbar-title: var(--navbar-title);
   --color-list-bg: #00000000;
+  --color-danger: #ff5151;
+  --color-danger-hover: #e64848;
 }
 
 html:not(.theme-ready) *,

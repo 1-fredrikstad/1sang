@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type Song } from '@/src/lib/db';
@@ -7,11 +8,13 @@ import SongForm from '@/src/components/SongForm';
 import { useAuth } from '@/src/context/AuthContext';
 import BackButton from '@/src/components/BackButton';
 import { createClient } from '@/src/lib/supabase/client';
+import { DeleteSongButton } from '@/src/components/DeleteSongButton';
 
 export default function EditSongPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { user, isLoading } = useAuth();
+  const [isDeletingSong, setIsDeletingSong] = useState(false);
 
   const song = useLiveQuery<Song | undefined>(() => (id ? db.songs.get(id) : undefined), [id]);
 
@@ -23,6 +26,7 @@ export default function EditSongPage() {
     return <p className="text-center mt-10">Ingen tilgang.</p>;
   }
 
+  if (isDeletingSong) return null;
   if (!song) {
     return <p className="text-center mt-10">Fant ikke sang.</p>;
   }
@@ -91,6 +95,13 @@ export default function EditSongPage() {
         }}
         onSubmit={handleSubmit}
       />
+      <div className="flex justify-center">
+        <DeleteSongButton
+          songId={song.id}
+          className="danger"
+          onDeletingChange={setIsDeletingSong}
+        />
+      </div>
     </main>
   );
 }
