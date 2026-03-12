@@ -12,7 +12,14 @@ export default function Header() {
             aria-label="Go to homepage"
             className="flex items-center gap-3 justify-start lg:justify-center"
           >
-            <Image src="/favicon/favicon.svg" alt="Scout Logo" width={50} height={50} priority />
+            <Image
+              src="/favicon/favicon.svg"
+              alt="Scout Logo"
+              width={175}
+              height={200}
+              className="h-14.5 w-auto"
+              priority
+            />
 
             <span className="text-navbar-title text-base leading-tight flex flex-col lg:flex-row lg:items-baseline lg:gap-2 lg:text-lg">
               <span>Sanger</span>
