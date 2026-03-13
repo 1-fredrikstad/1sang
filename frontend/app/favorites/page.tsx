@@ -16,7 +16,7 @@ export default function FavoritesPage() {
   if (!songs) return <p className="p-4">Laster...</p>;
 
   if (songs.length === 0) {
-    return <p className="p-4">Ingen favorittsanger ennå ⭐</p>;
+    return <p className="p-4">Ingen favorittsanger</p>;
   }
 
   // TODO: add searchbar and filtering on this page + alphabetic sorting of songs
