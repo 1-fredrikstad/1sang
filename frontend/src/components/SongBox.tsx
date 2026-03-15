@@ -40,7 +40,7 @@ export function SongBox({ song }: SongBoxProps) {
         className="absolute right-2 top-1/2 -translate-y-1/2"
       >
         <StarIcon
-          className={`h-6 w-6 transition ${starred ? 'text-yellow-200' : 'text-foreground'}`}
+          className={`h-6 w-6 transition cursor-pointer ${starred ? 'text-yellow-200' : 'text-foreground'}`}
         />
       </button>
     </li>
