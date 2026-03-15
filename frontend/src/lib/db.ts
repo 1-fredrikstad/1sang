@@ -68,19 +68,26 @@ export interface SyncMetadata {
   last_synced_at: string;
 }
 
+export interface FavoriteSong {
+  song_id: string;
+  created_at: string;
+}
+
 export class AppDatabase extends Dexie {
-  songs!: Table<Song>;
-  playlists!: Table<Playlist>;
-  playlist_items!: Table<PlaylistItem>;
-  tags!: Table<Tag>;
-  song_tags!: Table<SongTag>;
-  song_links!: Table<SongLink>;
-  song_suggestions!: Table<SongSuggestion>;
-  admin_users!: Table<AdminUser>;
-  sync_metadata!: Table<SyncMetadata>;
+  songs!: Table<Song, string>;
+  playlists!: Table<Playlist, string>;
+  playlist_items!: Table<PlaylistItem, [string, string]>;
+  tags!: Table<Tag, string>;
+  song_tags!: Table<SongTag, [string, string]>;
+  song_links!: Table<SongLink, string>;
+  song_suggestions!: Table<SongSuggestion, string>;
+  admin_users!: Table<AdminUser, string>;
+  sync_metadata!: Table<SyncMetadata, string>;
+  favorites!: Table<FavoriteSong, string>;
 
   constructor() {
     super('1sang');
+
     this.version(1).stores({
       songs: 'id, slug',
       playlists: 'id',
@@ -91,6 +98,19 @@ export class AppDatabase extends Dexie {
       song_suggestions: 'id, status',
       admin_users: 'user_id',
       sync_metadata: 'id, table_name',
+    });
+
+    this.version(2).stores({
+      songs: 'id, slug',
+      playlists: 'id',
+      playlist_items: '[playlist_id+song_id], playlist_id, song_id, position',
+      tags: 'id, name',
+      song_tags: '[song_id+tag_id], song_id, tag_id',
+      song_links: 'id, song_id',
+      song_suggestions: 'id, status',
+      admin_users: 'user_id',
+      sync_metadata: 'id, table_name',
+      favorites: 'song_id, created_at',
     });
   }
 }
