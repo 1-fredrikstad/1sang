@@ -6,10 +6,12 @@ import { db, type Song } from '@/src/lib/db';
 import BackButton from '@/src/components/BackButton';
 import Link from 'next/link';
 import { useAuth } from '@/src/context/AuthContext';
+import { useWakeLock } from '@/src/hooks/useWakeLock';
 
 export default function SongPage() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  useWakeLock(true);
 
   const song = useLiveQuery<Song | undefined>(() => (id ? db.songs.get(id) : undefined), [id]);
 
