@@ -1,10 +1,10 @@
 'use client';
 
 import { Song } from '@/src/lib/db';
-import { HomePageProps } from '@/src/types/homepage';
 import { SongBox } from '../SongBox';
+import { SongListProps } from '@/src/types/songList';
 
-export function HomePage({ songs = [], isLoading, error }: HomePageProps) {
+export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   if (error) return <div>Error: {error.message}</div>;
   if (!songs) return <div>Laster data...</div>;
 
@@ -16,7 +16,9 @@ export function HomePage({ songs = [], isLoading, error }: HomePageProps) {
 
       <ul className="flex flex-col gap-2">
         {songs.map((song: Song) => (
-          <SongBox key={song.id} song={song} />
+          <li key={song.id}>
+            <SongBox song={song} />
+          </li>
         ))}
       </ul>
     </div>

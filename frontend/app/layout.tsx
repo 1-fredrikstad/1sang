@@ -11,6 +11,7 @@ import { getCookie } from 'cookies-next/server';
 import { cookies } from 'next/headers';
 import { HeaderColor, HEADERCOLOR_OPTIONS } from '@/src/types/theme';
 import { ToastContainer } from 'react-toastify';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -46,18 +47,20 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
         >
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem enableColorScheme>
-            <HeaderColorProvider initialColor={headerColor}>
-              <ConditionalHeader />
+          <TooltipProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem enableColorScheme>
+              <HeaderColorProvider initialColor={headerColor}>
+                <ConditionalHeader />
 
-              <main className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20 m-5">
-                {children}
-              </main>
+                <main className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20 m-5">
+                  {children}
+                </main>
 
-              <ConditionalNavbar />
-              <ToastContainer position="top-center" autoClose={3000} />
-            </HeaderColorProvider>
-          </ThemeProvider>
+                <ConditionalNavbar />
+                <ToastContainer position="top-center" autoClose={3000} />
+              </HeaderColorProvider>
+            </ThemeProvider>
+          </TooltipProvider>
         </body>
       </html>
     </AuthProvider>

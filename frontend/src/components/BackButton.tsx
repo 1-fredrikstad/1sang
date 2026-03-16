@@ -1,11 +1,20 @@
 'use client';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function BackButton() {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const handleBack = () => {
+    if (pathname === '/admin') {
+      router.push('/');
+    } else {
+      router.back();
+    }
+  };
 
   return (
-    <button id="arrow-back" onClick={() => router.push('/')} className="hover:cursor-pointer">
+    <button id="arrow-back" onClick={handleBack} className="hover:cursor-pointer">
       <span className="hidden md:block">Tilbake</span>
       <svg
         xmlns="http://www.w3.org/2000/svg"
