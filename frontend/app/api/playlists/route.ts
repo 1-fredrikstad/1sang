@@ -59,6 +59,8 @@ export async function POST(req: Request) {
         rpcBody = {
           p_title: payload.title,
           p_password: payload.password,
+          p_is_public: payload.is_public,
+          p_expires_at: payload.expires_at,
         };
         break;
 
