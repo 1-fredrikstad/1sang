@@ -29,11 +29,11 @@ export function DeleteSongButton({
 
   const onDelete = async () => {
     if (!isOnline) {
-      alert('Du er offline. Gå online for å slette sangen.');
+      toast.error('Du er offline. Gå online for å slette sangen.');
       return;
     }
     if (!songId) {
-      alert('Mangler sang-ID');
+      toast.error('Mangler sang-ID');
       return;
     }
 
@@ -42,7 +42,6 @@ export function DeleteSongButton({
     try {
       setIsDeleting(true);
       onDeletingChange?.(true);
-      toast.success('Sangen ble slettet');
 
       const res = await fetch(`/api/songs/${encodeURIComponent(songId)}`, {
         method: 'DELETE',
@@ -56,9 +55,10 @@ export function DeleteSongButton({
       router.replace(redirectTo);
       // Remove from local offline cache immediately
       await db.songs.delete(songId);
+      toast.success('Sangen ble slettet');
     } catch (e) {
       console.error(e);
-      alert('Kunne ikke slette sang');
+      toast.error('Kunne ikke slette sang');
       onDeletingChange?.(false);
     } finally {
       setIsDeleting(false);
