@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { DELETE, GET, PATCH } from '../../../app/api/songs/[id]/route';
-import { checkUser } from '@/src/lib/supabase/isUser';
+import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 
-vi.mock('@/src/lib/supabase/isUser', () => ({
-  checkUser: vi.fn(),
+vi.mock('@/src/lib/supabase/isAdmin', () => ({
+  checkAdminAccess: vi.fn(),
 }));
 
 describe('songs [id] route', () => {
@@ -38,9 +38,10 @@ describe('songs [id] route', () => {
   });
 
   test('PATCH returns 403 when user is not admin', async () => {
-    vi.mocked(checkUser).mockResolvedValue({
-      isUser: false,
+    vi.mocked(checkAdminAccess).mockResolvedValue({
+      isAdmin: false,
       userId: null,
+      role: null,
     });
 
     const req = new Request(`http://localhost/api/songs/${songId}`, {
@@ -55,6 +56,7 @@ describe('songs [id] route', () => {
     const res = await PATCH(req, ctx);
     const body = await res.json();
 
+    expect(checkAdminAccess).toHaveBeenCalledWith('test-token');
     expect(res.status).toBe(403);
     expect(body.error).toBe('Du har ikke tilgang til å redigere sanger');
   });
