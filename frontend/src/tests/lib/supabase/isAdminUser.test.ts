@@ -1,8 +1,8 @@
 import { describe, test, expect, vi } from 'vitest';
-import { isAdminUser } from '../../../lib/supabase/isAdminUser';
+import { checkUser } from '../../../lib/supabase/isUser';
 
-describe('isAdminUser', () => {
-  test('returns admin true when user is in admin_users', async () => {
+describe('isUser', () => {
+  test('returns admin true when user is in users', async () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabassen.no';
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'pubkey';
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'service';
@@ -18,9 +18,9 @@ describe('isAdminUser', () => {
         json: async () => [{ user_id: 'user-1' }],
       } as Response);
 
-    const result = await isAdminUser('test-token');
+    const result = await checkUser('test-token');
 
-    expect(result.isAdmin).toBe(true);
+    expect(result.isUser).toBe(true);
     expect(result.userId).toBe('user-1');
   });
 });
