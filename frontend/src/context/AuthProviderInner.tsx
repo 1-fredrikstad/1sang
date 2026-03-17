@@ -5,6 +5,7 @@ import { AuthContext } from './AuthContext';
 
 export const AuthProviderInner = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const isMounted = useRef(true);
 
@@ -12,7 +13,20 @@ export const AuthProviderInner = ({ children }: { children: ReactNode }) => {
     const supabase = createClient();
     isMounted.current = true;
 
-    const initAuth = async () => {
+    const fetchAdminStatus = async (accessToken: string) => {
+      const res = await fetch('/api/users/me', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const body = await res.json().catch(() => null);
+
+      if (!isMounted.current) return;
+      setIsAdmin(body?.isAdmin === true);
+    };
+
+    const updateAuthState = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -24,23 +38,45 @@ export const AuthProviderInner = ({ children }: { children: ReactNode }) => {
           name: session.user.user_metadata.full_name ?? session.user.email ?? 'User',
           email: session.user.email ?? '',
         });
+
+        if (session.access_token) {
+          await fetchAdminStatus(session.access_token);
+        } else {
+          setIsAdmin(false);
+        }
+      } else {
+        setUser(null);
+        setIsAdmin(false);
       }
 
       setIsLoading(false);
     };
 
-    initAuth();
+    updateAuthState();
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (!isMounted.current) return;
+
+      setIsLoading(true);
+
       if (session?.user) {
         setUser({
           name: session.user.user_metadata.full_name ?? session.user.email ?? 'User',
           email: session.user.email ?? '',
         });
+
+        if (session.access_token) {
+          await fetchAdminStatus(session.access_token);
+        } else {
+          setIsAdmin(false);
+        }
       } else {
         setUser(null);
+        setIsAdmin(false);
       }
+
+      if (!isMounted.current) return;
+      setIsLoading(false);
     });
 
     return () => {
@@ -52,14 +88,19 @@ export const AuthProviderInner = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     if (!isMounted.current) return;
     setIsLoading(true);
+
     const supabase = createClient();
     await supabase.auth.signOut();
+
     if (!isMounted.current) return;
     setUser(null);
+    setIsAdmin(false);
     setIsLoading(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, isAdmin, isLoading, logout }}>
+      {children}
+    </AuthContext.Provider>
   );
 };

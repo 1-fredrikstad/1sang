@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { HomeIcon, SongsIcon, AddIcon, FavoritesIcon, SettingsIcon } from '../icons/Icons';
 import { useAuth } from '@/src/context/AuthContext';
@@ -26,15 +26,18 @@ const navItems: NavItem[] = [
 // Navigation component
 export default function Navbar() {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const router = useRouter();
+  const { isAdmin } = useAuth();
 
   const [showSongOrPlaylistBox, setShowSongOrPlaylistBox] = useState(false);
 
   const handleAddClick = (e: React.MouseEvent) => {
-    if (user) {
-      e.preventDefault();
-      setShowSongOrPlaylistBox((prev) => !prev);
+    if (!isAdmin) {
+      return;
     }
+
+    e.preventDefault();
+    setShowSongOrPlaylistBox((prev) => !prev);
   };
 
   return (
@@ -83,7 +86,7 @@ export default function Navbar() {
       </nav>
 
       {/* Show SongOrPlaylistBox if user is admin and add button is active */}
-      {showSongOrPlaylistBox && (
+      {isAdmin && showSongOrPlaylistBox && (
         <SongOrPlaylistBox onClose={() => setShowSongOrPlaylistBox(false)} />
       )}
     </>

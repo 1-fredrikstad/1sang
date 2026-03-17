@@ -6,12 +6,16 @@ import { useAuth } from '@/src/context/AuthContext';
 import { createClient } from '@/src/lib/supabase/client';
 
 export default function AddSongPage() {
-  const { user } = useAuth();
+  const { isAdmin, isLoading } = useAuth();
   const supabase = createClient();
 
-  const heading = user ? 'Publiser sang' : 'Send inn sangforslag';
-  const submitLabel = user ? 'Publiser' : 'Send inn';
-  const toastMessage = user ? 'Sang lagt inn' : 'Sangforslag sendt';
+  if (isLoading || isAdmin === null) {
+    return <div>Henter skjema...</div>;
+  }
+
+  const heading = isAdmin ? 'Publiser sang' : 'Send inn sangforslag';
+  const submitLabel = isAdmin ? 'Publiser' : 'Send inn';
+  const toastMessage = isAdmin ? 'Sang lagt inn' : 'Sangforslag sendt';
 
   return (
     <Suspense fallback={<div>Henter skjema...</div>}>
