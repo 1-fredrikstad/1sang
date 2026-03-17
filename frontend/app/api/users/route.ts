@@ -15,7 +15,7 @@ export async function GET(req: Request) {
       );
     }
 
-    const target = `${supabaseUrl}/rest/v1/admin_users?select=*${limit ? `&limit=${limit}` : ''}`;
+    const target = `${supabaseUrl}/rest/v1/users?select=*${limit ? `&limit=${limit}` : ''}`;
 
     const res = await fetch(target, {
       headers: {

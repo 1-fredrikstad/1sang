@@ -24,7 +24,7 @@ export async function isAdminUser(token: string) {
   const userId = userBody.id;
 
   const adminRes = await fetch(
-    `${supabaseUrl}/rest/v1/admin_users?user_id=eq.${encodeURIComponent(userId)}&select=user_id&limit=1`,
+    `${supabaseUrl}/rest/v1/users?user_id=eq.${encodeURIComponent(userId)}&select=user_id&limit=1`,
     {
       headers: {
         apikey: serviceRoleKey,

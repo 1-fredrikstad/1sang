@@ -1,16 +1,16 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { GET } from '../../../app/api/admin_users/me/route';
+import { GET } from '../../../app/api/users/me/route';
 import { isAdminUser } from '@/src/lib/supabase/isAdminUser';
 
 vi.mock('@/src/lib/supabase/isAdminUser');
 
-describe('GET /api/admin_users/me', () => {
+describe('GET /api/users/me', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   test('returns that admin is false if no token', async () => {
-    const req = new Request('http://localhost/api/admin_users/me');
+    const req = new Request('http://localhost/api/users/me');
 
     const res = await GET(req);
     const body = await res.json();
@@ -28,7 +28,7 @@ describe('GET /api/admin_users/me', () => {
       userId: undefined,
     });
 
-    const req = new Request('http://localhost/api/admin_users/me', {
+    const req = new Request('http://localhost/api/users/me', {
       headers: {
         authorization: 'Bearer test-token',
       },
@@ -48,7 +48,7 @@ describe('GET /api/admin_users/me', () => {
   test('returns 500 when an error occurs', async () => {
     vi.mocked(isAdminUser).mockRejectedValue(new Error('failed'));
 
-    const req = new Request('http://localhost/api/admin_users/me', {
+    const req = new Request('http://localhost/api/users/me', {
       headers: {
         authorization: 'Bearer test-token',
       },

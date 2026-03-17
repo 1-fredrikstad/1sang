@@ -83,7 +83,7 @@ export class AppDatabase extends Dexie {
   song_tags!: Table<SongTag, [string, string]>;
   song_links!: Table<SongLink, string>;
   song_suggestions!: Table<SongSuggestion, string>;
-  admin_users!: Table<AdminUser, string>;
+  users!: Table<AdminUser, string>;
   sync_metadata!: Table<SyncMetadata, string>;
   favorites!: Table<FavoriteSong, string>;
 
@@ -98,7 +98,7 @@ export class AppDatabase extends Dexie {
       song_tags: '[song_id+tag_id], song_id, tag_id',
       song_links: 'id, song_id',
       song_suggestions: 'id, status',
-      admin_users: 'user_id',
+      users: 'user_id',
       sync_metadata: 'id, table_name',
     });
 
@@ -110,7 +110,7 @@ export class AppDatabase extends Dexie {
       song_tags: '[song_id+tag_id], song_id, tag_id',
       song_links: 'id, song_id',
       song_suggestions: 'id, status',
-      admin_users: 'user_id',
+      users: 'user_id',
       sync_metadata: 'id, table_name',
       favorites: 'song_id, created_at',
     });

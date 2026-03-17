@@ -9,7 +9,7 @@ type TableName =
   | 'song_tags'
   | 'song_links'
   | 'song_suggestions'
-  | 'admin_users';
+  | 'users';
 
 type SyncOptions = { forceFresh?: boolean };
 

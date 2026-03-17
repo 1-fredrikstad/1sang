@@ -2,7 +2,7 @@ import { describe, test, expect, vi } from 'vitest';
 import { isAdminUser } from '../../../lib/supabase/isAdminUser';
 
 describe('isAdminUser', () => {
-  test('returns admin true when user is in admin_users', async () => {
+  test('returns admin true when user is in users', async () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabassen.no';
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'pubkey';
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'service';
