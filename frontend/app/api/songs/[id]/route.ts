@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { checkUser } from '@/src/lib/supabase/isUser';
+import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 
 function getEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -68,9 +68,9 @@ export async function PATCH(req: Request, ctx: Ctx) {
       lyrics: typeof json.lyrics === 'string' ? json.lyrics.trim() : '',
     };
 
-    const { isUser } = await checkUser(token);
+    const { isAdmin } = await checkAdminAccess(token);
 
-    if (!isUser) {
+    if (!isAdmin) {
       return NextResponse.json(
         { ok: false, error: 'Du har ikke tilgang til å redigere sanger' },
         { status: 403 }
