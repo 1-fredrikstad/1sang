@@ -20,6 +20,8 @@ export interface Playlist {
   created_at?: string;
   updated_at?: string;
   version?: number;
+  is_public: boolean;
+  expires_at: string | null;
 }
 
 export interface PlaylistItem {
