@@ -19,7 +19,6 @@ describe('songs [id] route', () => {
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
   });
 
-  //bytter ut den globale fetch-funksjonen med en falsk versjon i testen
   test('GET returns song', async () => {
     vi.stubGlobal(
       'fetch',
@@ -62,6 +61,12 @@ describe('songs [id] route', () => {
   });
 
   test('DELETE returns 404 when nothing is deleted', async () => {
+    vi.mocked(checkAdminAccess).mockResolvedValue({
+      isAdmin: true,
+      userId: 'user-1',
+      role: 'admin',
+    });
+
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
@@ -70,10 +75,16 @@ describe('songs [id] route', () => {
       })
     );
 
-    const res = await DELETE(new Request(`http://localhost/api/songs/${songId}`), ctx);
+    const req = new Request(`http://localhost/api/songs/${songId}`, {
+      method: 'DELETE',
+      headers: { authorization: 'Bearer test-token' },
+    });
+
+    const res = await DELETE(req, ctx);
     const body = await res.json();
 
+    expect(checkAdminAccess).toHaveBeenCalledWith('test-token');
     expect(res.status).toBe(404);
-    expect(body.error).toBe('Nothing deleted (id not found or RLS blocked)');
+    expect(body.error).toBe('Nothing deleted (id not found)');
   });
 });
