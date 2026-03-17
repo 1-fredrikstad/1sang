@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 import { HomeIcon, SongsIcon, AddIcon, FavoritesIcon, SettingsIcon } from '../icons/Icons';
 import { useAuth } from '@/src/context/AuthContext';
@@ -26,7 +26,6 @@ const navItems: NavItem[] = [
 // Navigation component
 export default function Navbar() {
   const pathname = usePathname();
-  const router = useRouter();
   const { isAdmin } = useAuth();
 
   const [showSongOrPlaylistBox, setShowSongOrPlaylistBox] = useState(false);
