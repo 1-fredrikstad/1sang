@@ -42,7 +42,6 @@ export default function EditSongPage() {
     const {
       data: { session },
     } = await supabase.auth.getSession();
-    console.log('session user id:', session?.user?.id);
 
     const token = session?.access_token;
 
@@ -63,8 +62,7 @@ export default function EditSongPage() {
 
     if (!res.ok) {
       console.log('Kunne ikke oppdatere sang:', body);
-      alert(typeof body?.error === 'string' ? body.error : 'Kunne ikke oppdatere sang');
-      return;
+      throw new Error(typeof body?.error === 'string' ? body.error : 'Kunne ikke oppdatere sang');
     }
 
     await db.songs.update(id, {
