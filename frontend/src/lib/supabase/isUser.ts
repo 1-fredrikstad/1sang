@@ -1,5 +1,5 @@
 import 'server-only';
-export async function isAdminUser(token: string) {
+export async function checkUser(token: string) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -18,7 +18,7 @@ export async function isAdminUser(token: string) {
   const userBody = await userRes.json().catch(() => null);
 
   if (!userRes.ok || !userBody?.id) {
-    return { isAdmin: false, userId: null as string | null };
+    return { isUser: false, userId: null as string | null };
   }
 
   const userId = userBody.id;
@@ -41,7 +41,7 @@ export async function isAdminUser(token: string) {
   }
 
   return {
-    isAdmin: Array.isArray(adminBody) && adminBody.length > 0,
+    isUser: Array.isArray(adminBody) && adminBody.length > 0,
     userId,
   };
 }

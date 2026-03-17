@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { DELETE, GET, PATCH } from '../../../app/api/songs/[id]/route';
-import { isAdminUser } from '@/src/lib/supabase/isAdminUser';
+import { checkUser } from '@/src/lib/supabase/isUser';
 
-vi.mock('@/src/lib/supabase/isAdminUser', () => ({
-  isAdminUser: vi.fn(),
+vi.mock('@/src/lib/supabase/isUser', () => ({
+  checkUser: vi.fn(),
 }));
 
 describe('songs [id] route', () => {
@@ -38,8 +38,8 @@ describe('songs [id] route', () => {
   });
 
   test('PATCH returns 403 when user is not admin', async () => {
-    vi.mocked(isAdminUser).mockResolvedValue({
-      isAdmin: false,
+    vi.mocked(checkUser).mockResolvedValue({
+      isUser: false,
       userId: null,
     });
 
