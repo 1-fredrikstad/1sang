@@ -22,13 +22,14 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm<PlaylistInputs>({
     defaultValues: {
       title: '',
       password: '',
       songsInPlaylist: [],
-      duration: 604800,
+      duration: 604800, // Default value for public playlists
       isPublic: false,
     },
   });
@@ -75,6 +76,7 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
 
   const handleFormSubmit: SubmitHandler<PlaylistInputs> = async (data) => {
     await onSubmit(data);
+    reset();
   };
 
   return (
@@ -82,6 +84,8 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
       onSubmit={handleSubmit(handleFormSubmit)}
       className="flex flex-col m-8 mb-4 gap-1 max-w-2xl md:mx-auto"
     >
+      <h1 className="text-xl mb-2">Lag ny spilleliste</h1>
+
       {/* Title */}
       <span>
         <label>Tittel*</label>
@@ -115,34 +119,42 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
         isAdded={isSongAdded}
       />
 
-      {/* Dutation - how long the playlist will exist */}
-      <span className="inline-flex items-center gap-2">
-        <label>Varighet</label>
-        <MobileTooltip trigger={<QuestionMarkCircleIcon className="h-6 w-6 text-foreground" />}>
-          Hvor lenge spillelisten skal eksistere før den slettes automatisk
-        </MobileTooltip>
-      </span>
-      <select
-        {...register('duration', { valueAsNumber: true })}
-        className="mt-2 mb-6 p-3 rounded-sm outline-1 hover:cursor-pointer"
-        defaultValue={604800}
-      >
-        <option value={604800} className="text-black">
-          7 dager
-        </option>
-        <option value={2592000} className="text-black">
-          30 dager
-        </option>
-        <option value={7776000} className="text-black">
-          90 dager
-        </option>
-      </select>
-
       {/* Public playlist or not */}
       <span className="inline-flex items-center gap-2 mb-6">
         <p>Offentlig spilleliste:</p>
         <Switch checked={isPublic} onCheckedChange={(value) => setValue('isPublic', value)} />
       </span>
+
+      {isPublic && (
+        <section className="mb-4">
+          {/* Dutation - how long the playlist will exist if public */}
+          <label className="block mb-2">
+            <span className="flex items-center gap-2">
+              Varighet
+              <MobileTooltip
+                trigger={<QuestionMarkCircleIcon className="h-6 w-6 text-foreground" />}
+              >
+                Hvor lenge spillelisten skal eksistere før den slettes automatisk
+              </MobileTooltip>
+            </span>
+          </label>
+          <select
+            {...register('duration', { valueAsNumber: true })}
+            className="mt-2 mb-6 p-3 rounded-sm outline-1 hover:cursor-pointer"
+            defaultValue={604800}
+          >
+            <option value={604800} className="text-black">
+              7 dager
+            </option>
+            <option value={2592000} className="text-black">
+              30 dager
+            </option>
+            <option value={7776000} className="text-black">
+              90 dager
+            </option>
+          </select>
+        </section>
+      )}
 
       {/* Submit button */}
       <button
