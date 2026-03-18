@@ -9,24 +9,11 @@ import PlaylistForm from '@/src/components/playlist/PlaylistForm';
 import { PlaylistInputs } from '@/src/types/playlistInputs';
 
 export default function MakePlaylistPage() {
-  const { user, isLoading } = useAuth();
+  const { isLoading } = useAuth();
   const router = useRouter();
-
-  useEffect(() => {
-    if (!user) {
-      const timer = setTimeout(() => {
-        router.replace('/');
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [user, router]);
 
   if (isLoading) {
     return <p className="text-center mt-10">Laster...</p>;
-  }
-
-  if (!user) {
-    return <p className="text-center mt-10">Ingen tilgang.</p>;
   }
 
   const handleFormSubmit: SubmitHandler<PlaylistInputs> = async (data) => {
