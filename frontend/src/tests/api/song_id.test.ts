@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { DELETE, GET, PATCH } from '../../../app/api/songs/[id]/route';
-import { checkUser } from '@/src/lib/supabase/isUser';
+import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 
-vi.mock('@/src/lib/supabase/isUser', () => ({
-  checkUser: vi.fn(),
+vi.mock('@/src/lib/supabase/isAdmin', () => ({
+  checkAdminAccess: vi.fn(),
 }));
 
 describe('songs [id] route', () => {
@@ -19,7 +19,6 @@ describe('songs [id] route', () => {
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
   });
 
-  //bytter ut den globale fetch-funksjonen med en falsk versjon i testen
   test('GET returns song', async () => {
     vi.stubGlobal(
       'fetch',
@@ -38,9 +37,10 @@ describe('songs [id] route', () => {
   });
 
   test('PATCH returns 403 when user is not admin', async () => {
-    vi.mocked(checkUser).mockResolvedValue({
-      isUser: false,
+    vi.mocked(checkAdminAccess).mockResolvedValue({
+      isAdmin: false,
       userId: null,
+      role: null,
     });
 
     const req = new Request(`http://localhost/api/songs/${songId}`, {
@@ -55,11 +55,18 @@ describe('songs [id] route', () => {
     const res = await PATCH(req, ctx);
     const body = await res.json();
 
+    expect(checkAdminAccess).toHaveBeenCalledWith('test-token');
     expect(res.status).toBe(403);
     expect(body.error).toBe('Du har ikke tilgang til å redigere sanger');
   });
 
   test('DELETE returns 404 when nothing is deleted', async () => {
+    vi.mocked(checkAdminAccess).mockResolvedValue({
+      isAdmin: true,
+      userId: 'user-1',
+      role: 'admin',
+    });
+
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
@@ -68,10 +75,16 @@ describe('songs [id] route', () => {
       })
     );
 
-    const res = await DELETE(new Request(`http://localhost/api/songs/${songId}`), ctx);
+    const req = new Request(`http://localhost/api/songs/${songId}`, {
+      method: 'DELETE',
+      headers: { authorization: 'Bearer test-token' },
+    });
+
+    const res = await DELETE(req, ctx);
     const body = await res.json();
 
+    expect(checkAdminAccess).toHaveBeenCalledWith('test-token');
     expect(res.status).toBe(404);
-    expect(body.error).toBe('Nothing deleted (id not found or RLS blocked)');
+    expect(body.error).toBe('Nothing deleted (id not found)');
   });
 });

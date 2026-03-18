@@ -1,5 +1,12 @@
 import 'server-only';
-export async function checkUser(token: string) {
+
+type CheckAdminAccessResult = {
+  userId: string | null;
+  role: string | null;
+  isAdmin: boolean;
+};
+
+export async function checkAdminAccess(token: string): Promise<CheckAdminAccessResult> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -8,6 +15,7 @@ export async function checkUser(token: string) {
     throw new Error('Missing Supabase env variables');
   }
 
+  // 1. Get authenticated user
   const userRes = await fetch(`${supabaseUrl}/auth/v1/user`, {
     headers: {
       apikey: anonKey,
@@ -18,13 +26,18 @@ export async function checkUser(token: string) {
   const userBody = await userRes.json().catch(() => null);
 
   if (!userRes.ok || !userBody?.id) {
-    return { isUser: false, userId: null as string | null };
+    return {
+      userId: null,
+      role: null,
+      isAdmin: false,
+    };
   }
 
   const userId = userBody.id;
 
-  const adminRes = await fetch(
-    `${supabaseUrl}/rest/v1/users?user_id=eq.${encodeURIComponent(userId)}&select=user_id&limit=1`,
+  // 2. Get role from users table
+  const roleRes = await fetch(
+    `${supabaseUrl}/rest/v1/users?user_id=eq.${encodeURIComponent(userId)}&select=role&limit=1`,
     {
       headers: {
         apikey: serviceRoleKey,
@@ -34,14 +47,17 @@ export async function checkUser(token: string) {
     }
   );
 
-  const adminBody = await adminRes.json().catch(() => null);
+  const roleBody = await roleRes.json().catch(() => null);
 
-  if (!adminRes.ok) {
-    throw new Error('Kunne ikke sjekke admin-status');
+  if (!roleRes.ok) {
+    throw new Error('Kunne ikke sjekke brukerrolle');
   }
 
+  const role = Array.isArray(roleBody) && roleBody.length > 0 ? roleBody[0].role : null;
+
   return {
-    isUser: Array.isArray(adminBody) && adminBody.length > 0,
     userId,
+    role,
+    isAdmin: role === 'admin' || role === 'superuser',
   };
 }

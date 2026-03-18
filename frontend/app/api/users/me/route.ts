@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { checkUser } from '@/src/lib/supabase/isUser';
+import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 
 export async function GET(req: Request) {
   try {
@@ -7,12 +7,12 @@ export async function GET(req: Request) {
     const token = authHeader?.replace(/^Bearer\s+/i, '');
 
     if (!token) {
-      return NextResponse.json({ ok: true, isUser: false }, { status: 200 });
+      return NextResponse.json({ ok: true, isAdmin: false }, { status: 200 });
     }
 
-    const { isUser } = await checkUser(token);
+    const { isAdmin } = await checkAdminAccess(token);
 
-    return NextResponse.json({ ok: true, isUser }, { status: 200 });
+    return NextResponse.json({ ok: true, isAdmin }, { status: 200 });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
 

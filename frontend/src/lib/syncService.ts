@@ -36,6 +36,20 @@ class SyncService {
       if (data) {
         const table = db.table(tableName);
         table.bulkPut(data);
+
+        type RowWithId = { id: string };
+
+        const remoteRows = data as RowWithId[];
+
+        const remoteIds = new Set(remoteRows.map((row) => row.id));
+
+        const localRows = (await table.toArray()) as RowWithId[];
+
+        const idsToDelete = localRows.filter((row) => !remoteIds.has(row.id)).map((row) => row.id);
+
+        if (idsToDelete.length > 0) {
+          await table.bulkDelete(idsToDelete);
+        }
       }
 
       await db.sync_metadata.put({

@@ -1,12 +1,26 @@
 import { NextResponse } from 'next/server';
+import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 
-function getEnv() {
+function getPublicEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
   if (!supabaseUrl || !anonKey) {
-    throw new Error('Missing Supabase env variables');
+    throw new Error('Missing public Supabase env variables');
   }
+
   return { supabaseUrl, anonKey };
+}
+
+function getServiceEnv() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    throw new Error('Missing service Supabase env variables');
+  }
+
+  return { supabaseUrl, serviceRoleKey };
 }
 
 export async function GET(req: Request) {
@@ -14,7 +28,7 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const limit = url.searchParams.get('limit');
 
-    const { supabaseUrl, anonKey } = getEnv();
+    const { supabaseUrl, anonKey } = getPublicEnv();
 
     if (!supabaseUrl || !anonKey) {
       return NextResponse.json(
@@ -48,28 +62,69 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { supabaseUrl, anonKey } = getEnv();
-    const { title, lyrics, slug, author, melody, chords } = await req.json().catch(() => ({}));
+    const { supabaseUrl, serviceRoleKey } = getServiceEnv();
 
-    if (!title || !lyrics) {
-      return NextResponse.json({ ok: false, error: 'title and lyrics required' }, { status: 400 });
+    const authHeader = req.headers.get('authorization');
+    const token = authHeader?.replace(/^Bearer\s+/i, '');
+
+    const json = await req.json();
+
+    const payload = {
+      title: typeof json.title === 'string' ? json.title.trim() : '',
+      melody: typeof json.melody === 'string' ? json.melody.trim() || null : null,
+      author: typeof json.author === 'string' ? json.author.trim() || null : null,
+      lyrics: typeof json.lyrics === 'string' ? json.lyrics.trim() : '',
+    };
+
+    let isAdmin = false;
+
+    if (token) {
+      const access = await checkAdminAccess(token);
+      isAdmin = access.isAdmin;
     }
 
-    const res = await fetch(`${supabaseUrl}/rest/v1/songs`, {
+    const table = isAdmin ? 'songs' : 'song_suggestions';
+    const errorMessage = isAdmin ? 'Kunne ikke opprette sang' : 'Kunne ikke sende sangforslag';
+
+    const insertRes = await fetch(`${supabaseUrl}/rest/v1/${table}`, {
       method: 'POST',
       headers: {
-        apikey: anonKey,
-        Authorization: `Bearer ${anonKey}`,
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
         'Content-Type': 'application/json',
+        Accept: 'application/json',
         Prefer: 'return=representation',
       },
-      body: JSON.stringify({ title, lyrics, slug, author, melody, chords }),
+      body: JSON.stringify(payload),
     });
 
-    const body = await res.json().catch(() => null);
-    if (!res.ok) return NextResponse.json({ ok: false, error: body }, { status: res.status });
+    const insertBody = await insertRes.json().catch(() => null);
 
-    return NextResponse.json({ ok: true, data: body }, { status: 201 });
+    if (!insertRes.ok) {
+      return NextResponse.json(
+        { ok: false, error: insertBody ?? errorMessage },
+        { status: insertRes.status }
+      );
+    }
+
+    if (!Array.isArray(insertBody) || insertBody.length === 0) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: isAdmin ? 'Ingen rad ble opprettet' : 'Ingen forslag ble opprettet',
+        },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        ok: true,
+        data: insertBody[0],
+        destination: table,
+      },
+      { status: 201 }
+    );
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
