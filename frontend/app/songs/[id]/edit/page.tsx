@@ -13,7 +13,7 @@ import { DeleteSongButton } from '@/src/components/DeleteSongButton';
 export default function EditSongPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const { user, isLoading } = useAuth();
+  const { isAdmin, isLoading } = useAuth();
   const [isDeletingSong, setIsDeletingSong] = useState(false);
 
   const song = useLiveQuery<Song | undefined>(() => (id ? db.songs.get(id) : undefined), [id]);
@@ -22,7 +22,7 @@ export default function EditSongPage() {
     return <p className="text-center mt-10">Laster...</p>;
   }
 
-  if (!user) {
+  if (!isAdmin) {
     return <p className="text-center mt-10">Ingen tilgang.</p>;
   }
 
