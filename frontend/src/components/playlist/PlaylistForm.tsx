@@ -34,6 +34,9 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
     },
   });
 
+  // Track toasts to prevent multiple toasts to show up at the same time
+  const TOAST_ID = 'playlist-toast';
+
   // Watch songsInPlaylist to get instant UI updates
   const songsInPlaylist = watch('songsInPlaylist');
   // Watch value of public
@@ -65,9 +68,11 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
           songsInPlaylist.filter((s) => s.id !== song.id)
         );
 
+        toast.dismiss();
         toast.error('Sang fjernet');
       } else {
         setValue('songsInPlaylist', [...songsInPlaylist, song]);
+        toast.dismiss();
         toast.success('Sang lagt til');
       }
     },
