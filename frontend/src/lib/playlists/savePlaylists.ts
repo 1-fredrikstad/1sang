@@ -24,13 +24,13 @@ export async function savePlaylist(data: PlaylistInputs) {
   });
 
   // Add songs to playlist in IndexedDB (save songs offline)
-  for (const [index, song] of data.songsInPlaylist.entries()) {
-    await db.playlist_items.add({
+  await db.playlist_items.bulkAdd(
+    data.songsInPlaylist.map((song, index) => ({
       playlist_id: localId,
       song_id: song.id,
       position: index,
-    });
-  }
+    }))
+  );
 
   // If not public - return (only local)
   if (!data.isPublic) {
