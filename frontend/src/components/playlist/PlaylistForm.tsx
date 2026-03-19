@@ -68,12 +68,24 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
           songsInPlaylist.filter((s) => s.id !== song.id)
         );
 
-        toast.dismiss();
-        toast.error('Sang fjernet');
+        if (toast.isActive(TOAST_ID)) {
+          toast.update(TOAST_ID, {
+            render: 'Sang fjernet',
+            type: 'error',
+          });
+        } else {
+          toast.error('Sang fjernet', { toastId: TOAST_ID });
+        }
       } else {
         setValue('songsInPlaylist', [...songsInPlaylist, song]);
-        toast.dismiss();
-        toast.success('Sang lagt til');
+        if (toast.isActive(TOAST_ID)) {
+          toast.update(TOAST_ID, {
+            render: 'Sang lagt til',
+            type: 'success',
+          });
+        } else {
+          toast.success('Sang lagt til', { toastId: TOAST_ID });
+        }
       }
     },
     [songsInPlaylist, setValue]

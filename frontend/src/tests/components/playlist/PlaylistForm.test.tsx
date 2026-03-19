@@ -15,6 +15,8 @@ vi.mock('react-toastify', () => ({
   toast: {
     success: mockToastSuccess,
     error: mockToastError,
+    update: vi.fn(),
+    isActive: vi.fn(),
   },
 }));
 
@@ -44,23 +46,33 @@ vi.mock('@/src/components/ui/switch', () => ({
 
 // ---- tests ----
 describe('PlaylistForm', () => {
-  test('adds a song and shows success toast', () => {
-    render(<PlaylistForm onSubmit={vi.fn()} />);
-
-    fireEvent.click(screen.getByText('toggle-song'));
-
-    expect(mockToastSuccess).toHaveBeenCalledWith('Sang lagt til');
-  });
-
-  test('removes a song and shows error toast', () => {
+  test('adds a song and shows success toast', async () => {
+    const user = userEvent.setup();
     render(<PlaylistForm onSubmit={vi.fn()} />);
 
     const toggle = screen.getByText('toggle-song');
 
-    fireEvent.click(toggle); // add
-    fireEvent.click(toggle); // remove
+    await user.click(toggle);
 
-    expect(mockToastError).toHaveBeenCalledWith('Sang fjernet');
+    expect(mockToastSuccess).toHaveBeenCalledWith(
+      'Sang lagt til',
+      expect.objectContaining({ toastId: 'playlist-toast' })
+    );
+  });
+
+  test('removes a song and shows error toast', async () => {
+    const user = userEvent.setup();
+    render(<PlaylistForm onSubmit={vi.fn()} />);
+
+    const toggle = screen.getByText('toggle-song');
+
+    await user.click(toggle); // add
+    await user.click(toggle); // remove
+
+    expect(mockToastError).toHaveBeenCalledWith(
+      'Sang fjernet',
+      expect.objectContaining({ toastId: 'playlist-toast' })
+    );
   });
 
   test('calls onSubmit when form is submitted', async () => {
