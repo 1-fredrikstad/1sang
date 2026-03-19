@@ -2,25 +2,25 @@
 
 // TODO: Comment in code when API logic is merged
 
-import {
-  songSuggestionSchema,
-  getFieldValidation,
-} from '@/src/lib/validation/songSuggestionSchema';
-import { useEffect } from 'react';
+import { getFieldValidation } from '@/src/lib/validation/songSuggestionSchema';
+import { useEffect, useState } from 'react';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import TagSelect from './TagSelect';
 
 type Inputs = {
   title: string;
   melody: string;
   author: string;
   lyrics: string;
+  tags?: string[];
 };
 
 type SongFormProps = {
   heading: string;
   submitLabel: string;
   initialValues?: Partial<Inputs>;
+  showTags?: boolean;
   onSubmit: (data: Inputs) => Promise<void> | void;
   toastSuccessMessage?: string;
 };
@@ -29,6 +29,7 @@ export default function SongForm({
   heading,
   submitLabel,
   initialValues,
+  showTags,
   onSubmit,
   toastSuccessMessage = 'Lagret',
 }: SongFormProps) {
@@ -44,6 +45,7 @@ export default function SongForm({
       melody: '',
       author: '',
       lyrics: '',
+      tags: [],
       ...initialValues,
     },
   });
@@ -63,31 +65,22 @@ export default function SongForm({
   const lyricsValue = useWatch({ control, name: 'lyrics' }) || '';
   // const notify = () => toast('Sang lagt inn');
 
+  const [selectedTags, setSelectedTags] = useState<{ id: string; name: string }[]>([]);
+
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
-      await onSubmit(data);
-      // notify();
+      const payload = {
+        ...data,
+        tags: selectedTags.map((t) => t.id),
+      };
+
+      await onSubmit(payload);
+
       toast.success(toastSuccessMessage);
-
-      // setIsSubmitting(true);
-      //   const res = await fetch('/api/songs', {
-      //     method: 'POST',
-      //     headers: { 'Content-Type': 'application/json' },
-      //     body: JSON.stringify(data),
-      //   });
-      //   if (res.ok) alert('Sang lagt til');
-
-      // if(!res.ok) {
-      // const errorData = await res.json();
-      // throw new Error(errorData.message || 'Serverfeil');
-      //}
     } catch (error) {
       console.error(error);
       toast.error(error instanceof Error ? error.message : 'Noe gikk galt');
     }
-    // finally {
-    //     setIsSubmitting(false)
-    // }
   };
 
   return (
@@ -142,6 +135,8 @@ export default function SongForm({
         >
           {lyricsValue.length} / 3000
         </div>
+        {/* Tags */}
+        {showTags && <TagSelect value={selectedTags} onChange={setSelectedTags} />}
 
         {/* Submit */}
         <button

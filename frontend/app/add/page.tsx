@@ -23,7 +23,13 @@ export default function AddSongPage() {
         heading={heading}
         submitLabel={submitLabel}
         toastSuccessMessage={toastMessage}
+        showTags={isAdmin}
         onSubmit={async (data) => {
+          const payload = {
+            ...data,
+            tags: [...(data.tags ?? [])],
+          };
+
           const {
             data: { session },
           } = await supabase.auth.getSession();
@@ -39,7 +45,7 @@ export default function AddSongPage() {
           const res = await fetch('/api/songs', {
             method: 'POST',
             headers,
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
           });
 
           const body = await res.json().catch(() => null);
