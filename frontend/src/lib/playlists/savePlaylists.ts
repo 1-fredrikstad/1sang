@@ -14,9 +14,11 @@ export async function savePlaylist(data: PlaylistInputs) {
   await db.playlists.add({
     id: localId,
     server_id: undefined, // Only exists if the playlist is public and synced to backend
+    synced: false,
     title: data.title,
     playlist_password: data.password,
     created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     is_public: data.isPublic,
     expires_at,
   });
@@ -75,12 +77,14 @@ export async function savePlaylist(data: PlaylistInputs) {
       if (!addBody.ok) {
         console.error('Kunne ikke legge til sang:', song.title, addBody.error);
       }
-
-      // Sync success -> store server_id locally
-      await db.playlists.update(localId, {
-        server_id: serverId,
-      });
     }
+
+    // Sync success -> store server_id locally
+    await db.playlists.update(localId, {
+      server_id: serverId,
+      synced: true,
+      updated_at: new Date().toISOString(),
+    });
 
     return { type: 'public', localId, serverId };
   } catch (error) {
