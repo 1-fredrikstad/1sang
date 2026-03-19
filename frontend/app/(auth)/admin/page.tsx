@@ -1,42 +1,25 @@
 'use client';
-import BackButton from '@/src/components/BackButton';
+import { useRouter } from 'next/navigation';
 import LoginPage from '@/src/components/pages/LoginPage';
 import { useAuth } from '@/src/context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import Spinner from '@/src/components/login/Spinner';
 
 export default function Admin() {
-  const { user, logout } = useAuth();
-
+  const { user, isLoading } = useAuth();
   const router = useRouter();
 
-  const handleLogout = async () => {
-    await logout();
-    router.replace('/admin');
-  };
+  useEffect(() => {
+    if (user) {
+      router.replace('/admin-dashboard');
+    }
+  }, [user, router]);
 
-  return (
-    <main className="flex justify-center items-center h-screen">
-      <div className={`absolute left-4 ${user ? 'top-24' : 'top-4'}`}>
-        <BackButton />
-      </div>
+  if (isLoading) return <div>Laster...</div>;
 
-      {user ? (
-        <section className="text-center">
-          <p className="text-lg">Logget inn som:</p>
-          <p>
-            <b>{user.name}</b>
-          </p>
+  if (!user) {
+    return <LoginPage />;
+  }
 
-          <button
-            onClick={handleLogout}
-            className="p-3 mt-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors cursor-pointer"
-          >
-            Logg out
-          </button>
-        </section>
-      ) : (
-        <LoginPage />
-      )}
-    </main>
-  );
+  return <Spinner />; // Show spinner while checking or redirecting
 }
