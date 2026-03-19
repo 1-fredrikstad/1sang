@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, type Song, type Playlist, type Tag } from '@/src/lib/db';
+import { db, type Song, type Playlist, type Tag, SongSuggestion } from '@/src/lib/db';
 import { syncService } from '@/src/lib/syncService';
 import { useOnlineStatus } from './useOnlineStatus';
 
@@ -91,4 +91,7 @@ export function usePlaylists(options?: UseDataOptions) {
 }
 export function useTags(options?: UseDataOptions) {
   return useData<Tag>('tags', options);
+}
+export function useSongSuggestions(options?: UseDataOptions) {
+  return useData<SongSuggestion>('song_suggestions', options);
 }

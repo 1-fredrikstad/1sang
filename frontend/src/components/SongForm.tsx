@@ -1,11 +1,6 @@
 'use client';
 
-// TODO: Comment in code when API logic is merged
-
-import {
-  songSuggestionSchema,
-  getFieldValidation,
-} from '@/src/lib/validation/songSuggestionSchema';
+import { getFieldValidation } from '@/src/lib/validation/songSuggestionSchema';
 import { useEffect } from 'react';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -59,35 +54,16 @@ export default function SongForm({
     }
   }, [initialValues, reset]);
 
-  // const [isSubmitting, setIsSubmitting] = useState(false);
   const lyricsValue = useWatch({ control, name: 'lyrics' }) || '';
-  // const notify = () => toast('Sang lagt inn');
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       await onSubmit(data);
-      // notify();
       toast.success(toastSuccessMessage);
-
-      // setIsSubmitting(true);
-      //   const res = await fetch('/api/songs', {
-      //     method: 'POST',
-      //     headers: { 'Content-Type': 'application/json' },
-      //     body: JSON.stringify(data),
-      //   });
-      //   if (res.ok) alert('Sang lagt til');
-
-      // if(!res.ok) {
-      // const errorData = await res.json();
-      // throw new Error(errorData.message || 'Serverfeil');
-      //}
     } catch (error) {
       console.error(error);
       toast.error(error instanceof Error ? error.message : 'Noe gikk galt');
     }
-    // finally {
-    //     setIsSubmitting(false)
-    // }
   };
 
   return (
@@ -146,7 +122,6 @@ export default function SongForm({
         {/* Submit */}
         <button
           type="submit"
-          // disabled={isSubmitting}
           className="disabled:opacity-50 self-center font-bold py-2 px-4 rounded-xs cursor-pointer"
         >
           {submitLabel}

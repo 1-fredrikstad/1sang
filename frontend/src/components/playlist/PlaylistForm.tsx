@@ -34,6 +34,7 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
   });
 
   // Watch songsInPlaylist to get instant UI updates
+  // eslint-disable-next-line react-hooks/incompatible-library
   const songsInPlaylist = watch('songsInPlaylist');
   // Watch value of public
   const isPublic = watch('isPublic');
