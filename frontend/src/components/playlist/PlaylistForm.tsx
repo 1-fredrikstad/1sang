@@ -88,24 +88,27 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
 
       {/* Title */}
       <span>
-        <label>Tittel*</label>
+        <label htmlFor="title">Tittel*</label>
         {errors.title && (
           <span className="text-red-500 italic ml-2">{errors.title.message}</span>
         )}{' '}
       </span>
       <input
+        id="title"
         {...register('title', getPlaylistFieldValidation('title'))}
         className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
+        type="text"
       ></input>
 
       {/* Password */}
       <span>
-        <label>Passord (NB! Husk for å redigere/slette spillelister)</label>
+        <label htmlFor="password">Passord* (NB! Husk for å redigere/slette spillelister)</label>
         {errors.password && (
           <span className="text-red-500 italic ml-2">{errors.password.message}</span>
         )}
       </span>
       <input
+        id="password"
         {...register('password', getPlaylistFieldValidation('password'))}
         className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
       ></input>
@@ -128,7 +131,7 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
       {isPublic && (
         <section className="mb-4">
           {/* Dutation - how long the playlist will exist if public */}
-          <label className="block mb-2">
+          <label htmlFor="duration" className="block mb-2">
             <span className="flex items-center gap-2">
               Varighet
               <MobileTooltip
@@ -139,6 +142,7 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
             </span>
           </label>
           <select
+            id="duration"
             {...register('duration', { valueAsNumber: true })}
             className="mt-2 mb-6 p-3 rounded-sm outline-1 hover:cursor-pointer"
             defaultValue={604800}

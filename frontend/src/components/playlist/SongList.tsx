@@ -2,7 +2,7 @@ import { Song } from '@/src/lib/db';
 import { SongBox } from '../SongBox';
 import { SongListProps } from '@/src/types/songList';
 
-type ExtendedSongListProps = SongListProps & {
+export type ExtendedSongListProps = SongListProps & {
   onToggleSong: (song: Song) => void;
   isAdded: (id: string) => boolean;
 };
