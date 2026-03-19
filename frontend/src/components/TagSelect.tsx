@@ -1,6 +1,15 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 type Tag = {
   id: string;
@@ -41,24 +50,37 @@ export default function TagSelect({ value, onChange }: TagSelectProps) {
     onChange(selectedTags);
   };
 
+  const selectedTagNames = tags
+    .filter((tag) => selectedIds.includes(tag.id))
+    .map((tag) => tag.name);
+
   return (
     <div className="mb-5">
-      <label>Tags</label>
+      <label className="block mb-2">Tags</label>
 
-      <div className="flex flex-wrap gap-2 mt-2">
-        {tags.map((tag) => (
-          <button
-            key={tag.id}
-            type="button"
-            onClick={() => toggleTag(tag)}
-            className={`px-2 py-1 rounded border ${
-              selectedIds.includes(tag.id) ? 'bg-blue-500 text-white' : 'bg-white'
-            }`}
-          >
-            {tag.name}
-          </button>
-        ))}
-      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" className="w-full justify-between">
+            {selectedTagNames.length > 0 ? selectedTagNames.join(', ') : 'Velg tags'}
+          </Button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuGroup>
+            <DropdownMenuLabel>Tags</DropdownMenuLabel>
+
+            {tags.map((tag) => (
+              <DropdownMenuCheckboxItem
+                key={tag.id}
+                checked={selectedIds.includes(tag.id)}
+                onCheckedChange={() => toggleTag(tag)}
+              >
+                {tag.name}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

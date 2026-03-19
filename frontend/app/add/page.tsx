@@ -51,7 +51,7 @@ export default function AddSongPage() {
           const body = await res.json().catch(() => null);
 
           if (!res.ok || body?.error) {
-            throw new Error(body?.error ?? 'Kunne ikke legge til sang');
+            throw new Error('Kunne ikke legge til sang');
           }
         }}
       />
