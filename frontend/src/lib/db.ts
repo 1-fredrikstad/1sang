@@ -14,7 +14,9 @@ export interface Song {
 }
 
 export interface Playlist {
-  id: string;
+  id: string; // local ID (always exists)
+  server_id?: string; // backend ID (only if synced and public)
+  synced: boolean; // Check if synced
   title: string;
   playlist_password: string;
   created_at?: string;

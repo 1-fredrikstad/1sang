@@ -29,12 +29,9 @@ export default function Navbar() {
   const { isAdmin } = useAuth();
 
   const [showSongOrPlaylistBox, setShowSongOrPlaylistBox] = useState(false);
+  const songChoice = isAdmin ? 'Publiser sang' : 'Send inn sangforslag';
 
   const handleAddClick = (e: React.MouseEvent) => {
-    if (!isAdmin) {
-      return;
-    }
-
     e.preventDefault();
     setShowSongOrPlaylistBox((prev) => !prev);
   };
@@ -84,9 +81,12 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Show SongOrPlaylistBox if user is admin and add button is active */}
-      {isAdmin && showSongOrPlaylistBox && (
-        <SongOrPlaylistBox onClose={() => setShowSongOrPlaylistBox(false)} />
+      {/* Show SongOrPlaylistBox if add button is active */}
+      {showSongOrPlaylistBox && (
+        <SongOrPlaylistBox
+          songChoice={songChoice}
+          onClose={() => setShowSongOrPlaylistBox(false)}
+        />
       )}
     </>
   );
