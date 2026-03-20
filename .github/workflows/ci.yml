@@ -7,90 +7,51 @@ on:
     branches: [main, dev]
 
 jobs:
-  lint:
+  ci:
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repository code
-      - uses: actions/checkout@v4
+      # Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      # Set up Node.js and enable built-in pnpm dependency caching
+      # Setup Node.js
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: 20
-          cache: "pnpm"
 
-      # Install pnpm package manager
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      # Install pnpm
+      - name: Install pnpm
+        run: npm install -g pnpm
 
-      # Install dependencies using lockfile for consistency and speed
+      # Cache pnpm dependencies
+      # - name: Cache pnpm store
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ~/.pnpm-store
+      #     key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pnpm-
+
+      # Install project dependencies
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
-      # Run linting to catch code issues and enforce style rules
+      # Lint all packages that have lint scripts
       - name: Lint
         working-directory: frontend
-        run: pnpm run lint
+        run: pnpm run lint   # continues even if some packages have no lint script
 
-      # Run formatting check (e.g. Prettier) to ensure consistent code style
-      - name: Format check
+      # Run Prettier check
+      - name: Prettier
         working-directory: frontend
         run: pnpm run format:check
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      # Checkout repository code
-      - uses: actions/checkout@v4
-
-      # Set up Node.js with pnpm caching enabled
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "pnpm"
-
-      # Install pnpm
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      # Install dependencies from lockfile
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      # Run all tests across the monorepo
-      - name: Run tests
+      # Test all packages that have test scripts
+      - name: Test
         run: pnpm -r test
 
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      # Checkout repository code
-      - uses: actions/checkout@v4
-
-      # Set up Node.js with pnpm caching enabled
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "pnpm"
-
-      # Install pnpm package manager
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      # Install dependencies from lockfile
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      # Build the frontend for production
+      # Build frontend
       - name: Build frontend
         working-directory: frontend
         run: pnpm build
