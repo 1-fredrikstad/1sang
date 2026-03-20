@@ -50,9 +50,7 @@ export default function TagSelect({ value, onChange }: TagSelectProps) {
     onChange(selectedTags);
   };
 
-  const selectedTagNames = tags
-    .filter((tag) => selectedIds.includes(tag.id))
-    .map((tag) => tag.name);
+  const selectedTagNames = value.map((tag) => tag.name);
 
   return (
     <div className="mb-5">
@@ -74,6 +72,7 @@ export default function TagSelect({ value, onChange }: TagSelectProps) {
                 key={tag.id}
                 checked={selectedIds.includes(tag.id)}
                 onCheckedChange={() => toggleTag(tag)}
+                onSelect={(e) => e.preventDefault()}
               >
                 {tag.name}
               </DropdownMenuCheckboxItem>

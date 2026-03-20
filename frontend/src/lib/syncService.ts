@@ -35,20 +35,32 @@ class SyncService {
       // update dexie cache with fresh data
       if (data) {
         const table = db.table(tableName);
-        table.bulkPut(data);
 
-        type RowWithId = { id: string };
+        const tablesWithTwoIds: TableName[] = ['song_tags', 'playlist_items'];
 
-        const remoteRows = data as RowWithId[];
+        if (tablesWithTwoIds.includes(tableName)) {
+          // enkel strategi
+          await table.clear();
+          await table.bulkPut(data);
+        } else {
+          // behold eksisterende diff-logikk
+          await table.bulkPut(data);
 
-        const remoteIds = new Set(remoteRows.map((row) => row.id));
+          type RowWithId = { id: string };
 
-        const localRows = (await table.toArray()) as RowWithId[];
+          const remoteRows = data as RowWithId[];
 
-        const idsToDelete = localRows.filter((row) => !remoteIds.has(row.id)).map((row) => row.id);
+          const remoteIds = new Set(remoteRows.map((row) => row.id));
 
-        if (idsToDelete.length > 0) {
-          await table.bulkDelete(idsToDelete);
+          const localRows = (await table.toArray()) as RowWithId[];
+
+          const idsToDelete = localRows
+            .filter((row) => !remoteIds.has(row.id))
+            .map((row) => row.id);
+
+          if (idsToDelete.length > 0) {
+            await table.bulkDelete(idsToDelete);
+          }
         }
       }
 

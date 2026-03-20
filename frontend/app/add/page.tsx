@@ -4,6 +4,7 @@ import SongForm from '@/src/components/SongForm';
 import { Suspense } from 'react';
 import { useAuth } from '@/src/context/AuthContext';
 import { createClient } from '@/src/lib/supabase/client';
+import { syncService } from '@/src/lib/syncService';
 
 export default function AddSongPage() {
   const { isAdmin, isLoading } = useAuth();
@@ -47,7 +48,9 @@ export default function AddSongPage() {
             headers,
             body: JSON.stringify(payload),
           });
-
+          await syncService.syncTable('songs', { forceFresh: true });
+          await syncService.syncTable('song_tags', { forceFresh: true });
+          await syncService.syncTable('tags', { forceFresh: true });
           const body = await res.json().catch(() => null);
 
           if (!res.ok || body?.error) {

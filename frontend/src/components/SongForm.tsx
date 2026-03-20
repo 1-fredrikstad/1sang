@@ -8,12 +8,17 @@ import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import TagSelect from './TagSelect';
 
+type Tag = {
+  id: string;
+  name: string;
+};
+
 type Inputs = {
   title: string;
   melody: string;
   author: string;
   lyrics: string;
-  tags?: string[];
+  tags?: Tag[];
 };
 
 type SongFormProps = {
@@ -21,7 +26,7 @@ type SongFormProps = {
   submitLabel: string;
   initialValues?: Partial<Inputs>;
   showTags?: boolean;
-  onSubmit: (data: Inputs) => Promise<void> | void;
+  onSubmit: (data: Omit<Inputs, 'tags'> & { tags?: string[] }) => Promise<void> | void;
   toastSuccessMessage?: string;
 };
 
@@ -39,6 +44,7 @@ export default function SongForm({
     formState: { errors },
     control,
     reset,
+    setValue,
   } = useForm<Inputs>({
     defaultValues: {
       title: '',
@@ -57,15 +63,14 @@ export default function SongForm({
         melody: initialValues.melody ?? '',
         author: initialValues.author ?? '',
         lyrics: initialValues.lyrics ?? '',
+        tags: initialValues.tags ?? [],
       });
     }
   }, [initialValues, reset]);
 
-  // const [isSubmitting, setIsSubmitting] = useState(false);
   const lyricsValue = useWatch({ control, name: 'lyrics' }) || '';
+  const selectedTags = useWatch({ control, name: 'tags' }) ?? [];
   // const notify = () => toast('Sang lagt inn');
-
-  const [selectedTags, setSelectedTags] = useState<{ id: string; name: string }[]>([]);
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
@@ -136,7 +141,7 @@ export default function SongForm({
           {lyricsValue.length} / 3000
         </div>
         {/* Tags */}
-        {showTags && <TagSelect value={selectedTags} onChange={setSelectedTags} />}
+        {showTags && <TagSelect value={selectedTags} onChange={(tags) => setValue('tags', tags)} />}
 
         {/* Submit */}
         <button
