@@ -9,44 +9,43 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-
     steps:
-      # Checkout repository code
+      # Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Set up Node.js and enable pnpm dependency caching
+      # Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "pnpm"
 
-      # Install pnpm package manager
-      - name: Setup pnpm
+      # Install pnpm
+      - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 9
 
-      # Install dependencies using frozen lockfile (fast + reproducible builds)
+      # Install project dependencies
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Run linting (checks code quality and catches errors early)
+      # Lint all packages that have lint scripts
       - name: Lint
         working-directory: frontend
-        run: pnpm run lint
+        run: pnpm run lint # continues even if some packages have no lint script
 
-      # Run Prettier / formatting check (ensures consistent code style)
-      - name: Prettier check
+      # Run Prettier check
+      - name: Prettier
         working-directory: frontend
         run: pnpm run format:check
 
-      # Run all tests in the repo (unit/integration tests)
+      # Test all packages that have test scripts
       - name: Test
         run: pnpm -r test
 
-      # Build frontend for production (verifies build succeeds)
+      # Build frontend
       - name: Build frontend
         working-directory: frontend
         run: pnpm build
