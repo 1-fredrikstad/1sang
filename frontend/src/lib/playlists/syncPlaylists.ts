@@ -84,8 +84,6 @@ export async function syncServerToLocal() {
     return;
   }
 
-  console.log('SUPABASE RAW:', { data, error });
-
   for (const p of data) {
     try {
       // If playlists already exists in IndexedDB - skip
