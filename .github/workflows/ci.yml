@@ -9,49 +9,44 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    steps:
-      # Checkout repo
-      - name: Checkout repository
-        uses: actions/checkout@v3
 
-      # Setup Node.js
+    steps:
+      # Checkout repository code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Set up Node.js and enable pnpm dependency caching
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: "pnpm"
 
-      # Install pnpm
-      - name: Install pnpm
-        run: npm install -g pnpm
+      # Install pnpm package manager
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
-      # Cache pnpm dependencies
-      # - name: Cache pnpm store
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ~/.pnpm-store
-      #     key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-pnpm-
-
-      # Install project dependencies
+      # Install dependencies using frozen lockfile (fast + reproducible builds)
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
-      # Lint all packages that have lint scripts
+      # Run linting (checks code quality and catches errors early)
       - name: Lint
         working-directory: frontend
-        run: pnpm run lint   # continues even if some packages have no lint script
+        run: pnpm run lint
 
-      # Run Prettier check
-      - name: Prettier
+      # Run Prettier / formatting check (ensures consistent code style)
+      - name: Prettier check
         working-directory: frontend
         run: pnpm run format:check
 
-      # Test all packages that have test scripts
+      # Run all tests in the repo (unit/integration tests)
       - name: Test
         run: pnpm -r test
 
-      # Build frontend
+      # Build frontend for production (verifies build succeeds)
       - name: Build frontend
         working-directory: frontend
         run: pnpm build
