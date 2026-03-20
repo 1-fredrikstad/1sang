@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { vi, expect, describe, test } from 'vitest';
 import PlaylistForm from '@/src/components/playlist/PlaylistForm';
 import { Song } from '@/src/lib/db';
