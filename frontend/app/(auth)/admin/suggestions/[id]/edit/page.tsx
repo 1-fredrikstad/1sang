@@ -6,6 +6,8 @@ import { db } from '@/src/lib/db';
 import SongForm from '@/src/components/SongForm';
 import { updateSuggestion } from '@/src/lib/actions/songSuggestions';
 import { useMounted } from '@/src/hooks/useMounted';
+import { toast } from 'react-toastify';
+import BackButton from '@/src/components/BackButton';
 
 export default function EditSuggestionPage() {
   const { id } = useParams<{ id: string }>();
@@ -30,44 +32,48 @@ export default function EditSuggestionPage() {
   }
 
   return (
-    <SongForm
-      heading="Rediger forslag"
-      submitLabel="Lagre endringer"
-      toastSuccessMessage="Oppdatert"
-      initialValues={{
-        title: suggestion.title,
-        melody: suggestion.melody ?? '',
-        author: suggestion.author ?? '',
-        lyrics: suggestion.lyrics ?? '',
-      }}
-      onSubmit={async (data) => {
-        const old = suggestion;
-        // setSuggestion((prev) => (prev ? { ...prev, ...data } : null));
+    <main className="relative w-full max-w-300 mx-auto px-4 mt-15">
+      <div className="absolute **:left-5 cursor-pointer">
+        <BackButton />
+      </div>
 
-        try {
-          await updateSuggestion(id, {
-            title: data.title,
-            melody: data.melody || undefined,
-            author: data.author || undefined,
-            lyrics: data.lyrics,
-          });
+      <SongForm
+        heading="Rediger forslag"
+        submitLabel="Lagre endringer"
+        toastSuccessMessage="Oppdatert"
+        initialValues={{
+          title: suggestion.title,
+          melody: suggestion.melody ?? '',
+          author: suggestion.author ?? '',
+          lyrics: suggestion.lyrics ?? '',
+        }}
+        onSubmit={async (data) => {
+          const old = suggestion;
 
-          if (typeof window !== 'undefined' && db && old) {
-            const updatedRow = { ...old, ...data };
-            await db.song_suggestions.put(updatedRow);
-            console.log('Dexie updated manually:', updatedRow.title);
+          try {
+            await updateSuggestion(id, {
+              title: data.title,
+              melody: data.melody || undefined,
+              author: data.author || undefined,
+              lyrics: data.lyrics,
+            });
+
+            if (typeof window !== 'undefined' && db && old) {
+              const updatedRow = { ...old, ...data };
+              await db.song_suggestions.put(updatedRow);
+              console.log('Dexie updated manually:', updatedRow.title);
+            }
+
+            toast('Forslag oppdatert!');
+            router.push(`/admin/suggestions/${id}`);
+            router.refresh();
+          } catch (err: unknown) {
+            console.error(err);
+            const message = err instanceof Error ? err.message : 'Ukjent feil';
+            toast(message || 'Noe gikk galt ved lagring');
           }
-
-          alert('Forslag oppdatert!');
-          router.push(`/admin/suggestions/${id}`);
-          router.refresh();
-        } catch (err: unknown) {
-          console.error(err);
-          const message = err instanceof Error ? err.message : 'Ukjent feil';
-          alert(message || 'Noe gikk galt ved lagring');
-          // setSuggestion(old);
-        }
-      }}
-    />
+        }}
+      />
+    </main>
   );
 }
