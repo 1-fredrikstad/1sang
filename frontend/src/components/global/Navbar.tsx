@@ -14,7 +14,6 @@ type NavItem = {
   Icon: React.ComponentType<{ className?: string }>;
 };
 
-//TODO: links are placeholders, add actual href when the pages are implemented
 const navItems: NavItem[] = [
   { id: 'home', href: '/', Icon: HomeIcon },
   { id: 'songs', href: '/songs', Icon: SongsIcon },

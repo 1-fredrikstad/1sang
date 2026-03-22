@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import LoginPage from '@/src/components/pages/LoginPage';
 import { useAuth } from '@/src/context/AuthContext';
 import { useEffect } from 'react';
-import Spinner from '@/src/components/login/Spinner';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function Admin() {
   const { user, isLoading } = useAuth();
@@ -15,11 +15,11 @@ export default function Admin() {
     }
   }, [user, router]);
 
-  if (isLoading) return <div>Laster...</div>;
+  if (isLoading) return <Spinner message="Laster inn" />;
 
   if (!user) {
     return <LoginPage />;
   }
 
-  return <Spinner />; // Show spinner while checking or redirecting
+  return <Spinner message="Laster adminside" />; // Show spinner while checking or redirecting
 }

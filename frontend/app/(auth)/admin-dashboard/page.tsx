@@ -10,7 +10,7 @@ export default async function AdminDashboard() {
   }
 
   if (role !== 'admin' && role !== 'superadmin') {
-    return <div>Ingen tilgang</div>;
+    return <div className="text-center mt-15 text-red-500">Ingen tilgang</div>;
   }
 
   return <AdminContent />;

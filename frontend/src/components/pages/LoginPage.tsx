@@ -1,7 +1,7 @@
 'use client';
 import BackButton from '@/src/components/BackButton';
 import GoogleLoginButton from '@/src/components/login/GoogleLoginButton';
-import Spinner from '@/src/components/login/Spinner';
+import { Spinner } from '@/components/ui/spinner';
 import { useAuth } from '@/src/context/AuthContext';
 import Image from 'next/image';
 
@@ -9,7 +9,7 @@ export default function LoginPage() {
   const { user, isLoading } = useAuth();
 
   if (isLoading || user) {
-    return <Spinner />; // Show spinner while checking or redirecting
+    return <Spinner message="Laster inn" />; // Show spinner while checking or redirecting
   }
 
   return (
