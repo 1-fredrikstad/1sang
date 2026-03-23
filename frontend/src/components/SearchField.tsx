@@ -1,6 +1,11 @@
 'use client';
 
-export function SearchField() {
+type SearchFieldProps = {
+  value: string;
+  onChange: (value: string) => void;
+};
+
+export function SearchField({ value, onChange }: SearchFieldProps) {
   return (
     <div className="mb-6">
       <div
@@ -29,6 +34,8 @@ export function SearchField() {
 
         <input
           type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
           placeholder="Søk etter sanger..."
           className="
                 w-full bg-transparent text-sm outline-none
