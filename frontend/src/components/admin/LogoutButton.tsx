@@ -12,20 +12,32 @@ import {
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 export default function LogoutButton() {
   const { logout } = useAuth();
   const router = useRouter();
 
   const handleLogout = async () => {
-    await logout();
-    router.replace('/admin');
+    try {
+      await logout();
+    } catch (error) {
+      toast.error('Logout failed');
+      console.error('Logout failed:', error);
+    } finally {
+      router.replace('/admin');
+    }
   };
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline" size="lg" className="p-3 text-md cursor-pointer">
+        <Button
+          variant="outline"
+          size="lg"
+          className="p-3 text-md cursor-pointer"
+          aria-label="Logg ut"
+        >
           Logg ut
         </Button>
       </AlertDialogTrigger>
@@ -36,8 +48,14 @@ export default function LogoutButton() {
             <AlertDialogTitle>Er du sikker på at du vil logge ut?</AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel variant="outline">Avbryt</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={handleLogout}>
+            <AlertDialogCancel variant="outline" aria-label="Avbryt">
+              Avbryt
+            </AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={handleLogout}
+              aria-label="Bekreftelse på logg ut"
+            >
               Logg ut
             </AlertDialogAction>
           </AlertDialogFooter>

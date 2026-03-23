@@ -21,6 +21,8 @@ export default function BackButton() {
         viewBox="0 0 24 24"
         fill="currentColor"
         className="size-6"
+        role="img"
+        aria-label="Tilbake"
       >
         <path
           fillRule="evenodd"

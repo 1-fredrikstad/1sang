@@ -11,3 +11,15 @@ vi.mock('next/image', () => ({
     return <img {...props} />;
   },
 }));
+
+vi.mock('next/navigation', () => {
+  return {
+    useRouter: () => ({
+      push: vi.fn(),
+      replace: vi.fn(),
+      prefetch: vi.fn(),
+      back: vi.fn(),
+    }),
+    usePathname: () => '/',
+  };
+});

@@ -19,13 +19,13 @@ describe('Login component', () => {
   it('renders Spinner when loading', () => {
     (useAuth as unknown as Mock).mockReturnValue({ user: null, isLoading: true });
     render(<Login />);
-    expect(screen.getByText('Spinner')).toBeInTheDocument();
+    expect(screen.getByText('Laster inn')).toBeInTheDocument();
   });
 
   it('renders Spinner when user is logged in', () => {
     (useAuth as unknown as Mock).mockReturnValue({ user: { name: 'Test' }, isLoading: false });
     render(<Login />);
-    expect(screen.getByText('Spinner')).toBeInTheDocument();
+    expect(screen.getByText('Laster inn')).toBeInTheDocument();
   });
 
   it('renders login form when not loading and no user', () => {
