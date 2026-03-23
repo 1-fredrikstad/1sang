@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable jsx-a11y/alt-text */
 
+import 'fake-indexeddb/auto';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
@@ -11,3 +12,16 @@ vi.mock('next/image', () => ({
     return <img {...props} />;
   },
 }));
+
+// mock ResizeObserver (Needed for Radix UI)
+global.ResizeObserver = class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+} as unknown as typeof ResizeObserver;
+
+global.IntersectionObserver = class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+} as unknown as typeof IntersectionObserver;

@@ -2,10 +2,11 @@ import { useRouter } from 'next/navigation';
 
 type SongOrPlaylistBoxProps = {
   onClose: () => void;
+  songChoice: string;
 };
 
 // Component for an admin to choose between adding a new song or creating a new playlist
-export default function SongOrPlaylistBox({ onClose }: SongOrPlaylistBoxProps) {
+export default function SongOrPlaylistBox({ onClose, songChoice }: SongOrPlaylistBoxProps) {
   const router = useRouter();
 
   return (
@@ -19,7 +20,7 @@ export default function SongOrPlaylistBox({ onClose }: SongOrPlaylistBoxProps) {
           className="cursor-pointer hover:bg-secondary w-full py-6 rounded-t-xl"
           onClick={() => router.push('/add')}
         >
-          Lag ny sang
+          {songChoice}
         </button>
         {/* Create new playlist button */}
         <button
