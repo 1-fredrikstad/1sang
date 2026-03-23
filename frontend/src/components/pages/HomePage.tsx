@@ -3,6 +3,7 @@
 import { Song } from '@/src/lib/db';
 import { SongBox } from '../SongBox';
 import { SongListProps } from '@/src/types/songList';
+import { SearchField } from '../SearchField';
 
 export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   if (error) return <div>Error: {error.message}</div>;
@@ -11,6 +12,8 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   return (
     <div>
       <h1 className="mb-5">Alle sanger</h1>
+
+      <SearchField />
 
       {isLoading && <p>Synkroniserer med supabase...</p>}
 
