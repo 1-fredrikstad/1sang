@@ -1,8 +1,10 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { GET } from '../../../app/api/users/me/route';
-import { checkUser } from '@/src/lib/supabase/isUser';
+import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 
-vi.mock('@/src/lib/supabase/isUser');
+vi.mock('@/src/lib/supabase/isAdmin', () => ({
+  checkAdminAccess: vi.fn(),
+}));
 
 describe('GET /api/users/me', () => {
   beforeEach(() => {
@@ -23,9 +25,10 @@ describe('GET /api/users/me', () => {
   });
 
   test('returns admin status when token is provided', async () => {
-    vi.mocked(checkUser).mockResolvedValue({
-      isUser: true,
-      userId: undefined,
+    vi.mocked(checkAdminAccess).mockResolvedValue({
+      isAdmin: true,
+      userId: 'user-123',
+      role: 'admin',
     });
 
     const req = new Request('http://localhost/api/users/me', {
@@ -37,7 +40,7 @@ describe('GET /api/users/me', () => {
     const res = await GET(req);
     const body = await res.json();
 
-    expect(checkUser).toHaveBeenCalledWith('test-token');
+    expect(checkAdminAccess).toHaveBeenCalledWith('test-token');
     expect(res.status).toBe(200);
     expect(body).toEqual({
       ok: true,
@@ -46,7 +49,7 @@ describe('GET /api/users/me', () => {
   });
 
   test('returns 500 when an error occurs', async () => {
-    vi.mocked(checkUser).mockRejectedValue(new Error('failed'));
+    vi.mocked(checkAdminAccess).mockRejectedValue(new Error('failed'));
 
     const req = new Request('http://localhost/api/users/me', {
       headers: {

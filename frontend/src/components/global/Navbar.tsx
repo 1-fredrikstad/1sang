@@ -25,15 +25,14 @@ const navItems: NavItem[] = [
 // Navigation component
 export default function Navbar() {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { isAdmin } = useAuth();
 
   const [showSongOrPlaylistBox, setShowSongOrPlaylistBox] = useState(false);
+  const songChoice = isAdmin ? 'Publiser sang' : 'Send inn sangforslag';
 
   const handleAddClick = (e: React.MouseEvent) => {
-    if (user) {
-      e.preventDefault();
-      setShowSongOrPlaylistBox((prev) => !prev);
-    }
+    e.preventDefault();
+    setShowSongOrPlaylistBox((prev) => !prev);
   };
 
   return (
@@ -81,9 +80,12 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Show SongOrPlaylistBox if user is admin and add button is active */}
+      {/* Show SongOrPlaylistBox if add button is active */}
       {showSongOrPlaylistBox && (
-        <SongOrPlaylistBox onClose={() => setShowSongOrPlaylistBox(false)} />
+        <SongOrPlaylistBox
+          songChoice={songChoice}
+          onClose={() => setShowSongOrPlaylistBox(false)}
+        />
       )}
     </>
   );

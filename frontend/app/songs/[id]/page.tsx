@@ -11,7 +11,7 @@ import { EditIcon } from '@/src/components/icons/Icons';
 
 export default function SongPage() {
   const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
+  const { isAdmin } = useAuth();
   useWakeLock(true);
 
   const song = useLiveQuery<Song | undefined>(() => (id ? db.songs.get(id) : undefined), [id]);
@@ -29,7 +29,7 @@ export default function SongPage() {
       <div className="absolute **:left-5 cursor-pointer">
         <BackButton />
       </div>
-      {user && (
+      {isAdmin && (
         <div className="absolute right-5 top-0">
           <Link href={`/songs/${id}/edit`}>
             <EditIcon

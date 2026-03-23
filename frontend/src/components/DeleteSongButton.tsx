@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { db } from '@/src/lib/db';
 import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
 import { toast } from 'react-toastify';
+import { createClient } from '@/src/lib/supabase/client';
 
 type Props = {
   songId: string;
@@ -26,14 +27,16 @@ export function DeleteSongButton({
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const isOnline = useOnlineStatus();
+  const supabase = createClient();
 
   const onDelete = async () => {
     if (!isOnline) {
-      alert('Du er offline. Gå online for å slette sangen.');
+      toast.error('Du er offline. Gå online for å slette sangen.');
       return;
     }
+
     if (!songId) {
-      alert('Mangler sang-ID');
+      toast.error('Mangler sang-ID');
       return;
     }
 
@@ -42,23 +45,34 @@ export function DeleteSongButton({
     try {
       setIsDeleting(true);
       onDeletingChange?.(true);
-      toast.success('Sangen ble slettet');
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      const headers: Record<string, string> = {};
+
+      if (session?.access_token) {
+        headers.Authorization = `Bearer ${session.access_token}`;
+      }
 
       const res = await fetch(`/api/songs/${encodeURIComponent(songId)}`, {
         method: 'DELETE',
+        headers,
       });
 
+      const body = await res.json().catch(() => null);
+
       if (!res.ok) {
-        const text = await res.text().catch(() => '');
-        throw new Error(text || 'Sletting feilet');
+        throw new Error(body?.error ?? 'Sletting feilet');
       }
 
-      router.replace(redirectTo);
-      // Remove from local offline cache immediately
       await db.songs.delete(songId);
+      toast.success('Sangen ble slettet');
+      router.replace(redirectTo);
     } catch (e) {
       console.error(e);
-      alert('Kunne ikke slette sang');
+      toast.error(e instanceof Error ? e.message : 'Kunne ikke slette sang');
       onDeletingChange?.(false);
     } finally {
       setIsDeleting(false);

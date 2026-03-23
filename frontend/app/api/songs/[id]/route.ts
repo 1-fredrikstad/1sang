@@ -1,18 +1,33 @@
 import { NextResponse } from 'next/server';
-import { checkUser } from '@/src/lib/supabase/isUser';
+import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 
-function getEnv() {
+function getPublicEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  if (!supabaseUrl || !anonKey) throw new Error('Missing Supabase env variables');
+
+  if (!supabaseUrl || !anonKey) {
+    throw new Error('Missing public Supabase env variables');
+  }
+
   return { supabaseUrl, anonKey };
+}
+
+function getServiceEnv() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    throw new Error('Missing service Supabase env variables');
+  }
+
+  return { supabaseUrl, serviceRoleKey };
 }
 
 type Ctx = { params: Promise<{ id: string }> };
 
 export async function GET(_req: Request, ctx: Ctx) {
   try {
-    const { supabaseUrl, anonKey } = getEnv();
+    const { supabaseUrl, anonKey } = getPublicEnv();
     const { id } = await ctx.params;
 
     const target = `${supabaseUrl}/rest/v1/songs?id=eq.${encodeURIComponent(id)}&select=*&limit=1`;
@@ -43,8 +58,7 @@ export async function GET(_req: Request, ctx: Ctx) {
 
 export async function PATCH(req: Request, ctx: Ctx) {
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const { supabaseUrl, serviceRoleKey } = getServiceEnv();
 
     if (!supabaseUrl || !serviceRoleKey) {
       throw new Error('Missing Supabase env variables');
@@ -68,9 +82,9 @@ export async function PATCH(req: Request, ctx: Ctx) {
       lyrics: typeof json.lyrics === 'string' ? json.lyrics.trim() : '',
     };
 
-    const { isUser } = await checkUser(token);
+    const { isAdmin } = await checkAdminAccess(token);
 
-    if (!isUser) {
+    if (!isAdmin) {
       return NextResponse.json(
         { ok: false, error: 'Du har ikke tilgang til å redigere sanger' },
         { status: 403 }
@@ -109,18 +123,34 @@ export async function PATCH(req: Request, ctx: Ctx) {
   }
 }
 
-export async function DELETE(_req: Request, ctx: Ctx) {
+export async function DELETE(req: Request, ctx: Ctx) {
   try {
-    const { supabaseUrl, anonKey } = getEnv();
+    const { supabaseUrl, serviceRoleKey } = getServiceEnv();
     const { id } = await ctx.params;
+
+    const authHeader = req.headers.get('authorization');
+    const token = authHeader?.replace(/^Bearer\s+/i, '');
+
+    if (!token) {
+      return NextResponse.json({ ok: false, error: 'Mangler token' }, { status: 401 });
+    }
+
+    const { isAdmin } = await checkAdminAccess(token);
+
+    if (!isAdmin) {
+      return NextResponse.json(
+        { ok: false, error: 'Du har ikke tilgang til å slette sanger' },
+        { status: 403 }
+      );
+    }
 
     const target = `${supabaseUrl}/rest/v1/songs?id=eq.${encodeURIComponent(id)}`;
 
     const res = await fetch(target, {
       method: 'DELETE',
       headers: {
-        apikey: anonKey,
-        Authorization: `Bearer ${anonKey}`,
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
         Accept: 'application/json',
         Prefer: 'return=representation',
       },
@@ -134,7 +164,7 @@ export async function DELETE(_req: Request, ctx: Ctx) {
 
     if (!Array.isArray(body) || body.length === 0) {
       return NextResponse.json(
-        { ok: false, error: 'Nothing deleted (id not found or RLS blocked)' },
+        { ok: false, error: 'Nothing deleted (id not found)' },
         { status: 404 }
       );
     }
