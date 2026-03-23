@@ -3,7 +3,7 @@
 // TODO: Comment in code when API logic is merged
 
 import { getFieldValidation } from '@/src/lib/validation/songSuggestionSchema';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import TagSelect from './TagSelect';
