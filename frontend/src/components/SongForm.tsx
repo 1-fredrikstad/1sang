@@ -12,6 +12,7 @@ type Tag = {
   id: string;
   name: string;
 };
+import SubmitButton from './SubmitButton';
 
 type Inputs = {
   title: string;
@@ -144,13 +145,7 @@ export default function SongForm({
         {showTags && <TagSelect value={selectedTags} onChange={(tags) => setValue('tags', tags)} />}
 
         {/* Submit */}
-        <button
-          type="submit"
-          // disabled={isSubmitting}
-          className="disabled:opacity-50 self-center font-bold py-2 px-4 rounded-xs cursor-pointer"
-        >
-          {submitLabel}
-        </button>
+        <SubmitButton submitLabel={submitLabel} />
       </form>
     </>
   );

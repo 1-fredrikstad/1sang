@@ -2,7 +2,7 @@ import { Song } from '@/src/lib/db';
 import { savePlaylist } from '@/src/lib/playlists/savePlaylists';
 import { vi, describe, expect, test } from 'vitest';
 
-describe('savePlaylist', () => {
+describe('savePlaylists', () => {
   test('saves private playlist locally and returns private type', async () => {
     const result = await savePlaylist({
       title: 'Test',

@@ -2,25 +2,31 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
-import { HomeIcon, SongsIcon, AddIcon, FavoritesIcon, SettingsIcon } from '../icons/Icons';
-import { useAuth } from '@/src/context/AuthContext';
 import { useState } from 'react';
+import {
+  HomeIcon,
+  MusicalNoteIcon,
+  PlusIcon,
+  StarIcon,
+  Cog6ToothIcon,
+} from '@heroicons/react/24/outline';
+
+import { useAuth } from '@/src/context/AuthContext';
 import SongOrPlaylistBox from '../SongOrPlaylistBox';
 
 type NavItem = {
   id: string;
   href: string;
-  Icon: React.ComponentType<{ className?: string }>;
+  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 };
 
 //TODO: links are placeholders, add actual href when the pages are implemented
 const navItems: NavItem[] = [
   { id: 'home', href: '/', Icon: HomeIcon },
-  { id: 'songs', href: '/songs', Icon: SongsIcon },
-  { id: 'add', href: '/add', Icon: AddIcon },
-  { id: 'favorites', href: '/favorites', Icon: FavoritesIcon },
-  { id: 'settings', href: '/settings', Icon: SettingsIcon },
+  { id: 'songs', href: '/songs', Icon: MusicalNoteIcon },
+  { id: 'add', href: '/add', Icon: PlusIcon },
+  { id: 'favorites', href: '/favorites', Icon: StarIcon },
+  { id: 'settings', href: '/settings', Icon: Cog6ToothIcon },
 ];
 
 // Navigation component
@@ -63,17 +69,17 @@ export default function Navbar() {
                 key={id}
                 href={href}
                 onClick={isAdd ? handleAddClick : undefined}
-                className="relative flex items-center justify-center py-4 transition-opacity duration-200"
+                className="relative flex items-center justify-center py-5 transition-opacity duration-200"
                 aria-current={isActive ? 'page' : undefined}
               >
                 <Icon
-                  className={`h-6 w-6 text-foreground transition-all duration-200 ${
+                  className={`h-7 w-7 text-foreground transition-all duration-200 ${
                     isActive ? 'opacity-100' : 'opacity-70'
                   } hover:opacity-100`}
                 />
                 {/* Black text at full opacity if link is active */}
                 {isActive && (
-                  <span className="absolute bottom-1 h-0.5 w-6 rounded-full text-foreground" />
+                  <span className="absolute bottom-2 h-0.5 w-6 rounded-full bg-foreground" />
                 )}
               </Link>
             );
