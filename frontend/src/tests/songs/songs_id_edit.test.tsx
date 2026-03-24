@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import EditSongPage from '../../../app/songs/[id]/edit/page';
+import EditSongPage from '../../../app/songs/[slug]/edit/page';
 
 const mockUseAuth = vi.fn();
 const mockUseLiveQuery = vi.fn();

@@ -11,12 +11,15 @@ import { createClient } from '@/src/lib/supabase/client';
 import { DeleteSongButton } from '@/src/components/DeleteSongButton';
 
 export default function EditSongPage() {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
   const { isAdmin, isLoading } = useAuth();
   const [isDeletingSong, setIsDeletingSong] = useState(false);
 
-  const song = useLiveQuery<Song | undefined>(() => (id ? db.songs.get(id) : undefined), [id]);
+  const song = useLiveQuery<Song | undefined>(
+    () => (slug ? db.songs.where('slug').equals(slug).first() : undefined),
+    [slug]
+  );
 
   if (isLoading) {
     return <p className="text-center mt-10">Laster...</p>;
@@ -49,7 +52,7 @@ export default function EditSongPage() {
       throw new Error('Ikke logget inn');
     }
 
-    const res = await fetch(`/api/songs/${id}`, {
+    const res = await fetch(`/api/songs/${song.id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -65,14 +68,14 @@ export default function EditSongPage() {
       throw new Error(typeof body?.error === 'string' ? body.error : 'Kunne ikke oppdatere sang');
     }
 
-    await db.songs.update(id, {
+    await db.songs.update(song.id, {
       title: data.title,
       melody: data.melody || undefined,
       author: data.author || undefined,
       lyrics: data.lyrics,
     });
 
-    router.push(`/songs/${id}`);
+    router.push(`/songs/${song.slug}`);
   };
 
   return (

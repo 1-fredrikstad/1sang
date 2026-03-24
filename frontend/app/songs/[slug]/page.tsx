@@ -10,10 +10,13 @@ import WakeLockToggle from '@/src/components/WakeLockToggle';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 
 export default function SongPage() {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const { isAdmin } = useAuth();
 
-  const song = useLiveQuery<Song | undefined>(() => (id ? db.songs.get(id) : undefined), [id]);
+  const song = useLiveQuery<Song | undefined>(
+    () => (slug ? db.songs.where('slug').equals(slug).first() : undefined),
+    [slug]
+  );
 
   if (!song) {
     return (
@@ -35,7 +38,7 @@ export default function SongPage() {
         </div>
         {isAdmin && (
           <div className="absolute right-5 top-0">
-            <Link href={`/songs/${id}/edit`}>
+            <Link href={`/songs/${slug}/edit`}>
               <PencilSquareIcon className="size-6 cursor-pointer" />
             </Link>
           </div>

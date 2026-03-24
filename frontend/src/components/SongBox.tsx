@@ -30,7 +30,7 @@ export function SongBox({ song }: SongBoxProps) {
 
   return (
     <article className="relative rounded-sm outline-1 dark:bg-list-bg outline-[#0000001a] dark:shadow-xs dark:shadow-black hover:shadow-sm active:scale-[0.99] transition">
-      <Link href={`/songs/${song.id}`} className="block w-full py-4 pr-10 pl-4 text-left">
+      <Link href={`/songs/${song.slug}`} className="block w-full py-4 pr-10 pl-4 text-left">
         {song.title ?? '(uten tittel)'}
       </Link>
 
