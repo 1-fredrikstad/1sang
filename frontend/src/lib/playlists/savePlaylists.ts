@@ -1,9 +1,13 @@
 import { PlaylistInputs } from '@/src/types/playlistInputs';
 import { db } from '../db';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function savePlaylist(data: PlaylistInputs) {
   // ID for IndexedDB
-  const localId = crypto.randomUUID();
+  const localId =
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : uuidv4(); // fallback for insecure connections (such as http)
 
   // Calculate expiration (only relevant if public)
   const expires_at = data.isPublic
@@ -14,7 +18,7 @@ export async function savePlaylist(data: PlaylistInputs) {
   await db.playlists.add({
     id: localId,
     server_id: undefined, // Only exists if the playlist is public and synced to backend
-    synced: false,
+    synced: 0,
     title: data.title,
     playlist_password: data.password,
     created_at: new Date().toISOString(),
@@ -82,7 +86,7 @@ export async function savePlaylist(data: PlaylistInputs) {
     // Sync success -> store server_id locally
     await db.playlists.update(localId, {
       server_id: serverId,
-      synced: true,
+      synced: 1,
       updated_at: new Date().toISOString(),
     });
 
