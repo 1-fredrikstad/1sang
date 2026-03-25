@@ -80,6 +80,8 @@ export async function PATCH(req: Request, ctx: Ctx) {
       melody: typeof json.melody === 'string' ? json.melody.trim() || null : null,
       author: typeof json.author === 'string' ? json.author.trim() || null : null,
       lyrics: typeof json.lyrics === 'string' ? json.lyrics.trim() : '',
+      spotify_youtube:
+        typeof json.spotify_youtube === 'string' ? json.spotify_youtube.trim() || null : null,
     };
 
     const { isAdmin } = await checkAdminAccess(token);

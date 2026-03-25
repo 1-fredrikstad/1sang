@@ -74,6 +74,8 @@ export async function POST(req: Request) {
       melody: typeof json.melody === 'string' ? json.melody.trim() || null : null,
       author: typeof json.author === 'string' ? json.author.trim() || null : null,
       lyrics: typeof json.lyrics === 'string' ? json.lyrics.trim() : '',
+      spotify_youtube:
+        typeof json.spotify_youtube === 'string' ? json.spotify_youtube.trim() || null : null,
     };
 
     let isAdmin = false;
