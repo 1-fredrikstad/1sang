@@ -142,6 +142,7 @@ export default function SongForm({
           {lyricsValue.length} / 3000
         </div>
         {/* Tags */}
+        <label>Tags</label>
         {showTags && <TagSelect value={selectedTags} onChange={(tags) => setValue('tags', tags)} />}
 
         {/* Submit */}
