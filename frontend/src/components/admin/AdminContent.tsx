@@ -6,17 +6,19 @@ import { SuggestionsCollapsible } from '../suggestions/SuggestionsCollapsible';
 import { useAuth } from '@/src/context/AuthContext';
 
 export default function AdminContent() {
-  const { data: suggestions, isLoading } = useSongSuggestions();
-  const { user } = useAuth();
+  const { data: suggestions, isLoading: suggestionsLoading } = useSongSuggestions();
+  const { user, isLoading: authLoading } = useAuth();
 
-  if (isLoading) return <Spinner message="Laster inn sangforslag" />;
+  const isLoading = authLoading || suggestionsLoading || !user;
+
+  if (isLoading) return <Spinner message="Laster inn admin" />;
 
   return (
-    <section className="mb-5 flex flex-col justify-between">
+    <main className="mb-5 flex flex-col justify-between max-w-5xl mx-auto">
       <div className="flex flex-row justify-between">
         <div>
           <p>Logget inn som:</p>
-          <b>{user?.name || 'admin'}</b>
+          <b>{user.name || 'admin'}</b>
         </div>
         <LogoutButton />
       </div>
@@ -25,6 +27,6 @@ export default function AdminContent() {
       </article>
 
       <section className="flex flex-col items-center mt-5"></section>
-    </section>
+    </main>
   );
 }

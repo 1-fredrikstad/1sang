@@ -1,12 +1,16 @@
 import { cn } from '@/lib/utils';
 import { SunIcon } from '@heroicons/react/24/solid';
-import { AnimatePresence, motion } from 'framer-motion';
-
+import { useDelayedLoading } from '@/src/hooks/useDelayedLoading';
 interface SpinnerProps extends React.ComponentProps<'svg'> {
   message?: string;
+  isLoading?: boolean;
 }
 
-function Spinner({ className, message, ...props }: SpinnerProps) {
+function Spinner({ className, message, isLoading = true, ...props }: SpinnerProps) {
+  const show = useDelayedLoading(isLoading);
+
+  if (!show) return null;
+
   return (
     <div className="flex flex-col items-center justify-center gap-3 fixed inset-0">
       <SunIcon
@@ -18,20 +22,7 @@ function Spinner({ className, message, ...props }: SpinnerProps) {
         )}
         {...props}
       />
-      <AnimatePresence mode="wait">
-        {message && (
-          <motion.p
-            key={message}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.1 }}
-            className="text-md opacity-90 loading-dots allow-animation"
-          >
-            {message}
-          </motion.p>
-        )}
-      </AnimatePresence>
+      {message && <p className="text-md opacity-90 loading-dots allow-animation">{message}</p>}
     </div>
   );
 }

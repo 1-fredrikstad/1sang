@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { Spinner } from '@/components/ui/spinner';
 
 export default function Admin() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -15,11 +15,8 @@ export default function Admin() {
     }
   }, [user, router]);
 
-  if (isLoading) return <Spinner message="Laster inn" />;
+  if (authLoading || user)
+    return <Spinner message={user ? 'Omdirigerer til admin...' : 'Laster inn...'} />;
 
-  if (!user) {
-    return <LoginPage />;
-  }
-
-  return <Spinner message="Laster adminside" />; // Show spinner while checking or redirecting
+  return <LoginPage />;
 }
