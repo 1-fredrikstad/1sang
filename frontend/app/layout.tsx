@@ -12,6 +12,7 @@ import { cookies } from 'next/headers';
 import { HeaderColor, HEADERCOLOR_OPTIONS } from '@/src/types/theme';
 import { ToastContainer } from 'react-toastify';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import GlobalSync from '@/src/components/global/GlobalSync';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -47,6 +48,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
         >
+          <GlobalSync />
           <TooltipProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem enableColorScheme>
               <HeaderColorProvider initialColor={headerColor}>

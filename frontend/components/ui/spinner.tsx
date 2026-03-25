@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { SunIcon } from '@/src/components/icons/Icons';
+import { SunIcon } from '@heroicons/react/24/solid';
 import { AnimatePresence, motion } from 'framer-motion';
 
 interface SpinnerProps extends React.ComponentProps<'svg'> {

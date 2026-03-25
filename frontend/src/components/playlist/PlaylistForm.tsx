@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { Switch } from '@/components/ui/switch';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import MobileTooltip from '../MobileTooltip';
+import SubmitButton from '../SubmitButton';
 
 type PlaylistFormProps = {
   onSubmit: SubmitHandler<PlaylistInputs>;
@@ -179,12 +180,7 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
       )}
 
       {/* Submit button */}
-      <button
-        type="submit"
-        className="disabled:opacity-50 self-center font-bold py-2 px-4 rounded-sm cursor-pointer bg-secondary"
-      >
-        Opprett spilleliste
-      </button>
+      <SubmitButton submitLabel="Opprett spilleliste" />
     </form>
   );
 }

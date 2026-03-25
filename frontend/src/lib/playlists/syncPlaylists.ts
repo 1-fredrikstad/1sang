@@ -1,19 +1,28 @@
 import { db } from '../db';
 import { createClient } from '../supabase/client';
+import { v4 as uuidv4 } from 'uuid';
 
 const supabase = createClient();
 
 export async function syncLocalToServer() {
+  if (typeof navigator !== 'undefined' && !navigator.onLine) return;
+
   // Get all unsynced public playlists
-  const unsynced = await db.playlists.filter((p) => p.is_public && !p.synced).toArray();
+  const unsynced = await db.playlists
+    .where('synced')
+    .equals(0)
+    .and((p) => p.is_public)
+    .toArray();
 
   for (const playlist of unsynced) {
     try {
-      // Create playlist on server
+      // SUPABASE - Create playlist on server
+
+      // Add expires_at field for Supabase
       const expires_at = playlist.expires_at || new Date(Date.now() + 604800 * 1000).toISOString();
 
-      // Insert playlist
-      const res = await supabase
+      // Create playlist
+      const { data, error } = await supabase
         .from('playlists')
         .insert({
           title: playlist.title,
@@ -21,33 +30,39 @@ export async function syncLocalToServer() {
           is_public: true,
           expires_at,
         })
-        .select();
+        .select()
+        .single();
 
-      if (res.error || !res.data || !res.data[0]?.id)
-        throw res.error || new Error('Failed to create server playlist');
+      if (error || !data?.id) {
+        throw error || new Error('Kunne ikke laget spilleliste på server');
+      }
 
-      const serverId = res.data[0].id;
+      const serverId = data.id;
 
-      // Add playlist items
-      const songsinPlaylist = await db.playlist_items
+      // Get local items
+      const songsInPlaylist = await db.playlist_items
         .where('playlist_id')
         .equals(playlist.id)
         .sortBy('position');
 
-      for (const song of songsinPlaylist) {
-        const addRes = await supabase.from('playlist_items').insert({
-          playlist_id: serverId,
-          song_id: song.song_id,
-          position: song.position,
-        });
+      if (songsInPlaylist.length > 0) {
+        const { error: itemsError } = await supabase.from('playlist_items').insert(
+          songsInPlaylist.map((song) => ({
+            playlist_id: serverId,
+            song_id: song.song_id,
+            position: song.position,
+          }))
+        );
 
-        if (addRes.error) {
-          console.error('Kunne ikke legge til sang:', song.song_id, addRes.error);
-        }
+        if (itemsError) throw itemsError;
       }
 
       // Mark local playlist as synced
-      await db.playlists.update(playlist.id, { server_id: serverId, synced: true });
+      await db.playlists.update(playlist.id, {
+        server_id: serverId,
+        synced: 1,
+        updated_at: new Date().toISOString(),
+      });
     } catch (err) {
       console.error('Sync feilet for lokal spilleliste', playlist.id, err);
       // Keep as unsynced → retry later
@@ -56,58 +71,82 @@ export async function syncLocalToServer() {
 }
 
 export async function syncServerToLocal() {
+  if (typeof navigator !== 'undefined' && !navigator.onLine) return;
+
   // Fetch server playlists
-  const { data, error } = await supabase.from('playlists').select('*').eq('is_public', true);
+  const { data, error } = await supabase
+    .from('playlists')
+    .select('*')
+    .eq('is_public', true)
+    .order('created_at', { ascending: false }); // List starts with newest
   if (error || !data) {
     console.error('Kunne ikke hente spillelister fra server', error);
     return;
   }
 
   for (const p of data) {
-    const exists = await db.playlists.where('server_id').equals(p.id).first();
+    try {
+      // If playlists already exists in IndexedDB - skip
+      const existing = await db.playlists.where('server_id').equals(p.id).first();
 
-    if (exists) {
-      await db.playlists.update(exists.id, {
-        title: p.title,
-        expires_at: p.expires_at,
-        synced: true,
-      });
-    } else {
-      // Add new server playlist to IndexedDB
-      const localId = crypto.randomUUID();
+      let localId = existing?.id;
 
-      await db.playlists.add({
-        id: localId,
-        server_id: p.id,
-        synced: true,
-        title: p.title,
-        playlist_password: '', // Can't store user password
-        created_at: p.created_at,
-        is_public: true,
-        expires_at: p.expires_at,
-      });
+      if (existing) {
+        // update existing
+        await db.playlists.update(existing.id, {
+          title: p.title,
+          expires_at: p.expires_at,
+          synced: 1,
+        });
+      } else {
+        // Add new server playlist to IndexedDB
+        localId =
+          typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+            ? crypto.randomUUID()
+            : uuidv4(); // fallback for insecure connections
 
-      // Optionally fetch playlist items
+        await db.playlists.add({
+          id: localId,
+          server_id: p.id,
+          synced: 1,
+          title: p.title,
+          playlist_password: '',
+          created_at: p.created_at,
+          is_public: true,
+          expires_at: p.expires_at,
+        });
+      }
+
+      // Fetch playlist_items from supabase
       const { data: items, error: itemsError } = await supabase
         .from('playlist_items')
         .select('*')
         .eq('playlist_id', p.id);
 
-      if (items && !itemsError) {
-        for (const item of items) {
-          await db.playlist_items.add({
-            playlist_id: localId,
+      if (itemsError || !items) continue;
+
+      // Write new playlist to IndexedDB
+      await db.playlist_items.where('playlist_id').equals(localId!).delete();
+
+      if (items.length > 0) {
+        await db.playlist_items.bulkAdd(
+          items.map((item) => ({
+            playlist_id: localId!,
             song_id: item.song_id,
             position: item.position,
-          });
-        }
+          }))
+        );
       }
+    } catch (error) {
+      console.error('Server → local sync failed for playlist', p.id, error);
     }
   }
 }
 
 // Sync when user is online
 export async function syncPlaylists() {
+  if (typeof navigator !== 'undefined' && !navigator.onLine) return;
+
   await syncLocalToServer();
   await syncServerToLocal();
 }
