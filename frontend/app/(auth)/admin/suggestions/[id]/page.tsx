@@ -6,7 +6,7 @@ import { db } from '@/src/lib/db';
 import BackButton from '@/src/components/BackButton';
 import Link from 'next/link';
 import { useMounted } from '@/src/hooks/useMounted';
-import { EditIcon } from '@/src/components/icons/Icons';
+import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import { Spinner } from '@/components/ui/spinner';
 import { SuggestionActions } from '@/src/components/suggestions/SuggestionActions';
 
@@ -41,7 +41,7 @@ export default function SuggestionPage() {
       {/* Edit button */}
       <div className="absolute right-5 top-0">
         <Link href={`/admin/suggestions/${id}/edit`} aria-label="Rediger forslag">
-          <EditIcon
+          <PencilSquareIcon
             className="h-6 w-6 text-foreground transition-all duration-200 opacity-70 hover:opacity-100"
             title="Rediger forslag"
           />
