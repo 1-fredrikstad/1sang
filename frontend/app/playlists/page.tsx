@@ -1,10 +1,11 @@
 'use client';
 
-import { usePlaylists } from '@/src/hooks/useData';
-import Spinner from '@/src/components/login/Spinner';
+import { db } from '@/src/lib/db'; // your Dexie db instanceimport Spinner from '@/src/components/login/Spinner';
 import { toast } from 'react-toastify';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePublicPlaylists } from '@/src/hooks/usePublicPlaylists';
+import { useLiveQuery } from 'dexie-react-hooks';
+import Spinner from '@/src/components/login/Spinner';
 
 export default function PlaylistsPage() {
   const {
@@ -13,18 +14,13 @@ export default function PlaylistsPage() {
     error: publicError,
   } = usePublicPlaylists();
 
-  const {
-    data: playlistsFromDexie,
-    isLoading: loadingPrivate,
-    error: privateError,
-  } = usePlaylists({
-    maxAgeMins: 5,
-    syncOnMount: true,
-  });
+  const playlistsFromDexie = useLiveQuery(() => db.playlists.toArray(), []);
+
+  const loadingPrivate = playlistsFromDexie === undefined;
 
   if (loadingPrivate || loadingPublic) return <Spinner />;
 
-  if (privateError || publicError) {
+  if (publicError) {
     toast.error('Feil i å laste spillelister');
     return;
   }
@@ -47,8 +43,8 @@ export default function PlaylistsPage() {
   ];
 
   return (
-    <main className="min-h-screen">
-      <div className="max-w-3xl">
+    <main className="mb-5  flex flex-col justify-center max-w-5xl mx-auto">
+      <div className="max-w-5xl">
         <h1>Spillelister</h1>
         <Tabs defaultValue="public">
           <TabsList className="mt-3">
