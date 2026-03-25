@@ -214,14 +214,15 @@ a[href] .no-underline {
 @layer utilities {
   .collapsible-content {
     overflow: hidden;
+    box-sizing: border-box;
   }
 
   .collapsible-content[data-state='open'] {
-    animation: slideDown 0.4s ease-in-out;
+    animation: slideDown 0.3s ease-out forwards;
   }
 
   .collapsible-content[data-state='closed'] {
-    animation: slideUp 0.4s ease-in-out;
+    animation: slideUp 0.3s ease-out forwards;
   }
 
   @keyframes slideDown {
