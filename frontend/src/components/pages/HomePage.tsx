@@ -35,7 +35,7 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
 
   return (
     <div>
-      <h1 className="mb-5 text-xl font-bold">Alle sanger</h1>
+      <h1 className="mb-5 text-xl">Alle sanger</h1>
       <div className="mb-10 w-fit">
         <TagSelect
           value={selectedTags}
