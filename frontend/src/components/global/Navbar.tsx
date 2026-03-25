@@ -23,7 +23,7 @@ type NavItem = {
 //TODO: links are placeholders, add actual href when the pages are implemented
 const navItems: NavItem[] = [
   { id: 'home', href: '/', Icon: HomeIcon },
-  { id: 'playlists', href: '/playlists', Icon: MusicalNoteIcon },
+  { id: 'songs', href: '/songs', Icon: MusicalNoteIcon },
   { id: 'add', href: '/add', Icon: PlusIcon },
   { id: 'favorites', href: '/favorites', Icon: StarIcon },
   { id: 'settings', href: '/settings', Icon: Cog6ToothIcon },
