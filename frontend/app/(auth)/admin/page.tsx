@@ -16,7 +16,7 @@ export default function Admin() {
   }, [user, router]);
 
   if (authLoading || user)
-    return <Spinner message={user ? 'Omdirigerer til admin...' : 'Laster inn...'} />;
+    return <Spinner message={user ? 'Omdirigerer til admin' : 'Laster inn'} />;
 
   return <LoginPage />;
 }

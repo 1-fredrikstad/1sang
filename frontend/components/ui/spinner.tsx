@@ -6,7 +6,7 @@ interface SpinnerProps extends React.ComponentProps<'svg'> {
   isLoading?: boolean;
 }
 
-function Spinner({ className, message, isLoading = true, ...props }: SpinnerProps) {
+export function Spinner({ className, message, isLoading = true, ...props }: SpinnerProps) {
   const show = useDelayedLoading(isLoading);
 
   if (!show) return null;
@@ -26,5 +26,3 @@ function Spinner({ className, message, isLoading = true, ...props }: SpinnerProp
     </div>
   );
 }
-
-export { Spinner };
