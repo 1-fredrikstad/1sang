@@ -20,7 +20,7 @@ describe('GET /api/users/me', () => {
     expect(res.status).toBe(200);
     expect(body).toEqual({
       ok: true,
-      isUser: false,
+      isAdmin: false,
     });
   });
 
@@ -44,7 +44,7 @@ describe('GET /api/users/me', () => {
     expect(res.status).toBe(200);
     expect(body).toEqual({
       ok: true,
-      isUser: true,
+      isAdmin: true,
     });
   });
 

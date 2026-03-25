@@ -2,7 +2,7 @@ import { describe, test, expect, vi } from 'vitest';
 import { checkAdminAccess } from '../../../lib/supabase/isAdmin';
 
 describe('checkAdminAccess', () => {
-  test('returns admin true when user is in users', async () => {
+  test('returns admin true when user has role of admin', async () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.no';
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'pubkey';
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'service';
@@ -20,7 +20,7 @@ describe('checkAdminAccess', () => {
 
     const result = await checkAdminAccess('test-token');
 
-    expect(result.isUser).toBe(true);
+    expect(result.role).toBe('admin');
     expect(result.userId).toBe('user-1');
   });
 });
