@@ -15,6 +15,7 @@ export function SearchField({ value, onChange }: SearchFieldProps) {
             bg-white dark:bg-neutral-900
             px-3 py-2 shadow-sm
             focus-within:border-neutral-400 dark:focus-within:border-neutral-500
+            hover:border-neutral-400 dark:hover:border-neutral-500
         "
       >
         <svg
