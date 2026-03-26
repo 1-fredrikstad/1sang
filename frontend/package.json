@@ -10,7 +10,9 @@
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
     "prepare": "husky",
-    "test": "vitest"
+    "test": "vitest",
+    "cypress": "cypress open",
+    "test:e2e": "start-server-and-test dev http://localhost:3000 cypress"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

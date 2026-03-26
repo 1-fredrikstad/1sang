@@ -1,6 +1,6 @@
 describe('Theme toggle', () => {
   it('should show the correct theme and toggle theme and labels', () => {
-    cy.visit('http://localhost:3000/settings', {
+    cy.visit('/settings', {
       onBeforeLoad(win: Window) {
         win.localStorage.setItem('theme', 'dark');
       },
@@ -26,7 +26,7 @@ describe('Theme toggle', () => {
 
 describe('Theme persistence', () => {
   it('keeps theme after reload', () => {
-    cy.visit('http://localhost:3000/settings', {
+    cy.visit('/settings', {
       onBeforeLoad(win) {
         win.localStorage.setItem('theme', 'dark');
       },
