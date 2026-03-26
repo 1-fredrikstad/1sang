@@ -1,7 +1,5 @@
 'use client';
 
-// TODO: Comment in code when API logic is merged
-
 import { getFieldValidation } from '@/src/lib/validation/songSuggestionSchema';
 import { useEffect } from 'react';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
