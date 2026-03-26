@@ -29,7 +29,7 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   const filteredSongs = useMemo(() => {
     if (selectedTags.length === 0) return songs;
     return songs.filter((song: Song) => matchingSongIds.includes(song.id));
-  }, [songs, matchingSongIds]);
+  }, [songs, matchingSongIds, selectedTags.length]);
 
   if (error) return <div>Error: {error.message}</div>;
 
