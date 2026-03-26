@@ -32,7 +32,7 @@ export default function PlaylistSettingsMenu({
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-full bg-list-bg">
+      <DropdownMenuContent align="end" className="w-full dark:bg-list-bg">
         <DropdownMenuGroup>
           <DropdownMenuLabel>Om</DropdownMenuLabel>
           {playlist.created_at && (
