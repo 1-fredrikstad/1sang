@@ -23,6 +23,12 @@ export default function SongPage() {
     );
   }
 
+  const getLinkPlatform = (url: string) => {
+    if (url.includes('spotify.com')) return 'Spotify';
+    if (url.includes('youtube.com') || url.includes('youtu.be')) return 'YouTube';
+    return 'Link';
+  };
+
   return (
     <>
       <div className="mx-auto w-full max-w-300 px-4 flex justify-end mt-4">
@@ -40,15 +46,24 @@ export default function SongPage() {
             </Link>
           </div>
         )}
-
-        <h1 className="mt-15 mb-0 text-3xl font-semibold">{song.title}</h1>
-
+        <h1 className="mt-15 text-3xl font-semibold mb-1">{song.title}</h1>
         {song.melody && <p className="opacity-60 mt-1">Melodi: {song.melody}</p>}
-
+        {song.spotify_youtube && (
+          <p className="opacity-60 mt-1">
+            Link:
+            <a
+              href={song.spotify_youtube}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline font-semibold"
+            >
+              {getLinkPlatform(song.spotify_youtube)}
+            </a>
+          </p>
+        )}
         <pre className="mt-8 flex justify-center text-center whitespace-pre-wrap">
           {song.lyrics || 'Ingen sangtekst'}
         </pre>
-
         {song.author && <p className="opacity-60 mt-1">Skrevet av: {song.author}</p>}
       </main>
     </>
