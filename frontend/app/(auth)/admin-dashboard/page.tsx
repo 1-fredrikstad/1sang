@@ -6,11 +6,16 @@ export default async function AdminDashboard() {
   const { role, isUser } = await getCurrentUserRole();
 
   if (!isUser) {
-    redirect('/admin');
+    redirect('/admin?error=invalid-user');
   }
 
   if (role !== 'admin' && role !== 'superadmin') {
-    return <div className="text-center mt-15 text-red-500">Ingen tilgang</div>;
+    return (
+      <>
+        <p className="mb-2">Ingen tilgang</p>
+        <p className="text-sm opacity-70">Logg ut og prøv med en annen bruker.</p>
+      </>
+    );
   }
 
   return <AdminContent />;

@@ -9,9 +9,17 @@ export default function AdminContent() {
   const { data: suggestions, isLoading: suggestionsLoading } = useSongSuggestions();
   const { user, isLoading: authLoading } = useAuth();
 
-  const isLoading = authLoading || suggestionsLoading || !user;
+  if (authLoading || suggestionsLoading) {
+    return <Spinner message="Laster inn admin" />;
+  }
 
-  if (isLoading) return <Spinner message="Laster inn admin" />;
+  if (!user) {
+    return (
+      <div className="text-center mt-10">
+        <p>Du er ikke logget inn</p>
+      </div>
+    );
+  }
 
   return (
     <main className="mb-5 flex flex-col justify-between max-w-5xl mx-auto">
