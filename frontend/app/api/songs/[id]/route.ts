@@ -82,6 +82,10 @@ export async function PATCH(req: Request, ctx: Ctx) {
       lyrics: typeof json.lyrics === 'string' ? json.lyrics.trim() : '',
     };
 
+    const tags = Array.isArray(json.tags)
+      ? json.tags.filter((tagId: unknown): tagId is string => typeof tagId === 'string')
+      : [];
+
     const { isAdmin } = await checkAdminAccess(token);
 
     if (!isAdmin) {
@@ -114,6 +118,57 @@ export async function PATCH(req: Request, ctx: Ctx) {
 
     if (!Array.isArray(updateBody) || updateBody.length === 0) {
       return NextResponse.json({ ok: false, error: 'Ingen rad ble oppdatert' }, { status: 404 });
+    }
+
+    // 2. Fjern gamle tags sangen har for å legge på nye
+    const deleteTagsRes = await fetch(
+      `${supabaseUrl}/rest/v1/song_tags?song_id=eq.${encodeURIComponent(id)}`,
+      {
+        method: 'DELETE',
+        headers: {
+          apikey: serviceRoleKey,
+          Authorization: `Bearer ${serviceRoleKey}`,
+          Accept: 'application/json',
+        },
+      }
+    );
+
+    const deleteTagsBody = await deleteTagsRes.json().catch(() => null);
+
+    if (!deleteTagsRes.ok) {
+      return NextResponse.json(
+        { ok: false, error: deleteTagsBody ?? 'Kunne ikke slette gamle tag-relasjoner' },
+        { status: deleteTagsRes.status }
+      );
+    }
+
+    // 3. Legg inn nye tag-relasjoner
+    if (tags.length > 0) {
+      const tagRows = tags.map((tagId: string) => ({
+        song_id: id,
+        tag_id: tagId,
+      }));
+
+      const insertTagsRes = await fetch(`${supabaseUrl}/rest/v1/song_tags`, {
+        method: 'POST',
+        headers: {
+          apikey: serviceRoleKey,
+          Authorization: `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Prefer: 'return=representation',
+        },
+        body: JSON.stringify(tagRows),
+      });
+
+      const insertTagsBody = await insertTagsRes.json().catch(() => null);
+
+      if (!insertTagsRes.ok) {
+        return NextResponse.json(
+          { ok: false, error: insertTagsBody ?? 'Kunne ikke legge til tag-relasjoner' },
+          { status: insertTagsRes.status }
+        );
+      }
     }
 
     return NextResponse.json({ ok: true, data: updateBody[0] }, { status: 200 });
