@@ -45,18 +45,12 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
 
   if (error) return <div>Error: {error.message}</div>;
 
-  /*
-  const filteredSongs =
-    selectedTags.length === 0
-      ? songs
-      : songs.filter((song: Song) => matchingSongIds.includes(song.id));
-
-  if (error) return <div>Error: {error.message}</div>;
-*/
-
   return (
     <div>
       <h1 className="mb-5 text-xl">Alle sanger</h1>
+
+      <SearchField value={searchQuery} onChange={setSearchQuery} />
+
       <div className="mb-10 w-fit">
         <TagSelect
           value={selectedTags}
@@ -64,8 +58,6 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
           triggerClassName="inline-flex w-fit min-w-[120px] max-w-[400px] justify-between"
         />
       </div>
-
-      <SearchField value={searchQuery} onChange={setSearchQuery} />
 
       {isLoading && <p>Synkroniserer med supabase...</p>}
 
