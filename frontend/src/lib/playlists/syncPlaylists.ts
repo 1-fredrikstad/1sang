@@ -1,4 +1,4 @@
-import { db } from '../db';
+import { db } from '@/src/lib/db';
 import { createClient } from '../supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 
