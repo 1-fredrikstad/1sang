@@ -26,10 +26,10 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
       return [...new Set(relations.map((relation) => relation.song_id))];
     }, [selectedTags]) ?? [];
 
-  const filteredSongs = useMemo(() => {
-    if (selectedTags.length === 0) return songs;
-    return songs.filter((song: Song) => matchingSongIds.includes(song.id));
-  }, [songs, matchingSongIds, selectedTags.length]);
+  const filteredSongs =
+    selectedTags.length === 0
+      ? songs
+      : songs.filter((song: Song) => matchingSongIds.includes(song.id));
 
   if (error) return <div>Error: {error.message}</div>;
 
