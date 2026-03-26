@@ -24,7 +24,7 @@ export async function getCurrentUserRole() {
 
 export async function requireAdmin() {
   const { role } = await getCurrentUserRole();
-  if (role !== 'admin' && role !== 'superadmin') throw new Error('Only admin has access');
+  if (role !== 'admin' && role !== 'superuser') throw new Error('Only admin has access');
 
   return true;
 }

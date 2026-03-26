@@ -14,7 +14,7 @@ export default function Admin() {
 
   useEffect(() => {
     if (user) {
-      router.replace('/admin-dashboard');
+      router.replace('/admin/dashboard');
     }
   }, [user, router]);
 

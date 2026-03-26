@@ -61,7 +61,7 @@ class SyncService {
           const localRows = (await table.toArray()) as RowWithId[];
 
           const idsToDelete = localRows
-            .filter((row) => !remoteIds.has(row.id))
+            .filter((row) => row.id != null && !remoteIds.has(row.id))
             .map((row) => row.id);
 
           if (idsToDelete.length > 0) {
