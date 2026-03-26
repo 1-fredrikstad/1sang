@@ -4,6 +4,7 @@ import SongForm from '@/src/components/SongForm';
 import { Suspense } from 'react';
 import { useAuth } from '@/src/context/AuthContext';
 import { createClient } from '@/src/lib/supabase/client';
+import { syncService } from '@/src/lib/syncService';
 
 export default function AddSongPage() {
   const { isAdmin, isLoading } = useAuth();
@@ -23,7 +24,13 @@ export default function AddSongPage() {
         heading={heading}
         submitLabel={submitLabel}
         toastSuccessMessage={toastMessage}
+        showTags={isAdmin}
         onSubmit={async (data) => {
+          const payload = {
+            ...data,
+            tags: [...(data.tags ?? [])],
+          };
+
           const {
             data: { session },
           } = await supabase.auth.getSession();
@@ -39,13 +46,15 @@ export default function AddSongPage() {
           const res = await fetch('/api/songs', {
             method: 'POST',
             headers,
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
           });
-
+          await syncService.syncTable('songs', { forceFresh: true });
+          await syncService.syncTable('song_tags', { forceFresh: true });
+          await syncService.syncTable('tags', { forceFresh: true });
           const body = await res.json().catch(() => null);
 
           if (!res.ok || body?.error) {
-            throw new Error(body?.error ?? 'Kunne ikke legge til sang');
+            throw new Error('Kunne ikke legge til sang');
           }
         }}
       />

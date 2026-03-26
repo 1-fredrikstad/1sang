@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { Song, db } from '@/src/lib/db';
-import { StarIcon } from '@heroicons/react/24/solid';
+import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+import { StarIcon as StarIconOutline } from '@heroicons/react/24/outline';
 import { useLiveQuery } from 'dexie-react-hooks';
 
 type SongBoxProps = {
@@ -39,9 +40,11 @@ export function SongBox({ song }: SongBoxProps) {
         aria-label={starred ? 'Fjern fra favoritter' : 'Legg til i favoritter'}
         className="absolute right-2 top-1/2 -translate-y-1/2"
       >
-        <StarIcon
-          className={`h-6 w-6 transition cursor-pointer ${starred ? 'text-yellow-200' : 'text-foreground'}`}
-        />
+        {starred ? (
+          <StarIconSolid className="h-6 w-6 dark:text-yellow-200 text-yellow-500 transition cursor-pointer" />
+        ) : (
+          <StarIconOutline className="h-6 w-6 text-foreground transition cursor-pointer" />
+        )}
       </button>
     </article>
   );
