@@ -27,7 +27,7 @@ describe('BackButton', () => {
     render(<BackButton />);
     const Button = screen.getByRole('button');
     expect(Button).toBeInTheDocument();
-    expect(Button).toContainElement(screen.getByRole('img', { name: 'Tilbake' })); // The svg has role='img' and aria-label='Tilbake'
+    expect(screen.getByLabelText('Tilbake')).toBeInTheDocument();
   });
 
   test('calls router.back() when not on /admin', () => {
