@@ -4,6 +4,7 @@ import { useState, useContext, useEffect, createContext } from 'react';
 import { setCookie, deleteCookie } from 'cookies-next/client';
 import type { HeaderColor } from '../types/theme';
 import { useMounted } from '../hooks/useMounted';
+import { useTheme } from 'next-themes';
 
 type Context = {
   headerColor: HeaderColor | undefined;
@@ -21,11 +22,11 @@ export function HeaderColorProvider({
 }) {
   const mounted = useMounted();
   const [headerOverride, setHeaderOverride] = useState<HeaderColor | undefined>(() => initialColor);
+  const { resolvedTheme } = useTheme();
 
   // Derived header color
-  // const headerColor = headerOverride ?? (resolvedTheme === 'dark' ? 'dark_gray' : 'light_yellow');
-
-  const headerColor = headerOverride ?? initialColor;
+  const headerColor =
+    headerOverride ?? initialColor ?? (resolvedTheme === 'dark' ? 'dark_gray' : 'light_yellow');
 
   // --- Update DOM ---
   useEffect(() => {

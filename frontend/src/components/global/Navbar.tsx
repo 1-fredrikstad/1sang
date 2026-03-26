@@ -22,7 +22,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { id: 'home', href: '/', Icon: HomeIcon },
-  { id: 'songs', href: '/songs', Icon: MusicalNoteIcon },
+  { id: 'playlists', href: '/playlists', Icon: MusicalNoteIcon },
   { id: 'add', href: '/add', Icon: PlusIcon },
   { id: 'favorites', href: '/favorites', Icon: StarIcon },
   { id: 'settings', href: '/settings', Icon: Cog6ToothIcon },

@@ -12,6 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import MobileTooltip from '../MobileTooltip';
 import SubmitButton from '../SubmitButton';
+import { useWatch } from 'react-hook-form';
 
 type PlaylistFormProps = {
   onSubmit: SubmitHandler<PlaylistInputs>;
@@ -22,7 +23,7 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     reset,
     formState: { errors },
   } = useForm<PlaylistInputs>({
@@ -39,11 +40,9 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
   const TOAST_ID = 'playlist-toast';
 
   // Watch songsInPlaylist to get instant UI updates
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const songsInPlaylist = watch('songsInPlaylist');
+  const songsInPlaylist = useWatch({ name: 'songsInPlaylist', control });
   // Watch value of public
-  const isPublic = watch('isPublic');
-
+  const isPublic = useWatch({ name: 'isPublic', control });
   const {
     data: songs,
     isLoading,

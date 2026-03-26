@@ -1,6 +1,6 @@
 describe('HeaderColorForm', () => {
   it('renders options and allows selecting a header color', () => {
-    cy.visit('http://localhost:3000/settings');
+    cy.visit('/settings');
 
     // Wait for component to mount - use title to indicate
     cy.contains('Fargetema', { timeout: 10000 }).should('be.visible');
