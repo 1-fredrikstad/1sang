@@ -1,11 +1,11 @@
 'use client';
 
 import { useAuth } from '@/src/context/AuthContext';
-import { SubmitHandler } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import PlaylistForm from '@/src/components/playlist/PlaylistForm';
 import { PlaylistInputs } from '@/src/types/playlistInputs';
 import { savePlaylist } from '@/src/lib/playlists/savePlaylists';
+import { SavePlaylistResult } from '@/src/types/savePlaylists';
 
 export default function MakePlaylistPage() {
   const { isLoading } = useAuth();
@@ -14,25 +14,22 @@ export default function MakePlaylistPage() {
     return <p className="text-center mt-10">Laster...</p>;
   }
 
-  const handleFormSubmit: SubmitHandler<PlaylistInputs> = async (data) => {
-    try {
-      // Prevent creating empty playlists
-      if (!data.songsInPlaylist?.length) throw new Error('Velg minst én sang');
+  const handleFormSubmit = async (data: PlaylistInputs): Promise<SavePlaylistResult> => {
+    // Prevent creating empty playlists
+    if (!data.songsInPlaylist?.length) throw new Error('Velg minst én sang');
 
-      const result = await savePlaylist(data);
+    const result = await savePlaylist(data);
 
-      // Success message if playlist was made successfully, else warning if not synced correctly
-      if (result.type === 'public') {
-        toast.success('Offentlig spilleliste opprettet!');
-      } else if (result.type === 'pending') {
-        toast.warning('Lagret lokalt – vil synkroniseres når du er online');
-      } else {
-        toast.success('Privat spilleliste lagret lokalt!');
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error(err instanceof Error ? err.message : 'Noe gikk galt');
+    // Success message if playlist was made successfully, else warning if not synced correctly
+    if (result.type === 'public') {
+      toast.success('Offentlig spilleliste opprettet!');
+    } else if (result.type === 'pending') {
+      toast.warning('Lagret lokalt – vil synkroniseres når du er online');
+    } else {
+      toast.success('Privat spilleliste lagret lokalt!');
     }
+
+    return result;
   };
 
   return (

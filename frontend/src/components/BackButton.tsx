@@ -18,7 +18,7 @@ export default function BackButton() {
   return (
     <button id="arrow-back" onClick={handleBack} className="hover:cursor-pointer">
       <ArrowLeftIcon className="size-6" />
-      <span className="hidden md:block">Tilbake</span>
+      {/* <span className="hidden md:block">Tilbake</span> */}
     </button>
   );
 }
