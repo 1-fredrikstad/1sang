@@ -17,7 +17,8 @@ export async function GET(req: Request) {
     const id = url.searchParams.get('id');
 
     let target =
-      `${supabaseUrl}/rest/v1/playlists` + `?select=id,title,created_at,updated_at,version`;
+      `${supabaseUrl}/rest/v1/playlists` +
+      `?select=id,title,created_at,updated_at,version,is_public,expires_at`;
 
     if (id) {
       target += `&id=eq.${encodeURIComponent(id)}`;
