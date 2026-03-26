@@ -121,3 +121,29 @@ frontend/
 │   ├── hooks/           # Custom React hooks for shared logic and state handling
 │   └── lib/             # Utility functions and external service setup (Supabase)
 ```
+
+## Testing
+
+Go into frontend folder:
+
+```bash
+cd fronted
+```
+
+### How to test (Vitest)
+
+Run in terminal:
+
+```bash
+pnpm test
+```
+
+### How to test (E2E - Cypress)
+
+Run in terminal:
+
+```bash
+pnpm test:e2e
+```
+
+This should start a development server: `http://localhost:3000/`, and open cypress. Here, you choose "E2E Testing" and, then, the test you want to run, e.g. themetoggle-cy.ts.
