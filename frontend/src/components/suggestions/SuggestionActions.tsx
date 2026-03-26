@@ -66,14 +66,18 @@ export function SuggestionActions({ id }: Props) {
         variant="outline"
         onClick={approve}
         disabled={loading !== null}
-        className="hover:text-green-500"
+        className="hover:text-green-500 cursor-pointer"
       >
         Godkjenn
       </Button>
 
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="outline" disabled={loading !== null} className="hover:text-red-500">
+          <Button
+            variant="outline"
+            disabled={loading !== null}
+            className="hover:text-red-500 cursor-pointer"
+          >
             Avvis
           </Button>
         </AlertDialogTrigger>
