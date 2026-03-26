@@ -19,9 +19,10 @@ type Tag = {
 type TagSelectProps = {
   value: Tag[];
   onChange: (tags: Tag[]) => void;
+  triggerClassName?: string;
 };
 
-export default function TagSelect({ value, onChange }: TagSelectProps) {
+export default function TagSelect({ value, onChange, triggerClassName }: TagSelectProps) {
   const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {
@@ -38,6 +39,7 @@ export default function TagSelect({ value, onChange }: TagSelectProps) {
   }, []);
 
   const selectedIds = useMemo(() => value.map((t) => t.id), [value]);
+  const [open, setOpen] = useState(false);
 
   const toggleTag = (tag: Tag) => {
     const isSelected = selectedIds.includes(tag.id);
@@ -54,16 +56,20 @@ export default function TagSelect({ value, onChange }: TagSelectProps) {
 
   return (
     <div className="mb-5">
-      <label className="block mb-2">Tags</label>
-
-      <DropdownMenu>
+      <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="w-full justify-between">
+          <Button variant="outline" className={triggerClassName ?? 'w-full justify-between'}>
             {selectedTagNames.length > 0 ? selectedTagNames.join(', ') : 'Velg tags'}
           </Button>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent className="w-56">
+          <button
+            onClick={() => setOpen(false)}
+            className="absolute right-2 top-2 text-gray-400 hover:text-black"
+          >
+            ✕
+          </button>
           <DropdownMenuGroup>
             <DropdownMenuLabel>Tags</DropdownMenuLabel>
 

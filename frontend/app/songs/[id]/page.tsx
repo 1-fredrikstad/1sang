@@ -13,6 +13,14 @@ export default function SongPage() {
   const { id } = useParams<{ id: string }>();
   const { isAdmin } = useAuth();
 
+  const tags = useLiveQuery(async () => {
+    if (!id) return [];
+    const relations = await db.song_tags.where('song_id').equals(id).toArray();
+    const tagIds = relations.map((relation) => relation.tag_id);
+
+    return await db.tags.where('id').anyOf(tagIds).toArray();
+  });
+
   const song = useLiveQuery<Song | undefined>(() => (id ? db.songs.get(id) : undefined), [id]);
 
   if (!song) {
@@ -42,6 +50,10 @@ export default function SongPage() {
         )}
 
         <h1 className="mt-15 mb-0 text-3xl font-semibold">{song.title}</h1>
+
+        <div className="opacity-60 mt-1">
+          {tags && tags.length > 0 && <p>Tags: {tags.map((tag) => tag.name).join(', ')}</p>}
+        </div>
 
         {song.melody && <p className="opacity-60 mt-1">Melodi: {song.melody}</p>}
 
