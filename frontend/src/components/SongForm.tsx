@@ -1,27 +1,31 @@
 'use client';
 
-// TODO: Comment in code when API logic is merged
-
-import {
-  songSuggestionSchema,
-  getFieldValidation,
-} from '@/src/lib/validation/songSuggestionSchema';
+import { getFieldValidation } from '@/src/lib/validation/songSuggestionSchema';
 import { useEffect } from 'react';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import TagSelect from './TagSelect';
+
+type Tag = {
+  id: string;
+  name: string;
+};
+import SubmitButton from './SubmitButton';
 
 type Inputs = {
   title: string;
   melody: string;
   author: string;
   lyrics: string;
+  tags?: Tag[];
 };
 
 type SongFormProps = {
   heading: string;
   submitLabel: string;
   initialValues?: Partial<Inputs>;
-  onSubmit: (data: Inputs) => Promise<void> | void;
+  showTags?: boolean;
+  onSubmit: (data: Omit<Inputs, 'tags'> & { tags?: string[] }) => Promise<void> | void;
   toastSuccessMessage?: string;
 };
 
@@ -29,6 +33,7 @@ export default function SongForm({
   heading,
   submitLabel,
   initialValues,
+  showTags,
   onSubmit,
   toastSuccessMessage = 'Lagret',
 }: SongFormProps) {
@@ -38,12 +43,14 @@ export default function SongForm({
     formState: { errors },
     control,
     reset,
+    setValue,
   } = useForm<Inputs>({
     defaultValues: {
       title: '',
       melody: '',
       author: '',
       lyrics: '',
+      tags: [],
       ...initialValues,
     },
   });
@@ -55,39 +62,29 @@ export default function SongForm({
         melody: initialValues.melody ?? '',
         author: initialValues.author ?? '',
         lyrics: initialValues.lyrics ?? '',
+        tags: initialValues.tags ?? [],
       });
     }
   }, [initialValues, reset]);
 
-  // const [isSubmitting, setIsSubmitting] = useState(false);
   const lyricsValue = useWatch({ control, name: 'lyrics' }) || '';
+  const selectedTags = useWatch({ control, name: 'tags' }) ?? [];
   // const notify = () => toast('Sang lagt inn');
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
-      await onSubmit(data);
-      // notify();
+      const payload = {
+        ...data,
+        tags: selectedTags.map((t) => t.id),
+      };
+
+      await onSubmit(payload);
+
       toast.success(toastSuccessMessage);
-
-      // setIsSubmitting(true);
-      //   const res = await fetch('/api/songs', {
-      //     method: 'POST',
-      //     headers: { 'Content-Type': 'application/json' },
-      //     body: JSON.stringify(data),
-      //   });
-      //   if (res.ok) alert('Sang lagt til');
-
-      // if(!res.ok) {
-      // const errorData = await res.json();
-      // throw new Error(errorData.message || 'Serverfeil');
-      //}
     } catch (error) {
       console.error(error);
       toast.error(error instanceof Error ? error.message : 'Noe gikk galt');
     }
-    // finally {
-    //     setIsSubmitting(false)
-    // }
   };
 
   return (
@@ -100,38 +97,42 @@ export default function SongForm({
 
         {/* Title */}
         <span>
-          <label>Tittel*</label>
+          <label htmlFor="title">Tittel*</label>
           {errors.title && (
             <span className="text-red-500 italic ml-2">{errors.title.message}</span>
           )}{' '}
         </span>
         <input
+          id="title"
           {...register('title', getFieldValidation('title'))}
           className=" mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
         ></input>
 
         {/* Author */}
-        <label>Låtskriver</label>
+        <label htmlFor="author">Låtskriver</label>
         <input
+          id="author"
           {...register('author', getFieldValidation('author'))}
           className="mb-5 p-1 outline outline-[#E6E4E2]  rounded-xs"
         />
 
         {/* Melody */}
-        <label>Melodi</label>
+        <label htmlFor="melody">Melodi</label>
         <input
+          id="melody"
           {...register('melody', getFieldValidation('melody'))}
           className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
         ></input>
 
         {/* Lyrics */}
         <span>
-          <label>Sangtekst*</label>
+          <label htmlFor="lyrics">Sangtekst*</label>
           {errors.lyrics && (
             <span className="text-red-500 italic ml-2">{errors.lyrics.message}</span>
           )}
         </span>
         <textarea
+          id="lyrics"
           {...register('lyrics', getFieldValidation('lyrics'))}
           className="p-1 outline outline-[#E6E4E2] rounded-sm h-70 resize-y text-left"
         ></textarea>
@@ -142,15 +143,12 @@ export default function SongForm({
         >
           {lyricsValue.length} / 3000
         </div>
+        {/* Tags */}
+        <label>Tags</label>
+        {showTags && <TagSelect value={selectedTags} onChange={(tags) => setValue('tags', tags)} />}
 
         {/* Submit */}
-        <button
-          type="submit"
-          // disabled={isSubmitting}
-          className="disabled:opacity-50 self-center font-bold py-2 px-4 rounded-xs cursor-pointer"
-        >
-          {submitLabel}
-        </button>
+        <SubmitButton submitLabel={submitLabel} />
       </form>
     </>
   );

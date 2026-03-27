@@ -18,6 +18,18 @@ export default function SongPage() {
     [slug]
   );
 
+  const tags = useLiveQuery(async () => {
+    if (!song?.id) return [];
+
+    const relations = await db.song_tags.where('song_id').equals(song.id).toArray();
+
+    const tagIds = relations.map((relation) => relation.tag_id);
+
+    if (tagIds.length === 0) return [];
+
+    return await db.tags.where('id').anyOf(tagIds).toArray();
+  }, [song?.id]);
+
   if (!song) {
     return (
       <div className="flex justify-center items-center min-h-screen text-center">
@@ -45,6 +57,10 @@ export default function SongPage() {
         )}
 
         <h1 className="mt-15 mb-0 text-3xl font-semibold">{song.title}</h1>
+
+        <div className="opacity-60 mt-1">
+          {tags && tags.length > 0 && <p>Tags: {tags.map((tag) => tag.name).join(', ')}</p>}
+        </div>
 
         {song.melody && <p className="opacity-60 mt-1">Melodi: {song.melody}</p>}
 
