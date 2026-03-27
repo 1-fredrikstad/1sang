@@ -6,19 +6,24 @@ import { PlaylistInputs } from '@/src/types/playlistInputs';
 import SongList from './SongList';
 import { useSongs } from '@/src/hooks/useData';
 import { Song } from '@/src/lib/db';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { Switch } from '@/components/ui/switch';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import MobileTooltip from '../MobileTooltip';
-import SubmitButton from '../SubmitButton';
 import { useWatch } from 'react-hook-form';
 
 type PlaylistFormProps = {
   onSubmit: SubmitHandler<PlaylistInputs>;
+  initialValues?: PlaylistInputs;
+  mode?: 'create' | 'edit';
 };
 
-export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
+export default function PlaylistForm({
+  onSubmit,
+  initialValues,
+  mode = 'create',
+}: PlaylistFormProps) {
   const {
     register,
     handleSubmit,
@@ -27,16 +32,22 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
     reset,
     formState: { errors },
   } = useForm<PlaylistInputs>({
-    defaultValues: {
+    defaultValues: initialValues ?? {
       title: '',
       password: '',
+      newPassword: '',
       songsInPlaylist: [],
-      duration: 604800, // Default value for public playlists
+      duration: 604800,
       isPublic: false,
     },
   });
 
-  // Track toasts to prevent multiple toasts to show up at the same time
+  useEffect(() => {
+    if (initialValues) {
+      reset(initialValues);
+    }
+  }, [initialValues, reset]);
+
   const TOAST_ID = 'playlist-toast';
 
   // Watch songsInPlaylist to get instant UI updates
@@ -52,13 +63,11 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
     syncOnMount: true,
   });
 
-  // Check if song is added to songsInPlaylist
   const isSongAdded = useCallback(
     (id: string) => songsInPlaylist.some((s) => s.id === id),
     [songsInPlaylist]
   );
 
-  // Add/remove song from songsInPlaylist
   const toggleSong = useCallback(
     (song: Song) => {
       const exists = songsInPlaylist.some((s) => s.id === song.id);
@@ -79,6 +88,7 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
         }
       } else {
         setValue('songsInPlaylist', [...songsInPlaylist, song]);
+
         if (toast.isActive(TOAST_ID)) {
           toast.update(TOAST_ID, {
             render: 'Sang lagt til',
@@ -94,7 +104,10 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
 
   const handleFormSubmit: SubmitHandler<PlaylistInputs> = async (data) => {
     await onSubmit(data);
-    reset();
+
+    if (mode === 'create') {
+      reset();
+    }
   };
 
   return (
@@ -102,36 +115,51 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
       onSubmit={handleSubmit(handleFormSubmit)}
       className="flex flex-col m-8 mb-4 gap-1 max-w-2xl md:mx-auto"
     >
-      <h1 className="text-xl mb-2">Lag ny spilleliste</h1>
+      <h1 className="text-xl mb-2">
+        {mode === 'edit' ? 'Rediger spilleliste' : 'Lag ny spilleliste'}
+      </h1>
 
-      {/* Title */}
       <span>
         <label htmlFor="title">Tittel*</label>
-        {errors.title && (
-          <span className="text-red-500 italic ml-2">{errors.title.message}</span>
-        )}{' '}
+        {errors.title && <span className="text-red-500 italic ml-2">{errors.title.message}</span>}
       </span>
       <input
         id="title"
+        type="text"
         {...register('title', getPlaylistFieldValidation('title'))}
         className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
-        type="text"
-      ></input>
+      />
 
-      {/* Password */}
-      <span>
-        <label htmlFor="password">Passord* (NB! Husk for å redigere/slette spillelister)</label>
-        {errors.password && (
-          <span className="text-red-500 italic ml-2">{errors.password.message}</span>
-        )}
-      </span>
-      <input
-        id="password"
-        {...register('password', getPlaylistFieldValidation('password'))}
-        className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
-      ></input>
+      {mode === 'create' ? (
+        <>
+          <span>
+            <label htmlFor="password">Passord* (NB! Husk for å redigere/slette spillelister)</label>
+            {errors.password && (
+              <span className="text-red-500 italic ml-2">{errors.password.message}</span>
+            )}
+          </span>
+          <input
+            id="password"
+            {...register('password', getPlaylistFieldValidation('password'))}
+            className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
+          />
+        </>
+      ) : (
+        <>
+          <span>
+            <label htmlFor="newPassword">Nytt passord (valgfritt)</label>
+            {errors.newPassword && (
+              <span className="text-red-500 italic ml-2">{errors.newPassword.message}</span>
+            )}
+          </span>
+          <input
+            id="newPassword"
+            {...register('newPassword')}
+            className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
+          />
+        </>
+      )}
 
-      {/* List of songs to add to playlist */}
       <SongList
         songs={songs}
         isLoading={isLoading}
@@ -140,15 +168,13 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
         isAdded={isSongAdded}
       />
 
-      {/* Public playlist or not */}
       <span className="inline-flex items-center gap-2 mb-6">
         <p>Offentlig spilleliste:</p>
         <Switch checked={isPublic} onCheckedChange={(value) => setValue('isPublic', value)} />
       </span>
 
-      {isPublic && (
+      {mode === 'create' && isPublic && (
         <section className="mb-4">
-          {/* Dutation - how long the playlist will exist if public */}
           <label htmlFor="duration" className="block mb-2">
             <span className="flex items-center gap-2">
               Varighet
@@ -178,8 +204,12 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
         </section>
       )}
 
-      {/* Submit button */}
-      <SubmitButton submitLabel="Opprett spilleliste" />
+      <button
+        type="submit"
+        className="disabled:opacity-50 self-center font-bold py-2 px-4 rounded-sm cursor-pointer bg-secondary"
+      >
+        {mode === 'edit' ? 'Lagre endringer' : 'Opprett spilleliste'}
+      </button>
     </form>
   );
 }
