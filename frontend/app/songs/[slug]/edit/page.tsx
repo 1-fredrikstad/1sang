@@ -86,11 +86,14 @@ export default function EditSongPage() {
       throw new Error(typeof body?.error === 'string' ? body.error : 'Kunne ikke oppdatere sang');
     }
 
+    const updatedSong = body?.data;
+
     await db.songs.update(song.id, {
       title: data.title,
       melody: data.melody || undefined,
       author: data.author || undefined,
       lyrics: data.lyrics,
+      slug: updatedSong?.slug ?? song.slug,
     });
 
     await db.song_tags.where('song_id').equals(song?.id).delete();
@@ -104,7 +107,7 @@ export default function EditSongPage() {
       );
     }
 
-    router.push(`/songs/${song.slug}`);
+    router.push(`/songs/${updatedSong?.slug ?? song.slug}`);
   };
 
   return (
