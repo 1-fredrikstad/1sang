@@ -151,7 +151,12 @@ describe('EditSongPage', () => {
       'fetch',
       vi.fn().mockResolvedValue({
         ok: true,
-        json: async () => ({}),
+        json: async () => ({
+          data: {
+            id: '123',
+            slug: 'ny-tittel',
+          },
+        }),
       })
     );
   });
@@ -272,6 +277,7 @@ describe('EditSongPage', () => {
 
     expect(mockUpdate).toHaveBeenCalledWith('123', {
       title: 'Ny tittel',
+      slug: 'ny-tittel',
       melody: 'Ny melodi',
       author: 'Ny forfatter',
       lyrics: 'Ny tekst',
@@ -284,6 +290,6 @@ describe('EditSongPage', () => {
       { song_id: '123', tag_id: 'tag3' },
     ]);
 
-    expect(mockPush).toHaveBeenCalledWith('/songs/min-sang');
+    expect(mockPush).toHaveBeenCalledWith('/songs/ny-tittel');
   });
 });
