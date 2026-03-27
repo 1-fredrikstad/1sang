@@ -49,7 +49,7 @@ type SongFormProps = {
 };
 
 vi.mock('next/navigation', () => ({
-  useParams: () => ({ id: '123' }),
+  useParams: () => ({ slug: 'min-sang' }),
   useRouter: () => ({ push: mockPush }),
 }));
 
@@ -73,7 +73,11 @@ vi.mock('@/src/lib/supabase/client', () => ({
 vi.mock('@/src/lib/db', () => ({
   db: {
     songs: {
-      get: vi.fn(),
+      where: vi.fn(() => ({
+        equals: vi.fn(() => ({
+          first: vi.fn(),
+        })),
+      })),
       update: mockUpdate,
     },
     song_tags: {
@@ -186,6 +190,7 @@ describe('EditSongPage', () => {
     const song = {
       id: '123',
       title: 'Min sang',
+      slug: 'min-sang',
       melody: 'Melodi',
       author: 'Forfatter',
       lyrics: 'Tekst',
@@ -223,6 +228,7 @@ describe('EditSongPage', () => {
     const song = {
       id: '123',
       title: 'Min sang',
+      slug: 'min-sang',
       melody: 'Melodi',
       author: 'Forfatter',
       lyrics: 'Tekst',
@@ -278,6 +284,6 @@ describe('EditSongPage', () => {
       { song_id: '123', tag_id: 'tag3' },
     ]);
 
-    expect(mockPush).toHaveBeenCalledWith('/songs/123');
+    expect(mockPush).toHaveBeenCalledWith('/songs/min-sang');
   });
 });
