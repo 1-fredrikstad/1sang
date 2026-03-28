@@ -34,20 +34,6 @@ export default function PlaylistSettingsMenu({
 
       <DropdownMenuContent align="end" className="w-full dark:bg-list-bg">
         <DropdownMenuGroup>
-          <DropdownMenuLabel>Om</DropdownMenuLabel>
-          {playlist.created_at && (
-            <DropdownMenuItem>
-              <div>Opprettet {new Date(playlist.created_at).toLocaleDateString('no-NO')}</div>
-            </DropdownMenuItem>
-          )}
-          {playlist.expires_at && (
-            <DropdownMenuItem>
-              <div>Utløper {new Date(playlist.expires_at).toLocaleDateString('no-NO')}</div>
-            </DropdownMenuItem>
-          )}
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
           <DropdownMenuLabel>Instillinger</DropdownMenuLabel>
 
           {canEdit && editUrl && (
@@ -55,6 +41,20 @@ export default function PlaylistSettingsMenu({
               <Link href={editUrl} className="flex items-center gap-2">
                 <PencilIcon className="h-4 w-4" /> Rediger spilleliste
               </Link>
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Om</DropdownMenuLabel>
+          {playlist.created_at && (
+            <DropdownMenuItem disabled className="data-disabled:opacity-100">
+              <div>Opprettet {new Date(playlist.created_at).toLocaleDateString('no-NO')}</div>
+            </DropdownMenuItem>
+          )}
+          {playlist.expires_at && (
+            <DropdownMenuItem disabled className="data-disabled:opacity-100">
+              <div>Utløper {new Date(playlist.expires_at).toLocaleDateString('no-NO')}</div>
             </DropdownMenuItem>
           )}
         </DropdownMenuGroup>
