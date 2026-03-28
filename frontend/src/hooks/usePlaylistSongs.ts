@@ -22,20 +22,30 @@ export function usePlaylistSongs(id?: string): State {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) return;
+    if (!id || id.length < 10 || id === 'undefined') {
+      setIsLoading(false);
+      setData([]);
+      return;
+    }
 
     const fetchSongs = async () => {
       try {
+        setIsLoading(true);
+        setError(null);
+
         const res = await fetch(`/api/playlists/${id}/songs`);
-        const json: { ok: boolean; data?: Song[] } = await res.json();
+        const json = await res.json();
 
         if (!res.ok || !json.ok) {
-          throw new Error('Failed to fetch playlist songs');
+          const errorMsg = json.error?.message || json.error || 'Failed to fetch playlist songs';
+          throw new Error(errorMsg);
         }
 
         setData(json.data || []);
       } catch (err) {
+        console.error(err);
         setError(err instanceof Error ? err.message : 'Unknown error');
+        setData([]);
       } finally {
         setIsLoading(false);
       }

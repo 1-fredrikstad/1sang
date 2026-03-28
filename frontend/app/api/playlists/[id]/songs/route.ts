@@ -1,9 +1,7 @@
 import { Song } from '@/src/lib/db';
 import { NextResponse } from 'next/server';
 
-type Ctx = { params: Promise<{ id: string }> };
-
-export async function GET(_req: Request, ctx: Ctx) {
+export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -12,8 +10,15 @@ export async function GET(_req: Request, ctx: Ctx) {
       return NextResponse.json({ ok: false, error: 'Missing env vars' }, { status: 500 });
     }
 
-    const { id } = await ctx.params;
+    const params = await ctx.params;
+    const id = params.id;
 
+    if (!id || typeof id !== 'string' || id.length < 10 || id === 'undefined') {
+      return NextResponse.json(
+        { ok: false, error: 'Missing or invalid playlist id' },
+        { status: 400 }
+      );
+    }
     const target = `${supabaseUrl}/rest/v1/playlist_items?playlist_id=eq.${encodeURIComponent(
       id
     )}&select=position,songs(*)&order=position.asc`;
@@ -26,11 +31,13 @@ export async function GET(_req: Request, ctx: Ctx) {
       },
     });
 
-    const body = await res.json();
-
     if (!res.ok) {
-      return NextResponse.json({ ok: false, error: body }, { status: res.status });
+      const errorBody = await res.json().catch(() => ({}));
+      console.error('Supabase error:', errorBody);
+      return NextResponse.json({ ok: false, error: errorBody }, { status: res.status });
     }
+
+    const body = await res.json();
 
     type PlaylistItemResponse = {
       position: number;

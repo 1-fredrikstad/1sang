@@ -9,10 +9,11 @@ import { Separator } from '@/components/ui/separator';
 import PlaylistSettingsMenu from '@/src/components/playlist/PlaylistSettingsMenu';
 
 export default function PlaylistDetailPage() {
-  const { id } = useParams<{ id: string }>();
-  const { playlist, songs, isLoading } = usePlaylistDetails(id);
+  const params = useParams<{ id: string }>();
+  const id = params?.id as string | undefined;
+  const { playlist, songs, isLoading } = usePlaylistDetails(id || '');
 
-  if (isLoading) return <Spinner />;
+  if (!id || isLoading) return <Spinner />;
 
   if (!playlist) {
     return (
@@ -46,7 +47,7 @@ export default function PlaylistDetailPage() {
       <Separator />
 
       {/* Songs */}
-      {songs.length === 0 ? (
+      {!songs || songs.length === 0 ? (
         <p className="text-center opacity-60 py-16">Ingen sanger ennå</p>
       ) : (
         <div className="space-y-2">
