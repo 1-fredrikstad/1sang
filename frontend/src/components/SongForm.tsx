@@ -1,7 +1,5 @@
 'use client';
 
-// TODO: Comment in code when API logic is merged
-
 import { getFieldValidation } from '@/src/lib/validation/songSuggestionSchema';
 import { useEffect } from 'react';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
@@ -146,6 +144,7 @@ export default function SongForm({
           {lyricsValue.length} / 3000
         </div>
         {/* Tags */}
+        <label>Tags</label>
         {showTags && <TagSelect value={selectedTags} onChange={(tags) => setValue('tags', tags)} />}
 
         {/* Submit */}

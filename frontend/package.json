@@ -10,7 +10,9 @@
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
     "prepare": "husky",
-    "test": "vitest"
+    "test": "vitest",
+    "cypress": "cypress open",
+    "test:e2e": "start-server-and-test dev http://localhost:3000 cypress"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -53,6 +55,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/uuid": "^10.0.0",
     "cypress": "^15.11.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
