@@ -1,14 +1,11 @@
 import { PlaylistInputs } from '@/src/types/playlistInputs';
-import { db, PlaylistItem } from '../db';
+import { db } from '../db';
 import { v4 as uuidv4 } from 'uuid';
-import { SavePlaylistResult } from '@/src/types/savePlaylists';
 
-export async function savePlaylist(data: PlaylistInputs): Promise<SavePlaylistResult> {
-  const isUpdate = !!data.id;
+export async function savePlaylist(data: PlaylistInputs) {
   // ID for IndexedDB
-  const localId: string = isUpdate
-    ? data.id!
-    : typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+  const localId =
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
       ? crypto.randomUUID()
       : uuidv4(); // fallback for insecure connections (such as http)
 
@@ -17,45 +14,27 @@ export async function savePlaylist(data: PlaylistInputs): Promise<SavePlaylistRe
     ? new Date(Date.now() + (data.duration || 604800) * 1000).toISOString()
     : null;
 
-  // Build playlist object for IndexedDB
-  const playlistObj: {
-    id: string;
-    server_id: string;
-    synced: number;
-    title: string;
-    playlist_password: string;
-    created_at?: string;
-    updated_at: string;
-    is_public: boolean;
-    expires_at: string | null;
-  } = {
+  // Always save playlist to IndexedDB (local)
+  await db.playlists.add({
     id: localId,
-    server_id: '', // Only exists if the playlist is public and synced to backend
+    server_id: undefined, // Only exists if the playlist is public and synced to backend
     synced: 0,
     title: data.title,
-    playlist_password: data.password ?? '',
-    created_at: isUpdate ? undefined : new Date().toISOString(),
+    playlist_password: data.password,
+    created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     is_public: data.isPublic,
     expires_at,
-  };
-
-  if (isUpdate) {
-    await db.playlists.update(localId, playlistObj);
-    await db.playlist_items.where({ playlist_id: localId }).delete();
-  } else {
-    // Always save playlist to IndexedDB (local)
-    await db.playlists.add(playlistObj);
-  }
+  });
 
   // Add songs to playlist in IndexedDB (save songs offline)
-  const playlistItems: PlaylistItem[] = data.songsInPlaylist.map((song, index) => ({
-    playlist_id: localId,
-    song_id: song.id,
-    position: index,
-  }));
-
-  await db.playlist_items.bulkAdd(playlistItems);
+  await db.playlist_items.bulkAdd(
+    data.songsInPlaylist.map((song, index) => ({
+      playlist_id: localId,
+      song_id: song.id,
+      position: index,
+    }))
+  );
 
   // If not public - return (only local)
   if (!data.isPublic) {
@@ -66,14 +45,12 @@ export async function savePlaylist(data: PlaylistInputs): Promise<SavePlaylistRe
   let serverId: string | undefined;
 
   try {
-    // Create or update playlist in backend
-    const action = !isUpdate ? 'update' : 'create';
+    // Create playlist in backend
     const res = await fetch('/api/playlists', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        action,
-        playlist_id: data.id,
+        action: 'create',
         title: data.title,
         password: data.password,
         is_public: true,

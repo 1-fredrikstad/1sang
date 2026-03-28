@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { getPlaylistFieldValidation } from '@/src/lib/validation/playlistSchema';
 import { PlaylistInputs } from '@/src/types/playlistInputs';
 import SongList from './SongList';
@@ -13,17 +13,12 @@ import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import MobileTooltip from '../MobileTooltip';
 import SubmitButton from '../SubmitButton';
 import { useWatch } from 'react-hook-form';
-import { SavePlaylistResult } from '@/src/types/savePlaylists';
-import { useRouter } from 'next/navigation';
 
 type PlaylistFormProps = {
-  onSubmit: (data: PlaylistInputs) => Promise<SavePlaylistResult>;
-  defaultValues?: PlaylistInputs;
+  onSubmit: SubmitHandler<PlaylistInputs>;
 };
 
-export default function PlaylistForm({ onSubmit, defaultValues }: PlaylistFormProps) {
-  const router = useRouter();
-
+export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
   const {
     register,
     handleSubmit,
@@ -32,7 +27,7 @@ export default function PlaylistForm({ onSubmit, defaultValues }: PlaylistFormPr
     reset,
     formState: { errors },
   } = useForm<PlaylistInputs>({
-    defaultValues: defaultValues || {
+    defaultValues: {
       title: '',
       password: '',
       songsInPlaylist: [],
@@ -97,15 +92,9 @@ export default function PlaylistForm({ onSubmit, defaultValues }: PlaylistFormPr
     [songsInPlaylist, setValue]
   );
 
-  const handleFormSubmit = async (data: PlaylistInputs) => {
-    try {
-      const result: SavePlaylistResult = await onSubmit(data);
-      reset();
-      router.push(`/playlists/${result.localId}`);
-    } catch (err) {
-      console.error(err);
-      toast.error(err instanceof Error ? err.message : 'Noe gikk galt');
-    }
+  const handleFormSubmit: SubmitHandler<PlaylistInputs> = async (data) => {
+    await onSubmit(data);
+    reset();
   };
 
   return (
@@ -113,14 +102,14 @@ export default function PlaylistForm({ onSubmit, defaultValues }: PlaylistFormPr
       onSubmit={handleSubmit(handleFormSubmit)}
       className="flex flex-col m-8 mb-4 gap-1 max-w-2xl md:mx-auto"
     >
-      <h1 className="text-xl mb-2">
-        {defaultValues ? 'Rediger spilleliste' : 'Lag ny spilleliste'}
-      </h1>
+      <h1 className="text-xl mb-2">Lag ny spilleliste</h1>
 
       {/* Title */}
       <span>
         <label htmlFor="title">Tittel*</label>
-        {errors.title && <span className="text-red-500 italic ml-2">{errors.title.message}</span>}
+        {errors.title && (
+          <span className="text-red-500 italic ml-2">{errors.title.message}</span>
+        )}{' '}
       </span>
       <input
         id="title"
@@ -190,7 +179,7 @@ export default function PlaylistForm({ onSubmit, defaultValues }: PlaylistFormPr
       )}
 
       {/* Submit button */}
-      <SubmitButton submitLabel={defaultValues ? 'Oppdater spilleliste' : 'Opprett spilleliste'} />
+      <SubmitButton submitLabel="Opprett spilleliste" />
     </form>
   );
 }
