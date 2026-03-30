@@ -1,5 +1,7 @@
+//app/api/song_suggestions/
 import { NextResponse } from 'next/server';
 import { normalizeSongInput, validateSongInput } from '@/src/lib/validation/songSuggestionSchema';
+import { requireAdmin } from '@/src/lib/actions/auth';
 
 function getEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -13,6 +15,15 @@ function getEnv() {
 }
 
 export async function GET(req: Request) {
+  try {
+    await requireAdmin();
+  } catch {
+    return NextResponse.json(
+      { ok: false, error: 'Du har ikke tilgang til å se sangforslag' },
+      { status: 403 }
+    );
+  }
+
   try {
     const url = new URL(req.url);
     const limit = url.searchParams.get('limit');

@@ -141,9 +141,9 @@
   --color-danger-hover: #e64848;
 }
 
-html:not(.theme-ready) *,
-html:not(.theme-ready) *::before,
-html:not(.theme-ready) *::after {
+html:not(.theme-ready) *:not(.allow-animation),
+html:not(.theme-ready) *:not(.allow-animation)::before,
+html:not(.theme-ready) *:not(.allow-animation)::after {
   transition: none !important;
   animation: none !important;
 }
@@ -178,11 +178,78 @@ body {
   width: 100%;
 }
 
+a.no-underline,
+a[href] .no-underline {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+/* --- Animation dots --- */
+
+@keyframes dots {
+  0%,
+  20% {
+    content: '';
+  }
+  40% {
+    content: '.';
+  }
+  60% {
+    content: '..';
+  }
+  80%,
+  100% {
+    content: '...';
+  }
+}
+
+.loading-dots::after {
+  content: '';
+  animation: dots 1.5s steps(1, end) infinite;
+  display: inline-block;
+  min-width: 1.2ch;
+}
+
+/* Collapsible animation */
+@layer utilities {
+  .collapsible-content {
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .collapsible-content[data-state='open'] {
+    animation: slideDown 0.3s ease-out forwards;
+  }
+
+  .collapsible-content[data-state='closed'] {
+    animation: slideUp 0.3s ease-out forwards;
+  }
+
+  @keyframes slideDown {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-collapsible-content-height);
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      height: var(--radix-collapsible-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
+
+/* -- Fonts --- */
+
 pre {
   font-family: 'DINOT', Arial, Georgia;
 }
 
-/* -- Fonts --- */
 @font-face {
   font-family: 'DINOT';
   src: url('/DINOT/DINOT-Regular.otf') format('opentype');
