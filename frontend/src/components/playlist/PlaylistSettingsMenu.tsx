@@ -16,15 +16,10 @@ import { Playlist, db } from '@/src/lib/db';
 
 type PlaylistSettingsMenuProps = {
   playlist: Playlist;
-  canEdit?: boolean;
   editUrl?: string;
 };
 
-export default function PlaylistSettingsMenu({
-  playlist,
-  canEdit,
-  editUrl,
-}: PlaylistSettingsMenuProps) {
+export default function PlaylistSettingsMenu({ playlist, editUrl }: PlaylistSettingsMenuProps) {
   const router = useRouter();
 
   const handleEdit = async () => {
@@ -78,15 +73,10 @@ export default function PlaylistSettingsMenu({
         <DropdownMenuGroup>
           <DropdownMenuLabel>Instillinger</DropdownMenuLabel>
 
-          {canEdit && (
-            <DropdownMenuItem
-              onClick={handleEdit}
-              className="flex items-center gap-2 cursor-pointer"
-            >
-              <PencilIcon className="h-4 w-4" />
-              Rediger spilleliste
-            </DropdownMenuItem>
-          )}
+          <DropdownMenuItem onClick={handleEdit} className="flex items-center gap-2 cursor-pointer">
+            <PencilIcon className="h-4 w-4" />
+            Rediger spilleliste
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
