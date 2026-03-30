@@ -167,6 +167,10 @@ export default function EditPlaylistPage() {
             ? new Date(Date.now() + data.duration * 1000).toISOString()
             : new Date('2100-01-01T00:00:00.000Z').toISOString(),
           updated_at: new Date().toISOString(),
+          playlist_password:
+            data.newPassword && data.newPassword.trim() !== ''
+              ? data.newPassword
+              : playlist.playlist_password,
         });
 
         for (const song of songsToRemove) {
