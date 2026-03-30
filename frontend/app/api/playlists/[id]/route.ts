@@ -20,17 +20,17 @@ export async function GET(_: Request, { params }: RouteContext) {
     const { id } = await params;
     const { supabaseUrl, anonKey } = getEnv();
 
-    const target =
-      `${supabaseUrl}/rest/v1/playlists` +
-      `?select=id,title,is_public,expires_at,created_at,updated_at,version` +
-      `&id=eq.${encodeURIComponent(id)}`;
-
-    const res = await fetch(target, {
+    const res = await fetch(`${supabaseUrl}/rest/v1/rpc/playlists_get_detail`, {
+      method: 'POST',
       headers: {
         apikey: anonKey,
         Authorization: `Bearer ${anonKey}`,
         Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        p_playlist_id: id,
+      }),
     });
 
     const body = await res.json().catch(() => null);

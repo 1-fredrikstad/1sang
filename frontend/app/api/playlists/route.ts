@@ -16,21 +16,33 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const id = url.searchParams.get('id');
 
-    let target =
-      `${supabaseUrl}/rest/v1/playlists` +
-      `?select=id,title,created_at,updated_at,version,is_public,expires_at`;
+    let res: Response;
 
     if (id) {
-      target += `&id=eq.${encodeURIComponent(id)}`;
+      res = await fetch(`${supabaseUrl}/rest/v1/rpc/playlists_get_detail`, {
+        method: 'POST',
+        headers: {
+          apikey: anonKey,
+          Authorization: `Bearer ${anonKey}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          p_playlist_id: id,
+        }),
+      });
+    } else {
+      res = await fetch(`${supabaseUrl}/rest/v1/rpc/playlists_list_public`, {
+        method: 'POST',
+        headers: {
+          apikey: anonKey,
+          Authorization: `Bearer ${anonKey}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}),
+      });
     }
-
-    const res = await fetch(target, {
-      headers: {
-        apikey: anonKey,
-        Authorization: `Bearer ${anonKey}`,
-        Accept: 'application/json',
-      },
-    });
 
     const body = await res.json().catch(() => null);
 
@@ -41,7 +53,6 @@ export async function GET(req: Request) {
     return NextResponse.json({ ok: true, data: body }, { status: 200 });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
-
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }
