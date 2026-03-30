@@ -11,6 +11,7 @@ type Tag = {
   name: string;
 };
 import SubmitButton from './SubmitButton';
+import { usePathname } from 'next/navigation';
 
 type Inputs = {
   title: string;
@@ -30,6 +31,8 @@ type SongFormProps = {
   toastSuccessMessage?: string;
 };
 
+const STORAGE_KEY = 'songForm';
+
 export default function SongForm({
   heading,
   submitLabel,
@@ -38,6 +41,21 @@ export default function SongForm({
   onSubmit,
   toastSuccessMessage = 'Lagret',
 }: SongFormProps) {
+  const saved = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
+  const pathname = usePathname();
+
+  const defaultValues: Inputs = saved
+    ? JSON.parse(saved)
+    : {
+        title: '',
+        melody: '',
+        author: '',
+        lyrics: '',
+        spotify_youtube: '',
+        tags: [],
+        ...initialValues,
+      };
+
   const {
     register,
     handleSubmit,
@@ -46,16 +64,31 @@ export default function SongForm({
     reset,
     setValue,
   } = useForm<Inputs>({
-    defaultValues: {
-      title: '',
-      melody: '',
-      author: '',
-      lyrics: '',
-      spotify_youtube: '',
-      tags: [],
-      ...initialValues,
-    },
+    defaultValues,
   });
+
+  const values = useWatch({ control });
+
+  // Persist form to localStorage on every change
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
+  }, [values]);
+
+  // Clear localStorage on page reload or navigation away
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      localStorage.removeItem(STORAGE_KEY);
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      // Only clear if navigating to a different route
+      if (typeof window !== 'undefined' && pathname !== window.location.pathname) {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     if (initialValues) {
@@ -72,7 +105,6 @@ export default function SongForm({
 
   const lyricsValue = useWatch({ control, name: 'lyrics' }) || '';
   const selectedTags = useWatch({ control, name: 'tags' }) ?? [];
-  // const notify = () => toast('Sang lagt inn');
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
@@ -84,6 +116,19 @@ export default function SongForm({
       await onSubmit(payload);
 
       toast.success(toastSuccessMessage);
+
+      // Reset form to default values
+      reset({
+        title: '',
+        melody: '',
+        author: '',
+        lyrics: '',
+        spotify_youtube: '',
+        tags: [],
+      });
+
+      // Remove saved form from localStorage
+      localStorage.removeItem(STORAGE_KEY);
     } catch (error) {
       console.error(error);
       toast.error(error instanceof Error ? error.message : 'Noe gikk galt');
