@@ -69,11 +69,17 @@ export async function POST(req: Request) {
 
     const json = await req.json();
 
+    const tagIds: string[] = Array.isArray(json.tags)
+      ? json.tags.filter((tag: unknown): tag is string => typeof tag === 'string')
+      : [];
+
     const payload = {
       title: typeof json.title === 'string' ? json.title.trim() : '',
       melody: typeof json.melody === 'string' ? json.melody.trim() || null : null,
       author: typeof json.author === 'string' ? json.author.trim() || null : null,
       lyrics: typeof json.lyrics === 'string' ? json.lyrics.trim() : '',
+      spotify_youtube:
+        typeof json.spotify_youtube === 'string' ? json.spotify_youtube.trim() || null : null,
     };
 
     let isAdmin = false;
@@ -115,6 +121,36 @@ export async function POST(req: Request) {
         },
         { status: 500 }
       );
+    }
+
+    if (isAdmin && table === 'songs' && tagIds.length > 0) {
+      const songId = insertBody[0].id;
+
+      const rows = tagIds.map((tagId) => ({
+        song_id: songId,
+        tag_id: tagId,
+      }));
+
+      const songTagsRes = await fetch(`${supabaseUrl}/rest/v1/song_tags`, {
+        method: 'POST',
+        headers: {
+          apikey: serviceRoleKey,
+          Authorization: `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Prefer: 'return=representation',
+        },
+        body: JSON.stringify(rows),
+      });
+
+      const songTagsBody = await songTagsRes.json().catch(() => null);
+
+      if (!songTagsRes.ok) {
+        return NextResponse.json(
+          { ok: false, error: songTagsBody ?? 'Kunne ikke lagre song_tags' },
+          { status: songTagsRes.status }
+        );
+      }
     }
 
     return NextResponse.json(

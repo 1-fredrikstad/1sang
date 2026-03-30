@@ -2,7 +2,7 @@ import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { checkAdminAccess } from '../../../lib/supabase/isAdmin';
 
 describe('checkAdminAccess', () => {
-  const originalEnv = process.env;
+  const originalEnv = { ...process.env };
   const originalFetch = global.fetch;
 
   beforeEach(() => {

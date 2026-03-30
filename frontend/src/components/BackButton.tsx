@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { ArrowLeftIcon } from '@heroicons/react/24/solid';
+import { ArrowLongLeftIcon } from '@heroicons/react/24/solid';
 
 export default function BackButton() {
   const router = useRouter();
@@ -17,8 +17,8 @@ export default function BackButton() {
 
   return (
     <button id="arrow-back" onClick={handleBack} className="hover:cursor-pointer">
-      <ArrowLeftIcon className="size-6" />
-      <span className="hidden md:block mt-1">Tilbake</span>
+      <span className="hidden md:block">Tilbake</span>
+      <ArrowLongLeftIcon className="size-6" aria-label="Tilbake" />
     </button>
   );
 }

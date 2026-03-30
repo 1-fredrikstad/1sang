@@ -13,6 +13,18 @@ vi.mock('next/image', () => ({
   },
 }));
 
+vi.mock('next/navigation', () => {
+  return {
+    useRouter: () => ({
+      push: vi.fn(),
+      replace: vi.fn(),
+      prefetch: vi.fn(),
+      back: vi.fn(),
+    }),
+    usePathname: () => '/',
+  };
+});
+
 // mock ResizeObserver (Needed for Radix UI)
 global.ResizeObserver = class {
   observe() {}

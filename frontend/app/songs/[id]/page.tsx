@@ -8,10 +8,19 @@ import Link from 'next/link';
 import { useAuth } from '@/src/context/AuthContext';
 import WakeLockToggle from '@/src/components/WakeLockToggle';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
+import { FaSpotify, FaYoutube } from 'react-icons/fa';
 
 export default function SongPage() {
   const { id } = useParams<{ id: string }>();
   const { isAdmin } = useAuth();
+
+  const tags = useLiveQuery(async () => {
+    if (!id) return [];
+    const relations = await db.song_tags.where('song_id').equals(id).toArray();
+    const tagIds = relations.map((relation) => relation.tag_id);
+
+    return await db.tags.where('id').anyOf(tagIds).toArray();
+  });
 
   const song = useLiveQuery<Song | undefined>(() => (id ? db.songs.get(id) : undefined), [id]);
 
@@ -22,6 +31,25 @@ export default function SongPage() {
       </div>
     );
   }
+
+  const getLinkPlatform = (url: string) => {
+    try {
+      const hostname = new URL(url).hostname;
+
+      if (hostname.includes('spotify.com')) {
+        return { name: 'Spotify', icon: FaSpotify, color: 'text-green-500' };
+      }
+      if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
+        return { name: 'YouTube', icon: FaYoutube, color: 'text-red-500' };
+      }
+    } catch {
+      return { name: 'Link' };
+    }
+
+    return { name: 'Link' };
+  };
+
+  const { name, icon: Icon, color } = getLinkPlatform(song.spotify_youtube || '');
 
   return (
     <>
@@ -44,12 +72,28 @@ export default function SongPage() {
 
         <h1 className="mt-15 mb-0 text-3xl font-semibold">{song.title}</h1>
 
-        {song.melody && <p className="opacity-60 mt-1">Melodi: {song.melody}</p>}
+        <div className="opacity-60 mt-1">
+          {tags && tags.length > 0 && <p>Tags: {tags.map((tag) => tag.name).join(', ')}</p>}
+        </div>
 
+        {song.melody && <p className="opacity-60 mt-1">Melodi: {song.melody}</p>}
+        {song.spotify_youtube && (
+          <p className="opacity-60 mt-1 flex flex-col items-center">
+            <span>Link:</span>
+            <a
+              href={song.spotify_youtube}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 font-semibold hover:underline"
+            >
+              {Icon && <Icon className={`w-4 h-4 ${color}`} />}
+              <span>{name}</span>
+            </a>
+          </p>
+        )}
         <pre className="mt-8 flex justify-center text-center whitespace-pre-wrap">
           {song.lyrics || 'Ingen sangtekst'}
         </pre>
-
         {song.author && <p className="opacity-60 mt-1">Skrevet av: {song.author}</p>}
       </main>
     </>

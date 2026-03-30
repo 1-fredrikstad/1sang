@@ -37,6 +37,14 @@ export const songSuggestionSchema = {
       pattern: 'Sangteksten inneholder ugyldige tegn',
     },
   },
+  spotify_youtube: {
+    required: false,
+    maxLength: 200,
+    messages: {
+      maxLength: 'Lenken kan maks være 200 tegn',
+      validate: 'Lenken må være en gyldig Spotify- eller YouTube-lenke',
+    },
+  },
 } as const;
 
 type SongFieldKey = keyof typeof songSuggestionSchema;
@@ -62,10 +70,32 @@ export function getFieldValidation(field: SongFieldKey) {
           },
         }
       : {}),
-    pattern: {
-      value: TEXT_PATTERN,
-      message: config.messages.pattern,
-    },
+
+    ...(field !== 'spotify_youtube' && 'pattern' in config.messages
+      ? {
+          pattern: {
+            value: TEXT_PATTERN,
+            message: config.messages.pattern,
+          },
+        }
+      : {}),
+
+    validate:
+      field === 'spotify_youtube' && 'validate' in config.messages
+        ? (value: string) => {
+            if (!value) return true;
+
+            const isValid =
+              /^(https?:\/\/)?(www\.)?([a-z]+\.)?spotify\.com\/.+$|^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/.test(
+                value
+              );
+
+            return (
+              isValid ||
+              (config.messages as typeof songSuggestionSchema.spotify_youtube.messages).validate
+            );
+          }
+        : undefined,
   };
 }
 

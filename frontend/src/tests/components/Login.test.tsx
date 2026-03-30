@@ -8,8 +8,8 @@ vi.mock('@/src/components/login/GoogleLoginButton', () => ({
   default: () => <div>GoogleLoginButton</div>,
 }));
 
-vi.mock('@/src/components/login/Spinner', () => ({
-  default: () => <div>Spinner</div>,
+vi.mock('@/components/ui/spinner', () => ({
+  Spinner: ({ message }: { message: string }) => <div>{message}</div>,
 }));
 
 // Mock the useAuth hook
@@ -17,15 +17,27 @@ vi.mock('@/src/context/AuthContext');
 
 describe('Login component', () => {
   it('renders Spinner when loading', () => {
+    vi.useFakeTimers();
+
     (useAuth as unknown as Mock).mockReturnValue({ user: null, isLoading: true });
     render(<Login />);
-    expect(screen.getByText('Spinner')).toBeInTheDocument();
+
+    vi.advanceTimersByTime(400);
+    expect(screen.getByText('Laster inn')).toBeInTheDocument();
+
+    vi.useRealTimers();
   });
 
   it('renders Spinner when user is logged in', () => {
+    vi.useFakeTimers();
+
     (useAuth as unknown as Mock).mockReturnValue({ user: { name: 'Test' }, isLoading: false });
     render(<Login />);
-    expect(screen.getByText('Spinner')).toBeInTheDocument();
+
+    vi.advanceTimersByTime(400);
+    expect(screen.getByText('Laster inn')).toBeInTheDocument();
+
+    vi.useRealTimers();
   });
 
   it('renders login form when not loading and no user', () => {

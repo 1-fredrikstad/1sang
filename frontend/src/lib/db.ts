@@ -11,12 +11,13 @@ export interface Song {
   created_at?: string;
   updated_at?: string;
   deleted_at?: string | null;
+  spotify_youtube?: string;
 }
 
 export interface Playlist {
   id: string; // local ID (always exists)
   server_id?: string; // backend ID (only if synced and public)
-  synced: boolean; // Check if synced
+  synced: number; // Check if synced
   title: string;
   playlist_password: string;
   created_at?: string;
@@ -107,6 +108,19 @@ export class AppDatabase extends Dexie {
     this.version(2).stores({
       songs: 'id, slug',
       playlists: 'id',
+      playlist_items: '[playlist_id+song_id], playlist_id, song_id, position',
+      tags: 'id, name',
+      song_tags: '[song_id+tag_id], song_id, tag_id',
+      song_links: 'id, song_id',
+      song_suggestions: 'id, status',
+      users: 'user_id',
+      sync_metadata: 'id, table_name',
+      favorites: 'song_id, created_at',
+    });
+
+    this.version(3).stores({
+      songs: 'id, slug',
+      playlists: 'id, &server_id, synced',
       playlist_items: '[playlist_id+song_id], playlist_id, song_id, position',
       tags: 'id, name',
       song_tags: '[song_id+tag_id], song_id, tag_id',
