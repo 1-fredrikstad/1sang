@@ -32,11 +32,7 @@ export default function PlaylistDetailPage() {
           <BackButton />
           <h1 className="text-2xl font-bold tracking-tight">{playlist.title}</h1>
           <div className="absolute right-0">
-            <PlaylistSettingsMenu
-              playlist={playlist}
-              canEdit={!!playlist.playlist_password}
-              editUrl={`/playlists/${playlist.id}/edit`}
-            />
+            <PlaylistSettingsMenu playlist={playlist} editUrl={`/playlists/${playlist.id}/edit`} />
           </div>
         </div>
 
