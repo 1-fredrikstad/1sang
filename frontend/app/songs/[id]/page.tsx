@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useAuth } from '@/src/context/AuthContext';
 import WakeLockToggle from '@/src/components/WakeLockToggle';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
+import { FaSpotify, FaYoutube } from 'react-icons/fa';
 
 export default function SongPage() {
   const { id } = useParams<{ id: string }>();
@@ -32,10 +33,23 @@ export default function SongPage() {
   }
 
   const getLinkPlatform = (url: string) => {
-    if (url.includes('spotify.com')) return 'Spotify';
-    if (url.includes('youtube.com') || url.includes('youtu.be')) return 'YouTube';
-    return 'Link';
+    try {
+      const hostname = new URL(url).hostname;
+
+      if (hostname.includes('spotify.com')) {
+        return { name: 'Spotify', icon: FaSpotify, color: 'text-green-500' };
+      }
+      if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
+        return { name: 'YouTube', icon: FaYoutube, color: 'text-red-500' };
+      }
+    } catch {
+      return { name: 'Link' };
+    }
+
+    return { name: 'Link' };
   };
+
+  const { name, icon: Icon, color } = getLinkPlatform(song.spotify_youtube || '');
 
   return (
     <>
@@ -63,15 +77,16 @@ export default function SongPage() {
 
         {song.melody && <p className="opacity-60 mt-1">Melodi: {song.melody}</p>}
         {song.spotify_youtube && (
-          <p className="opacity-60 mt-1">
-            Link:
+          <p className="opacity-60 mt-1 flex flex-col items-center">
+            <span>Link:</span>
             <a
               href={song.spotify_youtube}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:underline font-semibold"
+              className="inline-flex items-center gap-1 font-semibold hover:underline"
             >
-              {getLinkPlatform(song.spotify_youtube)}
+              {Icon && <Icon className={`w-4 h-4 ${color}`} />}
+              <span>{name}</span>
             </a>
           </p>
         )}
