@@ -1,11 +1,12 @@
 'use client';
 
-import { db } from '@/src/lib/db'; // your Dexie db instanceimport Spinner from '@/src/components/login/Spinner';
+import { db } from '@/src/lib/db';
 import { toast } from 'react-toastify';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePublicPlaylists } from '@/src/hooks/usePublicPlaylists';
 import { useLiveQuery } from 'dexie-react-hooks';
 import Spinner from '@/src/components/login/Spinner';
+import Link from 'next/link';
 
 export default function PlaylistsPage() {
   const {
@@ -67,17 +68,16 @@ export default function PlaylistsPage() {
               ) : (
                 <ul className="flex flex-col divide-y divide-black/10 dark:divide-white/10">
                   {tab.data.map((playlist) => (
-                    <li
-                      key={playlist.id}
-                      className="py-3 hover:bg-black/5 dark:hover:bg-white/5 transition allow-animation cursor-pointer rounded-xs"
-                    >
-                      <div className="flex flex-col pl-1.5">
-                        <span className="text-base font-medium">
-                          {playlist.title.charAt(0).toUpperCase() + playlist.title.slice(1)}
-                        </span>
-                        <span className="text-xs opacity-60">Spilleliste</span>
-                      </div>
-                    </li>
+                    <Link key={playlist.id} href={`/playlists/${playlist.id}`} className="block">
+                      <li className="py-3 hover:bg-black/5 dark:hover:bg-white/5 transition allow-animation cursor-pointer rounded-xs">
+                        <div className="flex flex-col pl-1.5">
+                          <span className="text-base font-medium">
+                            {playlist.title.charAt(0).toUpperCase() + playlist.title.slice(1)}
+                          </span>
+                          <span className="text-xs opacity-60">Spilleliste</span>
+                        </div>
+                      </li>
+                    </Link>
                   ))}
                 </ul>
               )}
