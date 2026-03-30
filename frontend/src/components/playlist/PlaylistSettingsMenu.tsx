@@ -10,8 +10,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { EllipsisVerticalIcon, PencilIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
-import { Playlist } from '@/src/lib/db';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import { Playlist, db } from '@/src/lib/db';
 
 type PlaylistSettingsMenuProps = {
   playlist: Playlist;
@@ -24,10 +25,51 @@ export default function PlaylistSettingsMenu({
   canEdit,
   editUrl,
 }: PlaylistSettingsMenuProps) {
+  const router = useRouter();
+
+  const handleEdit = async () => {
+    const password = prompt('Skriv passord for å redigere spillelisten');
+    if (!password) return;
+
+    if (!playlist.is_public) {
+      const localPlaylist = await db.playlists.get(playlist.id);
+
+      if (!localPlaylist || localPlaylist.playlist_password !== password) {
+        toast.error('Feil passord');
+        return;
+      }
+
+      sessionStorage.setItem(`playlist-password-${playlist.id}`, password);
+      router.push(editUrl ?? `/playlists/${playlist.id}/edit`);
+      return;
+    }
+
+    const res = await fetch('/api/playlists/verify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        playlist_id: playlist.id,
+        password,
+      }),
+    });
+
+    const json = await res.json().catch(() => null);
+
+    if (!res.ok || !json?.ok || !json?.data) {
+      toast.error('Feil passord');
+      return;
+    }
+
+    sessionStorage.setItem(`playlist-password-${playlist.id}`, password);
+    router.push(editUrl ?? `/playlists/${playlist.id}/edit`);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="p-2">
+        <button className="p-2" type="button">
           <EllipsisVerticalIcon className="h-5 w-5 opacity-70 hover:opacity-100 cursor-pointer" />
         </button>
       </DropdownMenuTrigger>
@@ -36,11 +78,13 @@ export default function PlaylistSettingsMenu({
         <DropdownMenuGroup>
           <DropdownMenuLabel>Instillinger</DropdownMenuLabel>
 
-          {canEdit && editUrl && (
-            <DropdownMenuItem asChild>
-              <Link href={editUrl} className="flex items-center gap-2">
-                <PencilIcon className="h-4 w-4" /> Rediger spilleliste
-              </Link>
+          {canEdit && (
+            <DropdownMenuItem
+              onClick={handleEdit}
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <PencilIcon className="h-4 w-4" />
+              Rediger spilleliste
             </DropdownMenuItem>
           )}
         </DropdownMenuGroup>

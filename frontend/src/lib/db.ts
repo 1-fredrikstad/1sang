@@ -24,6 +24,7 @@ export interface Playlist {
   version?: number;
   is_public: boolean;
   expires_at: string | null;
+  has_password?: boolean;
 }
 
 export interface PlaylistItem {
