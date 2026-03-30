@@ -214,12 +214,3 @@ export default function SongForm({
     </>
   );
 }
-
-function getLinkType(url: string) {
-  if (!url) return null;
-
-  if (url.includes('spotify.com')) return 'spotify';
-  if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
-
-  return null;
-}
