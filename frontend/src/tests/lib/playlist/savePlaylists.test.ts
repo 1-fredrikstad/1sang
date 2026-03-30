@@ -1,13 +1,30 @@
-import { Song } from '@/src/lib/db';
+import { Song, db } from '@/src/lib/db';
 import { savePlaylist } from '@/src/lib/playlists/savePlaylists';
-import { vi, describe, expect, test } from 'vitest';
+import { vi, describe, expect, test, beforeEach } from 'vitest';
 
 describe('savePlaylists', () => {
+  const song: Song = { id: '1', title: 'Test song', lyrics: 'Lyrics' };
+
+  beforeEach(() => {
+    // Mock IndexedDB / Dexie methods
+    db.playlists.add = vi.fn().mockResolvedValue(undefined);
+    db.playlists.update = vi.fn().mockResolvedValue(undefined);
+    db.playlist_items.bulkAdd = vi.fn().mockResolvedValue(undefined);
+    db.playlist_items.where = vi.fn().mockReturnValue({
+      delete: vi.fn().mockResolvedValue(undefined),
+    });
+
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ ok: true, data: { id: 'server-123' } }),
+    } as Response);
+  });
+
   test('saves private playlist locally and returns private type', async () => {
     const result = await savePlaylist({
       title: 'Test',
       password: '',
-      songsInPlaylist: [{ id: '1', title: 'Test song' }] as Song[],
+      songsInPlaylist: [song] as Song[],
       isPublic: false,
       duration: 604800,
     });
@@ -17,24 +34,10 @@ describe('savePlaylists', () => {
   });
 
   test('creates public playlist and returns serverId', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi
-        .fn()
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({
-            ok: true,
-            data: { id: 'server-123' },
-          }),
-        })
-        .mockResolvedValue({ ok: true, json: async () => ({ ok: true }) })
-    );
-
     const result = await savePlaylist({
       title: 'Test',
       password: '123',
-      songsInPlaylist: [{ id: '1', title: 'Test song' }] as Song[],
+      songsInPlaylist: [song] as Song[],
       isPublic: true,
       duration: 604800,
     });

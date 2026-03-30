@@ -20,7 +20,6 @@ type NavItem = {
   Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 };
 
-//TODO: links are placeholders, add actual href when the pages are implemented
 const navItems: NavItem[] = [
   { id: 'home', href: '/', Icon: HomeIcon },
   { id: 'playlists', href: '/playlists', Icon: MusicalNoteIcon },
