@@ -1,5 +1,3 @@
-import { link } from 'fs';
-
 export const TEXT_PATTERN = /^[a-zA-ZæøåÆØÅ0-9\s.\-/:;,'’*!?()"…–]+$/;
 
 export const songSuggestionSchema = {
@@ -88,7 +86,9 @@ export function getFieldValidation(field: SongFieldKey) {
             if (!value) return true;
 
             const isValid =
-              /^(https?:\/\/)?(www\.)?(spotify\.com|youtube\.com|youtu\.be)\/.+$/.test(value);
+              /^(https?:\/\/)?(www\.)?([a-z]+\.)?spotify\.com\/.+$|^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/.test(
+                value
+              );
 
             return (
               isValid ||
