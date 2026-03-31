@@ -17,12 +17,22 @@ import { Playlist, db } from '@/src/lib/db';
 type PlaylistSettingsMenuProps = {
   playlist: Playlist;
   editUrl?: string;
+  isAdmin?: boolean;
 };
 
-export default function PlaylistSettingsMenu({ playlist, editUrl }: PlaylistSettingsMenuProps) {
+export default function PlaylistSettingsMenu({
+  playlist,
+  editUrl,
+  isAdmin = false,
+}: PlaylistSettingsMenuProps) {
   const router = useRouter();
 
   const handleEdit = async () => {
+    if (isAdmin) {
+      router.push(editUrl ?? `/playlists/${playlist.id}/edit`);
+      return;
+    }
+
     const password = prompt('Skriv passord for å redigere spillelisten');
     if (!password) return;
 
@@ -71,21 +81,25 @@ export default function PlaylistSettingsMenu({ playlist, editUrl }: PlaylistSett
 
       <DropdownMenuContent align="end" className="w-full dark:bg-list-bg">
         <DropdownMenuGroup>
-          <DropdownMenuLabel>Instillinger</DropdownMenuLabel>
+          <DropdownMenuLabel>Innstillinger</DropdownMenuLabel>
 
           <DropdownMenuItem onClick={handleEdit} className="flex items-center gap-2 cursor-pointer">
             <PencilIcon className="h-4 w-4" />
             Rediger spilleliste
           </DropdownMenuItem>
         </DropdownMenuGroup>
+
         <DropdownMenuSeparator />
+
         <DropdownMenuGroup>
           <DropdownMenuLabel>Om</DropdownMenuLabel>
+
           {playlist.created_at && (
             <DropdownMenuItem disabled className="data-disabled:opacity-100">
               <div>Opprettet {new Date(playlist.created_at).toLocaleDateString('no-NO')}</div>
             </DropdownMenuItem>
           )}
+
           {playlist.expires_at && (
             <DropdownMenuItem disabled className="data-disabled:opacity-100">
               <div>Utløper {new Date(playlist.expires_at).toLocaleDateString('no-NO')}</div>

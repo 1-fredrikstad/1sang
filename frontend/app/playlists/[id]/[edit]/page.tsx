@@ -6,6 +6,7 @@ import PlaylistForm from '@/src/components/playlist/PlaylistForm';
 import { PlaylistInputs } from '@/src/types/playlistInputs';
 import { Song, db } from '@/src/lib/db';
 import { toast } from 'react-toastify';
+import { createClient } from '@/src/lib/supabase/client';
 
 type PlaylistResponse = {
   id: string;
@@ -28,25 +29,56 @@ export default function EditPlaylistPage() {
   const [loading, setLoading] = useState(true);
   const [originalSongs, setOriginalSongs] = useState<Song[]>([]);
   const [isPublicPlaylist, setIsPublicPlaylist] = useState(false);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+
+  const getAuthHeaders = async (): Promise<HeadersInit> => {
+    const supabase = createClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    console.log('SESSION:', session);
+    console.log('ACCESS TOKEN:', session?.access_token);
+
+    if (!session?.access_token) return {};
+
+    return {
+      Authorization: `Bearer ${session.access_token}`,
+    };
+  };
 
   useEffect(() => {
     const fetchPlaylistData = async () => {
       try {
+        const authHeaders = await getAuthHeaders();
+
+        const meRes = await fetch('/api/users/me', {
+          headers: {
+            ...authHeaders,
+          },
+        });
+
+        const meJson = await meRes.json().catch(() => null);
+        console.log('ME RESPONSE:', meJson);
+        const admin = !!meJson?.ok && !!meJson?.isAdmin;
+        setIsAdmin(admin);
+        console.log('ME RESPONSE:', meJson);
+
         const authPassword =
           typeof window !== 'undefined' ? sessionStorage.getItem(`playlist-password-${id}`) : null;
 
-        // require password before entering page
-        if (!authPassword) {
+        console.log('ADMIN?', admin);
+        console.log('AUTH PASSWORD?', authPassword);
+        if (!admin && !authPassword) {
           toast.error('Du må oppgi passord først');
           router.push('/');
           return;
         }
 
-        // 1) Check local private playlist first
         const localPlaylist = await db.playlists.get(id);
 
         if (localPlaylist && !localPlaylist.is_public) {
-          if (localPlaylist.playlist_password !== authPassword) {
+          if (!admin && localPlaylist.playlist_password !== authPassword) {
             toast.error('Feil passord');
             router.push('/');
             return;
@@ -83,10 +115,17 @@ export default function EditPlaylistPage() {
           return;
         }
 
-        // 2) Fallback to public/server playlist
         const [playlistRes, itemsRes, songsRes] = await Promise.all([
-          fetch(`/api/playlists/${id}`),
-          fetch(`/api/playlist_items?playlist_id=${id}`),
+          fetch(`/api/playlists/${id}`, {
+            headers: {
+              ...authHeaders,
+            },
+          }),
+          fetch(`/api/playlist_items?playlist_id=${id}`, {
+            headers: {
+              ...authHeaders,
+            },
+          }),
           fetch('/api/songs'),
         ]);
 
@@ -126,21 +165,24 @@ export default function EditPlaylistPage() {
             : 604800,
         });
       } catch (err) {
-        console.error(err);
+        console.error('fetchPlaylistData error:', err);
         toast.error('Kunne ikke hente spilleliste');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPlaylistData();
+    if (id) {
+      fetchPlaylistData();
+    }
   }, [id, router]);
 
   const handleSubmit = async (data: PlaylistInputs) => {
     try {
       const authPassword = sessionStorage.getItem(`playlist-password-${id}`) ?? '';
+      const authHeaders = await getAuthHeaders();
 
-      if (!authPassword) {
+      if (!isAdmin && !authPassword) {
         throw new Error('Missing auth password');
       }
 
@@ -153,7 +195,13 @@ export default function EditPlaylistPage() {
       if (!isPublicPlaylist) {
         const playlist = await db.playlists.get(id);
 
-        if (!playlist || playlist.playlist_password !== authPassword) {
+        if (!playlist) {
+          toast.error('Fant ikke spilleliste');
+          router.push('/');
+          return;
+        }
+
+        if (!isAdmin && playlist.playlist_password !== authPassword) {
           sessionStorage.removeItem(`playlist-password-${id}`);
           toast.error('Feil passord');
           router.push('/');
@@ -191,8 +239,14 @@ export default function EditPlaylistPage() {
           });
         }
 
+        if (!isAdmin) {
+          const nextAuthPassword =
+            data.newPassword && data.newPassword.trim() !== '' ? data.newPassword : authPassword;
+
+          sessionStorage.setItem(`playlist-password-${id}`, nextAuthPassword);
+        }
+
         toast.success('Spilleliste oppdatert');
-        sessionStorage.removeItem(`playlist-password-${id}`);
         router.push('/');
         return;
       }
@@ -201,7 +255,10 @@ export default function EditPlaylistPage() {
         ...songsToAdd.map(async (song) => {
           const res = await fetch('/api/playlist_items', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              ...authHeaders,
+            },
             body: JSON.stringify({
               playlist_id: id,
               password: authPassword,
@@ -217,7 +274,10 @@ export default function EditPlaylistPage() {
         ...songsToRemove.map(async (song) => {
           const res = await fetch('/api/playlist_items', {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              ...authHeaders,
+            },
             body: JSON.stringify({
               playlist_id: id,
               password: authPassword,
@@ -234,7 +294,10 @@ export default function EditPlaylistPage() {
 
       const res = await fetch(`/api/playlists/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeaders,
+        },
         body: JSON.stringify({
           title: data.title,
           password: authPassword,
@@ -262,7 +325,11 @@ export default function EditPlaylistPage() {
       }
 
       toast.success('Spilleliste oppdatert');
-      sessionStorage.removeItem(`playlist-password-${id}`);
+
+      if (!isAdmin) {
+        sessionStorage.removeItem(`playlist-password-${id}`);
+      }
+
       router.push('/');
     } catch (err) {
       console.error('Update playlist error:', err);
@@ -270,7 +337,7 @@ export default function EditPlaylistPage() {
     }
   };
 
-  if (loading) return <p className="p-4">Laster...</p>;
+  if (loading || isAdmin === null) return <p className="p-4">Laster...</p>;
   if (!initialValues) return <p className="p-4">Fant ikke spilleliste</p>;
 
   return <PlaylistForm onSubmit={handleSubmit} initialValues={initialValues} mode="edit" />;
