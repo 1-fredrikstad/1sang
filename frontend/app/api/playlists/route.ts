@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 
 function getEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -7,6 +8,24 @@ function getEnv() {
     throw new Error('Missing Supabase env variables');
   }
   return { supabaseUrl, anonKey };
+}
+
+function getBearerToken(req: Request): string | null {
+  const authHeader = req.headers.get('authorization');
+  const token = authHeader?.replace(/^Bearer\s+/i, '');
+  return token || null;
+}
+
+async function getIsAdmin(req: Request) {
+  const token = getBearerToken(req);
+  if (!token) return false;
+
+  try {
+    const { isAdmin } = await checkAdminAccess(token);
+    return isAdmin;
+  } catch {
+    return false;
+  }
 }
 
 export async function GET(req: Request) {
@@ -61,6 +80,7 @@ export async function POST(req: Request) {
   try {
     const { supabaseUrl, anonKey } = getEnv();
     const { action, ...payload } = await req.json();
+    const isAdmin = await getIsAdmin(req);
 
     let rpcName = '';
     let rpcBody: unknown = {};
@@ -77,29 +97,43 @@ export async function POST(req: Request) {
         break;
 
       case 'add_item':
-        rpcName = 'playlists_add_item';
-        rpcBody = {
-          p_playlist_id: payload.playlist_id,
-          p_password: payload.password,
-          p_song_id: payload.song_id,
-        };
+        rpcName = isAdmin ? 'playlists_admin_add_item' : 'playlists_add_item';
+        rpcBody = isAdmin
+          ? {
+              p_playlist_id: payload.playlist_id,
+              p_song_id: payload.song_id,
+            }
+          : {
+              p_playlist_id: payload.playlist_id,
+              p_password: payload.password,
+              p_song_id: payload.song_id,
+            };
         break;
 
       case 'remove_item':
-        rpcName = 'playlists_remove_item';
-        rpcBody = {
-          p_playlist_id: payload.playlist_id,
-          p_password: payload.password,
-          p_song_id: payload.song_id,
-        };
+        rpcName = isAdmin ? 'playlists_admin_remove_item' : 'playlists_remove_item';
+        rpcBody = isAdmin
+          ? {
+              p_playlist_id: payload.playlist_id,
+              p_song_id: payload.song_id,
+            }
+          : {
+              p_playlist_id: payload.playlist_id,
+              p_password: payload.password,
+              p_song_id: payload.song_id,
+            };
         break;
 
       case 'delete':
-        rpcName = 'playlists_delete';
-        rpcBody = {
-          p_playlist_id: payload.playlist_id,
-          p_password: payload.password,
-        };
+        rpcName = isAdmin ? 'playlists_admin_delete' : 'playlists_delete';
+        rpcBody = isAdmin
+          ? {
+              p_playlist_id: payload.playlist_id,
+            }
+          : {
+              p_playlist_id: payload.playlist_id,
+              p_password: payload.password,
+            };
         break;
 
       default:

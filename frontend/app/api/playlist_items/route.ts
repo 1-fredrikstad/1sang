@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 
 function getEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -9,6 +10,24 @@ function getEnv() {
   }
 
   return { supabaseUrl, anonKey };
+}
+
+function getBearerToken(req: Request): string | null {
+  const authHeader = req.headers.get('authorization');
+  const token = authHeader?.replace(/^Bearer\s+/i, '');
+  return token || null;
+}
+
+async function getIsAdmin(req: Request) {
+  const token = getBearerToken(req);
+  if (!token) return false;
+
+  try {
+    const { isAdmin } = await checkAdminAccess(token);
+    return isAdmin;
+  } catch {
+    return false;
+  }
 }
 
 export async function GET(req: Request) {
@@ -54,8 +73,22 @@ export async function POST(req: Request) {
   try {
     const { supabaseUrl, anonKey } = getEnv();
     const payload = await req.json();
+    const isAdmin = await getIsAdmin(req);
 
-    const res = await fetch(`${supabaseUrl}/rest/v1/rpc/playlists_add_item`, {
+    const rpcName = isAdmin ? 'playlists_admin_add_item' : 'playlists_add_item';
+
+    const rpcBody = isAdmin
+      ? {
+          p_playlist_id: payload.playlist_id,
+          p_song_id: payload.song_id,
+        }
+      : {
+          p_playlist_id: payload.playlist_id,
+          p_password: payload.password,
+          p_song_id: payload.song_id,
+        };
+
+    const res = await fetch(`${supabaseUrl}/rest/v1/rpc/${rpcName}`, {
       method: 'POST',
       headers: {
         apikey: anonKey,
@@ -63,11 +96,7 @@ export async function POST(req: Request) {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        p_playlist_id: payload.playlist_id,
-        p_password: payload.password,
-        p_song_id: payload.song_id,
-      }),
+      body: JSON.stringify(rpcBody),
     });
 
     const body = await res.json().catch(() => null);
@@ -87,8 +116,22 @@ export async function DELETE(req: Request) {
   try {
     const { supabaseUrl, anonKey } = getEnv();
     const payload = await req.json();
+    const isAdmin = await getIsAdmin(req);
 
-    const res = await fetch(`${supabaseUrl}/rest/v1/rpc/playlists_remove_item`, {
+    const rpcName = isAdmin ? 'playlists_admin_remove_item' : 'playlists_remove_item';
+
+    const rpcBody = isAdmin
+      ? {
+          p_playlist_id: payload.playlist_id,
+          p_song_id: payload.song_id,
+        }
+      : {
+          p_playlist_id: payload.playlist_id,
+          p_password: payload.password,
+          p_song_id: payload.song_id,
+        };
+
+    const res = await fetch(`${supabaseUrl}/rest/v1/rpc/${rpcName}`, {
       method: 'POST',
       headers: {
         apikey: anonKey,
@@ -96,11 +139,7 @@ export async function DELETE(req: Request) {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        p_playlist_id: payload.playlist_id,
-        p_password: payload.password,
-        p_song_id: payload.song_id,
-      }),
+      body: JSON.stringify(rpcBody),
     });
 
     const body = await res.json().catch(() => null);
