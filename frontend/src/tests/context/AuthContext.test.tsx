@@ -35,7 +35,7 @@ describe('AuthContext', () => {
       const auth = useAuth();
       return (
         <div>
-          {auth.user?.email} / {String(auth.isAdmin)} / {String(auth.isLoading)}
+          {auth.user?.email} / {String(auth.isAdmin)}
         </div>
       );
     }
@@ -45,7 +45,6 @@ describe('AuthContext', () => {
         value={{
           user: { name: 'Test User', email: 'test@example.com' },
           isAdmin: true,
-          isLoading: false,
           logout: vi.fn(),
         }}
       >
@@ -53,6 +52,6 @@ describe('AuthContext', () => {
       </AuthContext.Provider>
     );
 
-    expect(screen.getByText('test@example.com / true / false')).toBeInTheDocument();
+    expect(screen.getByText('test@example.com / true')).toBeInTheDocument();
   });
 });
