@@ -6,35 +6,19 @@ import { PlaylistInputs } from '@/src/types/playlistInputs';
 import SongList from './SongList';
 import { useSongs } from '@/src/hooks/useData';
 import { Song } from '@/src/lib/db';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { Switch } from '@/components/ui/switch';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import MobileTooltip from '../MobileTooltip';
 import SubmitButton from '../SubmitButton';
 import { useWatch } from 'react-hook-form';
-import { usePathname } from 'next/navigation';
 
 type PlaylistFormProps = {
   onSubmit: SubmitHandler<PlaylistInputs>;
 };
 
-const STORAGE_KEY = 'playlistForm';
-
 export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
-  const saved = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
-  const pathname = usePathname();
-
-  const defaultValues: PlaylistInputs = saved
-    ? JSON.parse(saved)
-    : {
-        title: '',
-        password: '',
-        songsInPlaylist: [],
-        duration: 604800,
-        isPublic: false,
-      };
-
   const {
     register,
     handleSubmit,
@@ -43,31 +27,14 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
     reset,
     formState: { errors },
   } = useForm<PlaylistInputs>({
-    defaultValues,
+    defaultValues: {
+      title: '',
+      password: '',
+      songsInPlaylist: [],
+      duration: 604800, // Default value for public playlists
+      isPublic: false,
+    },
   });
-
-  const values = useWatch({ control });
-
-  // Persist to localStorage on every change
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
-  }, [values]);
-
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      localStorage.removeItem(STORAGE_KEY); // Clear on page reload or tab close
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      // Only clear storage if the pathname changed (navigating away)
-      if (typeof window !== 'undefined' && pathname !== window.location.pathname) {
-        localStorage.removeItem(STORAGE_KEY);
-      }
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [pathname]);
 
   // Track toasts to prevent multiple toasts to show up at the same time
   const TOAST_ID = 'playlist-toast';
@@ -127,17 +94,7 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
 
   const handleFormSubmit: SubmitHandler<PlaylistInputs> = async (data) => {
     await onSubmit(data);
-    // Reset the form to initial default values
-    reset({
-      title: '',
-      password: '',
-      songsInPlaylist: [],
-      duration: 604800,
-      isPublic: false,
-    });
-
-    // Remove saved form from localStorage
-    localStorage.removeItem(STORAGE_KEY);
+    reset();
   };
 
   return (
