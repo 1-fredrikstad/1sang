@@ -37,17 +37,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     : undefined;
 
   return (
-    <AuthProvider>
-      <html lang="en" suppressHydrationWarning data-theme={headerColor}>
-        <head>
-          <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-          <link rel="manifest" href="/manifest.webmanifest" />
-          <link rel="icon" href="/favicon.ico" sizes="32x32" />
-          <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
-        </head>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
-        >
+    <html lang="en" suppressHydrationWarning data-theme={headerColor}>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <link rel="icon" href="/favicon.ico" sizes="32x32" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
+        <AuthProvider>
           <GlobalSync />
           <TooltipProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem enableColorScheme>
@@ -63,8 +61,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               </HeaderColorProvider>
             </ThemeProvider>
           </TooltipProvider>
-        </body>
-      </html>
-    </AuthProvider>
+        </AuthProvider>
+      </body>
+    </html>
   );
 }

@@ -6,7 +6,7 @@ import { AuthContext } from './AuthContext';
 export const AuthProviderInner = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
   const isMounted = useRef(true);
 
   useEffect(() => {
@@ -49,15 +49,13 @@ export const AuthProviderInner = ({ children }: { children: ReactNode }) => {
         setIsAdmin(false);
       }
 
-      setIsLoading(false);
+      setIsInitialized(true);
     };
 
     updateAuthState();
 
     const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (!isMounted.current) return;
-
-      setIsLoading(true);
 
       if (session?.user) {
         setUser({
@@ -76,7 +74,6 @@ export const AuthProviderInner = ({ children }: { children: ReactNode }) => {
       }
 
       if (!isMounted.current) return;
-      setIsLoading(false);
     });
 
     return () => {
@@ -86,21 +83,21 @@ export const AuthProviderInner = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const logout = async () => {
-    if (!isMounted.current) return;
-    setIsLoading(true);
-
     const supabase = createClient();
     await supabase.auth.signOut();
 
     if (!isMounted.current) return;
     setUser(null);
     setIsAdmin(false);
-    setIsLoading(false);
   };
 
-  return (
-    <AuthContext.Provider value={{ user, isAdmin, isLoading, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  if (!isInitialized) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <p>Laster...</p>
+      </div>
+    );
+  }
+
+  return <AuthContext.Provider value={{ user, isAdmin, logout }}>{children}</AuthContext.Provider>;
 };

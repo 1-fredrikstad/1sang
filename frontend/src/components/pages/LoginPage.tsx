@@ -6,9 +6,9 @@ import { useAuth } from '@/src/context/AuthContext';
 import Image from 'next/image';
 
 export default function LoginPage() {
-  const { user, isLoading } = useAuth();
+  const { user } = useAuth();
 
-  if (isLoading || user) {
+  if (user) {
     return <Spinner message="Laster inn" />; // Show spinner while checking or redirecting
   }
 
