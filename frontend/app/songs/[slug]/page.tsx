@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useAuth } from '@/src/context/AuthContext';
 import WakeLockToggle from '@/src/components/WakeLockToggle';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
+import { FaSpotify, FaYoutube } from 'react-icons/fa';
 
 export default function SongPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -38,9 +39,32 @@ export default function SongPage() {
     );
   }
 
+  const getLinkPlatform = (url: string) => {
+    try {
+      const hostname = new URL(url).hostname;
+
+      if (hostname.includes('spotify.com')) {
+        return { name: 'Spotify', icon: FaSpotify, color: 'text-green-500' };
+      }
+      if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
+        return { name: 'YouTube', icon: FaYoutube, color: 'text-red-500' };
+      }
+    } catch {
+      return { name: 'Link' };
+    }
+
+    return { name: 'Link' };
+  };
+
+  const { name, icon: Icon, color } = getLinkPlatform(song.spotify_youtube || '');
+
   return (
     <>
-      <div className="mx-auto w-full max-w-300 px-4 flex justify-end mt-4">
+      <div className="mx-auto w-full max-w-300 px-4 flex justify-between mt-4">
+        <div className="cursor-pointer">
+          <BackButton />
+        </div>
+
         <WakeLockToggle />
       </div>
 
@@ -63,11 +87,23 @@ export default function SongPage() {
         </div>
 
         {song.melody && <p className="opacity-60 mt-1">Melodi: {song.melody}</p>}
-
+        {song.spotify_youtube && (
+          <p className="opacity-60 mt-1 flex flex-col items-center">
+            <span>Link:</span>
+            <a
+              href={song.spotify_youtube}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 font-semibold hover:underline"
+            >
+              {Icon && <Icon className={`w-4 h-4 ${color}`} />}
+              <span>{name}</span>
+            </a>
+          </p>
+        )}
         <pre className="mt-8 flex justify-center text-center whitespace-pre-wrap">
           {song.lyrics || 'Ingen sangtekst'}
         </pre>
-
         {song.author && <p className="opacity-60 mt-1">Skrevet av: {song.author}</p>}
       </main>
     </>

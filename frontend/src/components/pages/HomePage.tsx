@@ -1,12 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Song } from '@/src/lib/db';
 import { db } from '@/src/lib/db';
 import { SongBox } from '../SongBox';
 import { SongListProps } from '@/src/types/songList';
+import { SearchField } from '../SearchField';
+import { useDebounce } from '@/src/hooks/useDebounce';
 import TagSelect from '@/src/components/TagSelect';
+import { searchByTitle } from '@/src/lib/search/searchByTitle';
 
 type Tag = {
   id: string;
@@ -14,7 +17,13 @@ type Tag = {
 };
 
 export function HomePage({ songs = [], isLoading, error }: SongListProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedQuery = useDebounce(searchQuery, 300);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+
+  const searchedSongs = useMemo(() => {
+    return searchByTitle(songs, debouncedQuery);
+  }, [songs, debouncedQuery]);
 
   const matchingSongIds =
     useLiveQuery(async () => {
@@ -26,16 +35,19 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
       return [...new Set(relations.map((relation) => relation.song_id))];
     }, [selectedTags]) ?? [];
 
-  const filteredSongs =
+  const displayedSongs =
     selectedTags.length === 0
-      ? songs
-      : songs.filter((song: Song) => matchingSongIds.includes(song.id));
+      ? searchedSongs
+      : searchedSongs.filter((song: Song) => matchingSongIds.includes(song.id));
 
   if (error) return <div>Error: {error.message}</div>;
 
   return (
     <div>
       <h1 className="mb-5 text-xl">Alle sanger</h1>
+
+      <SearchField value={searchQuery} onChange={setSearchQuery} />
+
       <div className="mb-10 w-fit">
         <TagSelect
           value={selectedTags}
@@ -46,11 +58,19 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
 
       {isLoading && <p>Synkroniserer med supabase...</p>}
 
-      {filteredSongs.length === 0 ? (
-        <p>Ingen sanger matcher valgte tags.</p>
+      {!isLoading && searchQuery.trim() && (
+        <p className="mb-3 text-sm text-neutral-500">{displayedSongs.length} treff</p>
+      )}
+
+      {!isLoading && displayedSongs.length === 0 ? (
+        <p className="text-sm text-neutral-500">
+          {selectedTags.length > 0
+            ? 'Ingen sanger matcher søk og valgte tags.'
+            : 'Ingen sanger funnet.'}
+        </p>
       ) : (
         <ul className="flex flex-col gap-2">
-          {filteredSongs.map((song: Song) => (
+          {displayedSongs.map((song: Song) => (
             <li key={song.id}>
               <SongBox song={song} />
             </li>

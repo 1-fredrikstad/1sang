@@ -18,6 +18,7 @@ type Inputs = {
   author: string;
   lyrics: string;
   tags?: Tag[];
+  spotify_youtube: string;
 };
 
 type SongFormProps = {
@@ -50,6 +51,7 @@ export default function SongForm({
       melody: '',
       author: '',
       lyrics: '',
+      spotify_youtube: '',
       tags: [],
       ...initialValues,
     },
@@ -62,6 +64,7 @@ export default function SongForm({
         melody: initialValues.melody ?? '',
         author: initialValues.author ?? '',
         lyrics: initialValues.lyrics ?? '',
+        spotify_youtube: initialValues.spotify_youtube ?? '',
         tags: initialValues.tags ?? [],
       });
     }
@@ -147,9 +150,31 @@ export default function SongForm({
         <label>Tags</label>
         {showTags && <TagSelect value={selectedTags} onChange={(tags) => setValue('tags', tags)} />}
 
+        {/* Spotify */}
+        <span>
+          <label>Spotify/YouTube-lenke</label>
+          {errors.spotify_youtube && (
+            <span className="text-red-500 italic ml-2">{errors.spotify_youtube.message}</span>
+          )}
+        </span>
+
+        <input
+          {...register('spotify_youtube', getFieldValidation('spotify_youtube'))}
+          className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
+        ></input>
+
         {/* Submit */}
         <SubmitButton submitLabel={submitLabel} />
       </form>
     </>
   );
+}
+
+function getLinkType(url: string) {
+  if (!url) return null;
+
+  if (url.includes('spotify.com')) return 'spotify';
+  if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
+
+  return null;
 }
