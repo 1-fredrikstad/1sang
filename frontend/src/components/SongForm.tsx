@@ -1,8 +1,16 @@
 'use client';
 
 import { getFieldValidation } from '@/src/lib/validation/songSuggestionSchema';
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroupTextarea,
+} from '@/components/ui/input-group';
 import { toast } from 'react-toastify';
 import TagSelect from './TagSelect';
 
@@ -10,8 +18,10 @@ type Tag = {
   id: string;
   name: string;
 };
+
 import SubmitButton from './SubmitButton';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 type Inputs = {
   title: string;
@@ -30,6 +40,8 @@ type SongFormProps = {
   onSubmit: (data: Omit<Inputs, 'tags'> & { tags?: string[] }) => Promise<void> | void;
   toastSuccessMessage?: string;
 };
+
+const MAX_LYRICS_LENGTH = 3000;
 
 export default function SongForm({
   heading,
@@ -60,22 +72,24 @@ export default function SongForm({
 
   const router = useRouter();
 
-  useEffect(() => {
-    if (initialValues) {
-      reset({
-        title: initialValues.title ?? '',
-        melody: initialValues.melody ?? '',
-        author: initialValues.author ?? '',
-        lyrics: initialValues.lyrics ?? '',
-        spotify_youtube: initialValues.spotify_youtube ?? '',
-        tags: initialValues.tags ?? [],
-      });
-    }
-  }, [initialValues, reset]);
+  // useEffect(() => {
+  //   if (initialValues) {
+  //     reset({
+  //       title: initialValues.title ?? '',
+  //       melody: initialValues.melody ?? '',
+  //       author: initialValues.author ?? '',
+  //       lyrics: initialValues.lyrics ?? '',
+  //       spotify_youtube: initialValues.spotify_youtube ?? '',
+  //       tags: initialValues.tags ?? [],
+  //     });
+  //   }
+  // }, [initialValues, reset]);
 
   const lyricsValue = useWatch({ control, name: 'lyrics' }) || '';
+  const charCount = lyricsValue.length;
+  const isNearLimit = charCount > 2900;
+
   const selectedTags = useWatch({ control, name: 'tags' }) ?? [];
-  // const notify = () => toast('Sang lagt inn');
 
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
@@ -95,81 +109,102 @@ export default function SongForm({
   };
 
   return (
-    <>
-      <form
-        onSubmit={handleSubmit(handleFormSubmit)}
-        className="flex flex-col m-8 mb-4 gap-1 max-w-2xl md:mx-auto"
-      >
-        <h1 className=" text-xl mb-2">{heading}</h1>
+    <form
+      id="form-add-song"
+      onSubmit={handleSubmit(handleFormSubmit)}
+      className="flex flex-col m-8 mb-4 gap-1 max-w-2xl md:mx-auto"
+    >
+      <h1 className=" text-xl mb-2">{heading}</h1>
 
+      <FieldGroup>
         {/* Title */}
-        <span>
-          <label htmlFor="title">Tittel*</label>
-          {errors.title && (
-            <span className="text-red-500 italic ml-2">{errors.title.message}</span>
-          )}{' '}
-        </span>
-        <input
-          id="title"
-          {...register('title', getFieldValidation('title'))}
-          className=" mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
-        ></input>
+        <Field data-invalid={!!errors.title}>
+          <FieldLabel htmlFor="form-add-song-title">Tittel*</FieldLabel>
+          <Input
+            id="form-add-song-title"
+            aria-invalid={!!errors.title}
+            {...register('title', getFieldValidation('title'))}
+            className="focus-visible:ring-1 text-sm"
+          />
+          {errors.title && <FieldError errors={[errors.title]} />}
+        </Field>
 
         {/* Author */}
-        <label htmlFor="author">Låtskriver</label>
-        <input
-          id="author"
-          {...register('author', getFieldValidation('author'))}
-          className="mb-5 p-1 outline outline-[#E6E4E2]  rounded-xs"
-        />
+        <Field data-invalid={!!errors.author}>
+          <FieldLabel htmlFor="form-add-song-author">Låtskriver</FieldLabel>
+          <Input
+            id="form-add-song-author"
+            aria-invalid={!!errors.author}
+            {...register('author', getFieldValidation('author'))}
+            className="focus-visible:ring-1 text-sm"
+          />
+          {errors.author && <FieldError errors={[errors.author]} />}
+        </Field>
 
         {/* Melody */}
-        <label htmlFor="melody">Melodi</label>
-        <input
-          id="melody"
-          {...register('melody', getFieldValidation('melody'))}
-          className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
-        ></input>
+        <Field data-invalid={!!errors.melody}>
+          <FieldLabel htmlFor="form-add-song-melody">Melodi</FieldLabel>
+          <Input
+            id="form-add-song-melody"
+            aria-invalid={!!errors.melody}
+            {...register('melody', getFieldValidation('melody'))}
+            className="focus-visible:ring-1 text-sm"
+          />
+          {errors.melody && <FieldError errors={[errors.melody]} />}
+        </Field>
 
         {/* Lyrics */}
-        <span>
-          <label htmlFor="lyrics">Sangtekst*</label>
-          {errors.lyrics && (
-            <span className="text-red-500 italic ml-2">{errors.lyrics.message}</span>
-          )}
-        </span>
-        <textarea
-          id="lyrics"
-          {...register('lyrics', getFieldValidation('lyrics'))}
-          className="p-1 outline outline-[#E6E4E2] rounded-sm h-70 resize-y text-left"
-        ></textarea>
-        <div
-          className={`text-sm text-right mr-2 ${
-            lyricsValue.length > 2900 ? 'text-red-500' : 'text-gray-500'
-          }`}
-        >
-          {lyricsValue.length} / 3000
-        </div>
+        <Field data-invalid={!!errors.lyrics}>
+          <FieldLabel htmlFor="form-add-song-lyrics">Sangtekst*</FieldLabel>
+          <InputGroup>
+            <InputGroupTextarea
+              id="form-add-song-lyrics"
+              aria-invalid={!!errors.lyrics}
+              rows={6}
+              {...register('lyrics', getFieldValidation('lyrics'))}
+              className="focus-visible:ring-1 text-sm"
+            />
+            <InputGroupAddon align="block-end">
+              <InputGroupText
+                className={`text-sm text-right mr-2 tabular-nums ${
+                  isNearLimit ? 'text-red-500' : 'text-gray-500'
+                }`}
+              >
+                {charCount} / {MAX_LYRICS_LENGTH}
+              </InputGroupText>
+            </InputGroupAddon>
+          </InputGroup>
+          {errors.lyrics && <FieldError errors={[errors.lyrics]} />}
+        </Field>
+
+        {/* Links */}
+        <Field data-invalid={!!errors.spotify_youtube}>
+          <FieldLabel htmlFor="add-form-song-link">Spotify/YouTube-lenke</FieldLabel>
+          <Input
+            id="form-add-song-link"
+            aria-invalid={!!errors.spotify_youtube}
+            {...register('spotify_youtube', getFieldValidation('spotify_youtube'))}
+            className="focus-visible:ring-1 text-sm"
+          />
+          {errors.spotify_youtube && <FieldError errors={[errors.spotify_youtube]} />}
+        </Field>
+
         {/* Tags */}
-        <label>Tags</label>
-        {showTags && <TagSelect value={selectedTags} onChange={(tags) => setValue('tags', tags)} />}
-
-        {/* Spotify */}
-        <span>
-          <label>Spotify/YouTube-lenke</label>
-          {errors.spotify_youtube && (
-            <span className="text-red-500 italic ml-2">{errors.spotify_youtube.message}</span>
+        <Field className="w-56">
+          <FieldLabel htmlFor="form-add-song-tags">Tags</FieldLabel>
+          {showTags && (
+            <TagSelect value={selectedTags} onChange={(tags) => setValue('tags', tags)} />
           )}
-        </span>
+        </Field>
+      </FieldGroup>
 
-        <input
-          {...register('spotify_youtube', getFieldValidation('spotify_youtube'))}
-          className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
-        ></input>
-
-        {/* Submit */}
+      {/* Submit and reset */}
+      <div className="mt-4 flex flex-row gap-4">
         <SubmitButton submitLabel={submitLabel} />
-      </form>
-    </>
+        <Button type="button" variant="outline" onClick={() => reset()} className="cursor-pointer">
+          Reset
+        </Button>
+      </div>
+    </form>
   );
 }
