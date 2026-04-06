@@ -152,22 +152,9 @@ describe('EditSongPage', () => {
     );
   });
 
-  test('shows loading when auth is loading', () => {
-    mockUseAuth.mockReturnValue({
-      isAdmin: false,
-      isLoading: true,
-    });
-    mockUseLiveQuery.mockReturnValue(undefined);
-
-    render(<EditSongPage />);
-
-    expect(screen.getByText('Laster...')).toBeInTheDocument();
-  });
-
   test('shows access denied when user is not admin', () => {
     mockUseAuth.mockReturnValue({
       isAdmin: false,
-      isLoading: false,
     });
     mockUseLiveQuery.mockReturnValue(undefined);
 
@@ -180,7 +167,6 @@ describe('EditSongPage', () => {
   test('passes existing tags to SongForm initialValues', () => {
     mockUseAuth.mockReturnValue({
       isAdmin: true,
-      isLoading: false,
     });
 
     const song = {
@@ -217,7 +203,6 @@ describe('EditSongPage', () => {
 
     mockUseAuth.mockReturnValue({
       isAdmin: true,
-      isLoading: false,
     });
 
     const song = {

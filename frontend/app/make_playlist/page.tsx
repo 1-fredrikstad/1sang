@@ -1,6 +1,5 @@
 'use client';
 
-import { useAuth } from '@/src/context/AuthContext';
 import { SubmitHandler } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import PlaylistForm from '@/src/components/playlist/PlaylistForm';
@@ -8,12 +7,6 @@ import { PlaylistInputs } from '@/src/types/playlistInputs';
 import { savePlaylist } from '@/src/lib/playlists/savePlaylists';
 
 export default function MakePlaylistPage() {
-  const { isLoading } = useAuth();
-
-  if (isLoading) {
-    return <p className="text-center mt-10">Laster...</p>;
-  }
-
   const handleFormSubmit: SubmitHandler<PlaylistInputs> = async (data) => {
     try {
       // Prevent creating empty playlists

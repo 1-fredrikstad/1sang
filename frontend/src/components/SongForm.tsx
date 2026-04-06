@@ -11,6 +11,7 @@ type Tag = {
   name: string;
 };
 import SubmitButton from './SubmitButton';
+import { useRouter } from 'next/navigation';
 
 type Inputs = {
   title: string;
@@ -57,6 +58,8 @@ export default function SongForm({
     },
   });
 
+  const router = useRouter();
+
   useEffect(() => {
     if (initialValues) {
       reset({
@@ -84,6 +87,7 @@ export default function SongForm({
       await onSubmit(payload);
 
       toast.success(toastSuccessMessage);
+      router.push('/');
     } catch (error) {
       console.error(error);
       toast.error(error instanceof Error ? error.message : 'Noe gikk galt');
@@ -168,13 +172,4 @@ export default function SongForm({
       </form>
     </>
   );
-}
-
-function getLinkType(url: string) {
-  if (!url) return null;
-
-  if (url.includes('spotify.com')) return 'spotify';
-  if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
-
-  return null;
 }

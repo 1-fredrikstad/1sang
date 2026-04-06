@@ -13,6 +13,7 @@ import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import MobileTooltip from '../MobileTooltip';
 import SubmitButton from '../SubmitButton';
 import { useWatch } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 
 type PlaylistFormProps = {
   onSubmit: SubmitHandler<PlaylistInputs>;
@@ -24,7 +25,6 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
     handleSubmit,
     setValue,
     control,
-    reset,
     formState: { errors },
   } = useForm<PlaylistInputs>({
     defaultValues: {
@@ -35,6 +35,8 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
       isPublic: false,
     },
   });
+
+  const router = useRouter();
 
   // Track toasts to prevent multiple toasts to show up at the same time
   const TOAST_ID = 'playlist-toast';
@@ -94,7 +96,7 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
 
   const handleFormSubmit: SubmitHandler<PlaylistInputs> = async (data) => {
     await onSubmit(data);
-    reset();
+    router.push('/');
   };
 
   return (
