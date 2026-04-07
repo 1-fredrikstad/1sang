@@ -12,7 +12,7 @@ import {
 import { EllipsisVerticalIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { Playlist, db } from '@/src/lib/db';
+import { Playlist } from '@/src/lib/db';
 
 type PlaylistSettingsMenuProps = {
   playlist: Playlist;
