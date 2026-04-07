@@ -7,7 +7,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { useSearchParams } from 'next/navigation';
 
 export default function Admin() {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
   const params = useSearchParams();
   const error = params.get('error');
@@ -18,8 +18,7 @@ export default function Admin() {
     }
   }, [user, router]);
 
-  if (authLoading || user)
-    return <Spinner message={user ? 'Omdirigerer til admin' : 'Laster inn'} />;
+  if (user) return <Spinner message={user ? 'Omdirigerer til admin' : 'Laster inn'} />;
 
   if (error === 'invalid-user') {
     return (

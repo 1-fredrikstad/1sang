@@ -7,9 +7,9 @@ import { useAuth } from '@/src/context/AuthContext';
 
 export default function AdminContent() {
   const { data: suggestions, isLoading: suggestionsLoading } = useSongSuggestions();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user } = useAuth();
 
-  if (authLoading || suggestionsLoading) {
+  if (suggestionsLoading) {
     return <Spinner message="Laster inn admin" />;
   }
 

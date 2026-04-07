@@ -13,7 +13,7 @@ import { useState } from 'react';
 export default function EditSongPage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
-  const { isAdmin, isLoading } = useAuth();
+  const { isAdmin } = useAuth();
   const [isDeletingSong, setIsDeletingSong] = useState(false);
 
   const song = useLiveQuery<Song | undefined>(
@@ -33,10 +33,6 @@ export default function EditSongPage() {
 
     return resolvedTags;
   }, [song?.id]);
-
-  if (isLoading) {
-    return <p className="text-center mt-10">Laster...</p>;
-  }
 
   if (!isAdmin) {
     return <p className="text-center mt-10">Ingen tilgang.</p>;

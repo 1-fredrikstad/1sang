@@ -22,14 +22,13 @@ vi.mock('@/src/lib/supabase/client', () => ({
 }));
 
 function TestConsumer() {
-  const { user, isAdmin, isLoading, logout } = useAuth();
+  const { user, isAdmin, logout } = useAuth();
 
   return (
     <div>
       <div data-testid="name">{user?.name ?? 'null'}</div>
       <div data-testid="email">{user?.email ?? 'null'}</div>
       <div data-testid="isAdmin">{String(isAdmin)}</div>
-      <div data-testid="isLoading">{String(isLoading)}</div>
       <button onClick={() => void logout()}>Logout</button>
     </div>
   );
@@ -65,11 +64,12 @@ describe('AuthProviderInner', () => {
 
     renderProvider();
 
+    await waitFor(() => expect(screen.queryByText('Laster...')).not.toBeInTheDocument());
+
     await waitFor(() => {
       expect(screen.getByTestId('name').textContent).toBe('null');
       expect(screen.getByTestId('email').textContent).toBe('null');
       expect(screen.getByTestId('isAdmin').textContent).toBe('false');
-      expect(screen.getByTestId('isLoading').textContent).toBe('false');
     });
   });
 
@@ -98,7 +98,6 @@ describe('AuthProviderInner', () => {
       expect(screen.getByTestId('name').textContent).toBe('Jane Doe');
       expect(screen.getByTestId('email').textContent).toBe('user@example.com');
       expect(screen.getByTestId('isAdmin').textContent).toBe('true');
-      expect(screen.getByTestId('isLoading').textContent).toBe('false');
     });
   });
 
@@ -138,7 +137,6 @@ describe('AuthProviderInner', () => {
       expect(screen.getByTestId('name').textContent).toBe('null');
       expect(screen.getByTestId('email').textContent).toBe('null');
       expect(screen.getByTestId('isAdmin').textContent).toBe('false');
-      expect(screen.getByTestId('isLoading').textContent).toBe('false');
     });
   });
 });
