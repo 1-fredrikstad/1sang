@@ -115,7 +115,9 @@ export default function EditPlaylistPage() {
 
         if (!admin) {
           if (!authPassword) {
-            toast.error('Du må oppgi passord først');
+            toast.error('Du må oppgi passord først', {
+              toastId: 'playlist-auth-required',
+            });
             router.push('/');
             return;
           }
@@ -136,7 +138,9 @@ export default function EditPlaylistPage() {
 
           if (!verifyRes.ok || !verifyJson?.ok || !verifyJson?.data) {
             sessionStorage.removeItem(`playlist-password-${id}`);
-            toast.error('Du må oppgi gyldig passord først');
+            toast.error('Du må oppgi gyldig passord først', {
+              toastId: 'playlist-auth-invalid',
+            });
             router.push('/');
             return;
           }
@@ -189,7 +193,9 @@ export default function EditPlaylistPage() {
         });
       } catch (err) {
         console.error('fetchPlaylistData error:', err);
-        toast.error('Kunne ikke hente spilleliste');
+        toast.error('Kunne ikke hente spilleliste', {
+          toastId: 'playlist-fetch-error',
+        });
       } finally {
         setLoading(false);
       }
