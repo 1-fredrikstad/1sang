@@ -28,26 +28,20 @@ export default function PlaylistSettingsMenu({
   const router = useRouter();
 
   const handleEdit = async () => {
-    if (isAdmin) {
+    if (isAdmin || !playlist.is_public) {
+      router.push(editUrl ?? `/playlists/${playlist.id}/edit`);
+      return;
+    }
+
+    const storedPassword = sessionStorage.getItem(`playlist-password-${playlist.id}`);
+
+    if (storedPassword) {
       router.push(editUrl ?? `/playlists/${playlist.id}/edit`);
       return;
     }
 
     const password = prompt('Skriv passord for å redigere spillelisten');
     if (!password) return;
-
-    if (!playlist.is_public) {
-      const localPlaylist = await db.playlists.get(playlist.id);
-
-      if (!localPlaylist || localPlaylist.playlist_password !== password) {
-        toast.error('Feil passord');
-        return;
-      }
-
-      sessionStorage.setItem(`playlist-password-${playlist.id}`, password);
-      router.push(editUrl ?? `/playlists/${playlist.id}/edit`);
-      return;
-    }
 
     const res = await fetch('/api/playlists/verify', {
       method: 'POST',

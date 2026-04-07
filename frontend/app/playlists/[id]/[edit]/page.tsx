@@ -31,14 +31,11 @@ export default function EditPlaylistPage() {
   const [isPublicPlaylist, setIsPublicPlaylist] = useState(false);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
-  const getAuthHeaders = async (): Promise<HeadersInit> => {
+  const getAuthHeaders = async (): Promise<Record<string, string>> => {
     const supabase = createClient();
     const {
       data: { session },
     } = await supabase.auth.getSession();
-
-    console.log('SESSION:', session);
-    console.log('ACCESS TOKEN:', session?.access_token);
 
     if (!session?.access_token) return {};
 
@@ -47,43 +44,39 @@ export default function EditPlaylistPage() {
     };
   };
 
+  const replaceLocalPlaylistItems = async (playlistId: string, songs: Song[]) => {
+    const existingItems = await db.playlist_items.where('playlist_id').equals(playlistId).toArray();
+
+    for (const item of existingItems) {
+      await db.playlist_items.delete([item.playlist_id, item.song_id]);
+    }
+
+    for (const [index, song] of songs.entries()) {
+      await db.playlist_items.put({
+        playlist_id: playlistId,
+        song_id: song.id,
+        position: index + 1,
+      });
+    }
+  };
+
   useEffect(() => {
     const fetchPlaylistData = async () => {
       try {
         const authHeaders = await getAuthHeaders();
 
         const meRes = await fetch('/api/users/me', {
-          headers: {
-            ...authHeaders,
-          },
+          headers: authHeaders,
         });
 
         const meJson = await meRes.json().catch(() => null);
-        console.log('ME RESPONSE:', meJson);
         const admin = !!meJson?.ok && !!meJson?.isAdmin;
         setIsAdmin(admin);
-        console.log('ME RESPONSE:', meJson);
-
-        const authPassword =
-          typeof window !== 'undefined' ? sessionStorage.getItem(`playlist-password-${id}`) : null;
-
-        console.log('ADMIN?', admin);
-        console.log('AUTH PASSWORD?', authPassword);
-        if (!admin && !authPassword) {
-          toast.error('Du må oppgi passord først');
-          router.push('/');
-          return;
-        }
 
         const localPlaylist = await db.playlists.get(id);
 
+        // Private/local playlist: no password required to enter edit page
         if (localPlaylist && !localPlaylist.is_public) {
-          if (!admin && localPlaylist.playlist_password !== authPassword) {
-            toast.error('Feil passord');
-            router.push('/');
-            return;
-          }
-
           setIsPublicPlaylist(false);
 
           const items = await db.playlist_items.where('playlist_id').equals(id).sortBy('position');
@@ -103,7 +96,7 @@ export default function EditPlaylistPage() {
             password: '',
             newPassword: '',
             songsInPlaylist,
-            isPublic: localPlaylist.is_public,
+            isPublic: false,
             duration: localPlaylist.expires_at
               ? Math.max(
                   0,
@@ -115,16 +108,45 @@ export default function EditPlaylistPage() {
           return;
         }
 
+        // Public playlist: require password unless admin
+        const authPassword =
+          typeof window !== 'undefined' ? sessionStorage.getItem(`playlist-password-${id}`) : null;
+
+        if (!admin) {
+          if (!authPassword) {
+            toast.error('Du må oppgi passord først');
+            router.push('/');
+            return;
+          }
+
+          const verifyRes = await fetch('/api/playlists/verify', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...authHeaders,
+            },
+            body: JSON.stringify({
+              playlist_id: id,
+              password: authPassword,
+            }),
+          });
+
+          const verifyJson = await verifyRes.json().catch(() => null);
+
+          if (!verifyRes.ok || !verifyJson?.ok || !verifyJson?.data) {
+            sessionStorage.removeItem(`playlist-password-${id}`);
+            toast.error('Du må oppgi gyldig passord først');
+            router.push('/');
+            return;
+          }
+        }
+
         const [playlistRes, itemsRes, songsRes] = await Promise.all([
           fetch(`/api/playlists/${id}`, {
-            headers: {
-              ...authHeaders,
-            },
+            headers: authHeaders,
           }),
           fetch(`/api/playlist_items?playlist_id=${id}`, {
-            headers: {
-              ...authHeaders,
-            },
+            headers: authHeaders,
           }),
           fetch('/api/songs'),
         ]);
@@ -159,7 +181,7 @@ export default function EditPlaylistPage() {
           password: '',
           newPassword: '',
           songsInPlaylist,
-          isPublic: playlist.is_public,
+          isPublic: true,
           duration: playlist.expires_at
             ? Math.max(0, Math.floor((new Date(playlist.expires_at).getTime() - Date.now()) / 1000))
             : 604800,
@@ -182,8 +204,8 @@ export default function EditPlaylistPage() {
       const authPassword = sessionStorage.getItem(`playlist-password-${id}`) ?? '';
       const authHeaders = await getAuthHeaders();
 
-      if (!isAdmin && !authPassword) {
-        throw new Error('Missing auth password');
+      if (!data.songsInPlaylist?.length) {
+        throw new Error('Velg minst én sang');
       }
 
       const originalSongIds = originalSongs.map((song) => song.id);
@@ -192,6 +214,80 @@ export default function EditPlaylistPage() {
       const songsToAdd = data.songsInPlaylist.filter((song) => !originalSongIds.includes(song.id));
       const songsToRemove = originalSongs.filter((song) => !updatedSongIds.includes(song.id));
 
+      // PRIVATE -> PUBLIC
+      if (!isPublicPlaylist && data.isPublic) {
+        const localPlaylist = await db.playlists.get(id);
+
+        if (!localPlaylist) {
+          throw new Error('Fant ikke spilleliste');
+        }
+
+        const passwordToUse =
+          data.newPassword && data.newPassword.trim() !== ''
+            ? data.newPassword.trim()
+            : localPlaylist.playlist_password?.trim();
+
+        if (!passwordToUse) {
+          throw new Error('Du må angi passord for å gjøre spillelisten offentlig');
+        }
+
+        const createRes = await fetch('/api/playlists', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...authHeaders,
+          },
+          body: JSON.stringify({
+            action: 'create',
+            title: data.title,
+            password: passwordToUse,
+            is_public: true,
+            expires_at: new Date(Date.now() + data.duration * 1000).toISOString(),
+          }),
+        });
+
+        const createJson = await createRes.json().catch(() => null);
+
+        if (!createRes.ok || !createJson?.ok || !createJson?.data?.id) {
+          throw new Error('Kunne ikke opprette offentlig spilleliste');
+        }
+
+        const newPlaylistId = createJson.data.id as string;
+
+        for (const song of data.songsInPlaylist) {
+          const addRes = await fetch('/api/playlist_items', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...authHeaders,
+            },
+            body: JSON.stringify({
+              playlist_id: newPlaylistId,
+              password: passwordToUse,
+              song_id: song.id,
+            }),
+          });
+
+          const addJson = await addRes.json().catch(() => null);
+
+          if (!addRes.ok || !addJson?.ok) {
+            throw new Error(`Kunne ikke legge til sang ${song.id}`);
+          }
+        }
+
+        await db.playlists.delete(id);
+
+        const localItems = await db.playlist_items.where('playlist_id').equals(id).toArray();
+        for (const item of localItems) {
+          await db.playlist_items.delete([item.playlist_id, item.song_id]);
+        }
+
+        sessionStorage.setItem(`playlist-password-${newPlaylistId}`, passwordToUse);
+        toast.success('Spilleliste gjort offentlig');
+        return;
+      }
+
+      // PRIVATE -> PRIVATE
       if (!isPublicPlaylist) {
         const playlist = await db.playlists.get(id);
 
@@ -201,54 +297,76 @@ export default function EditPlaylistPage() {
           return;
         }
 
-        if (!isAdmin && playlist.playlist_password !== authPassword) {
-          sessionStorage.removeItem(`playlist-password-${id}`);
-          toast.error('Feil passord');
-          router.push('/');
-          return;
-        }
-
         await db.playlists.update(id, {
           title: data.title,
-          is_public: data.isPublic,
-          expires_at: data.isPublic
-            ? new Date(Date.now() + data.duration * 1000).toISOString()
-            : new Date('2100-01-01T00:00:00.000Z').toISOString(),
+          is_public: false,
+          expires_at: null,
           updated_at: new Date().toISOString(),
           playlist_password:
             data.newPassword && data.newPassword.trim() !== ''
-              ? data.newPassword
+              ? data.newPassword.trim()
               : playlist.playlist_password,
         });
 
-        for (const song of songsToRemove) {
-          await db.playlist_items.delete([id, song.id]);
-        }
-
-        const currentItems = await db.playlist_items
-          .where('playlist_id')
-          .equals(id)
-          .sortBy('position');
-        let nextPosition = currentItems.length + 1;
-
-        for (const song of songsToAdd) {
-          await db.playlist_items.put({
-            playlist_id: id,
-            song_id: song.id,
-            position: nextPosition++,
-          });
-        }
-
-        if (!isAdmin) {
-          const nextAuthPassword =
-            data.newPassword && data.newPassword.trim() !== '' ? data.newPassword : authPassword;
-
-          sessionStorage.setItem(`playlist-password-${id}`, nextAuthPassword);
-        }
+        await db.songs.bulkPut(data.songsInPlaylist);
+        await replaceLocalPlaylistItems(id, data.songsInPlaylist);
 
         toast.success('Spilleliste oppdatert');
-        router.push('/');
         return;
+      }
+
+      // PUBLIC -> PRIVATE
+      if (isPublicPlaylist && !data.isPublic) {
+        if (!isAdmin && !authPassword) {
+          throw new Error('Missing auth password');
+        }
+
+        await db.songs.bulkPut(data.songsInPlaylist);
+
+        await db.playlists.put({
+          id,
+          title: data.title,
+          playlist_password:
+            data.newPassword && data.newPassword.trim() !== ''
+              ? data.newPassword.trim()
+              : authPassword,
+          synced: 0,
+          is_public: false,
+          expires_at: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          version: 1,
+          server_id: undefined,
+          has_password: false,
+        });
+
+        await replaceLocalPlaylistItems(id, data.songsInPlaylist);
+
+        const deleteRes = await fetch(`/api/playlists/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            ...authHeaders,
+          },
+          body: JSON.stringify({
+            password: authPassword,
+          }),
+        });
+
+        const deleteJson = await deleteRes.json().catch(() => null);
+
+        if (!deleteRes.ok || !deleteJson?.ok) {
+          throw new Error('Kunne ikke fjerne offentlig spilleliste fra server');
+        }
+
+        sessionStorage.removeItem(`playlist-password-${id}`);
+        toast.success('Spilleliste gjort privat og lagret lokalt');
+        return;
+      }
+
+      // PUBLIC -> PUBLIC
+      if (!isAdmin && !authPassword) {
+        throw new Error('Missing auth password');
       }
 
       await Promise.all([
@@ -302,10 +420,8 @@ export default function EditPlaylistPage() {
           title: data.title,
           password: authPassword,
           newPassword: data.newPassword ?? '',
-          is_public: data.isPublic,
-          expires_at: data.isPublic
-            ? new Date(Date.now() + data.duration * 1000).toISOString()
-            : new Date('2100-01-01T00:00:00.000Z').toISOString(),
+          is_public: true,
+          expires_at: new Date(Date.now() + data.duration * 1000).toISOString(),
         }),
       });
 
@@ -329,11 +445,9 @@ export default function EditPlaylistPage() {
       if (!isAdmin) {
         sessionStorage.removeItem(`playlist-password-${id}`);
       }
-
-      router.push('/');
     } catch (err) {
       console.error('Update playlist error:', err);
-      toast.error('Kunne ikke oppdatere spilleliste');
+      toast.error(err instanceof Error ? err.message : 'Kunne ikke oppdatere spilleliste');
     }
   };
 
