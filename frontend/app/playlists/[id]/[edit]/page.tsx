@@ -7,6 +7,7 @@ import { PlaylistInputs } from '@/src/types/playlistInputs';
 import { Song, db } from '@/src/lib/db';
 import { toast } from 'react-toastify';
 import { createClient } from '@/src/lib/supabase/client';
+import { DeletePlaylistButton } from '@/src/components/playlist/DeletePlaylistButton';
 
 type PlaylistResponse = {
   id: string;
@@ -454,5 +455,12 @@ export default function EditPlaylistPage() {
   if (loading || isAdmin === null) return <p className="p-4">Laster...</p>;
   if (!initialValues) return <p className="p-4">Fant ikke spilleliste</p>;
 
-  return <PlaylistForm onSubmit={handleSubmit} initialValues={initialValues} mode="edit" />;
+  return (
+    <main>
+      <PlaylistForm onSubmit={handleSubmit} initialValues={initialValues} mode="edit" />
+      <div className="flex justify-center">
+        <DeletePlaylistButton playlistId={id} isPublic={isPublicPlaylist} />
+      </div>
+    </main>
+  );
 }
