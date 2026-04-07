@@ -68,8 +68,6 @@ beforeEach(() => {
   });
 
   global.fetch = vi.fn();
-  global.confirm = vi.fn();
-
   sessionStorage.clear();
 });
 
@@ -80,8 +78,11 @@ describe('DeletePlaylistButton', () => {
   });
 
   test('shows error toast and does not delete when playlist id is missing', async () => {
+    const user = userEvent.setup();
+
     render(<DeletePlaylistButton playlistId="" isPublic={false} />);
-    await userEvent.click(screen.getByRole('button', { name: /slett spilleliste/i }));
+    await user.click(screen.getByRole('button', { name: /slett spilleliste/i }));
+    await user.click(screen.getByRole('button', { name: /^slett$/i }));
 
     expect(mockToastError).toHaveBeenCalledWith('Mangler playlist-ID');
     expect(global.fetch).not.toHaveBeenCalled();
@@ -89,24 +90,25 @@ describe('DeletePlaylistButton', () => {
     expect(mockReplace).not.toHaveBeenCalled();
   });
 
-  test('does nothing when user cancels confirm dialog', async () => {
-    vi.mocked(global.confirm).mockReturnValue(false);
+  test('does nothing when user cancels delete dialog', async () => {
+    const user = userEvent.setup();
 
     render(<DeletePlaylistButton playlistId="playlist-1" isPublic={false} />);
-    await userEvent.click(screen.getByRole('button', { name: /slett spilleliste/i }));
+    await user.click(screen.getByRole('button', { name: /slett spilleliste/i }));
+    await user.click(screen.getByRole('button', { name: /avbryt/i }));
 
-    expect(global.confirm).toHaveBeenCalledWith('Er du sikker på at du vil slette spillelisten?');
     expect(global.fetch).not.toHaveBeenCalled();
     expect(db.playlists.delete).not.toHaveBeenCalled();
     expect(mockReplace).not.toHaveBeenCalled();
   });
 
   test('deletes private playlist locally and redirects on success', async () => {
-    vi.mocked(global.confirm).mockReturnValue(true);
+    const user = userEvent.setup();
     sessionStorage.setItem('playlist-password-playlist-1', '1234');
 
     render(<DeletePlaylistButton playlistId="playlist-1" isPublic={false} />);
-    await userEvent.click(screen.getByRole('button', { name: /slett spilleliste/i }));
+    await user.click(screen.getByRole('button', { name: /slett spilleliste/i }));
+    await user.click(screen.getByRole('button', { name: /^slett$/i }));
 
     await waitFor(() => {
       expect(db.playlist_items.delete).toHaveBeenCalledWith(['playlist-1', 'song-1']);
@@ -121,7 +123,7 @@ describe('DeletePlaylistButton', () => {
   });
 
   test('deletes public playlist through API and redirects on success', async () => {
-    vi.mocked(global.confirm).mockReturnValue(true);
+    const user = userEvent.setup();
     sessionStorage.setItem('playlist-password-playlist-1', '1234');
 
     vi.mocked(global.fetch).mockResolvedValue({
@@ -130,7 +132,8 @@ describe('DeletePlaylistButton', () => {
     } as unknown as Response);
 
     render(<DeletePlaylistButton playlistId="playlist-1" isPublic={true} />);
-    await userEvent.click(screen.getByRole('button', { name: /slett spilleliste/i }));
+    await user.click(screen.getByRole('button', { name: /slett spilleliste/i }));
+    await user.click(screen.getByRole('button', { name: /^slett$/i }));
 
     expect(global.fetch).toHaveBeenCalledWith('/api/playlists/playlist-1', {
       method: 'DELETE',
@@ -153,8 +156,8 @@ describe('DeletePlaylistButton', () => {
   });
 
   test('handles failed public delete response and shows error toast', async () => {
+    const user = userEvent.setup();
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.mocked(global.confirm).mockReturnValue(true);
     sessionStorage.setItem('playlist-password-playlist-1', '1234');
 
     vi.mocked(global.fetch).mockResolvedValue({
@@ -163,7 +166,8 @@ describe('DeletePlaylistButton', () => {
     } as unknown as Response);
 
     render(<DeletePlaylistButton playlistId="playlist-1" isPublic={true} />);
-    await userEvent.click(screen.getByRole('button', { name: /slett spilleliste/i }));
+    await user.click(screen.getByRole('button', { name: /slett spilleliste/i }));
+    await user.click(screen.getByRole('button', { name: /^slett$/i }));
 
     await waitFor(() => {
       expect(mockToastError).toHaveBeenCalledWith('Kunne ikke slette spilleliste');
