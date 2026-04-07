@@ -235,10 +235,6 @@ export default function EditPlaylistPage() {
             ? data.newPassword.trim()
             : localPlaylist.playlist_password?.trim();
 
-        if (!passwordToUse) {
-          throw new Error('Du må angi passord for å gjøre spillelisten offentlig');
-        }
-
         const createRes = await fetch('/api/playlists', {
           method: 'POST',
           headers: {
