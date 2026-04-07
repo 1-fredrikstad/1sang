@@ -1,17 +1,17 @@
 'use client';
 
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { getPlaylistFieldValidation } from '@/src/lib/validation/playlistSchema';
 import { PlaylistInputs } from '@/src/types/playlistInputs';
 import SongList from './SongList';
 import { useSongs } from '@/src/hooks/useData';
 import { Song } from '@/src/lib/db';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { Switch } from '@/components/ui/switch';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import MobileTooltip from '../MobileTooltip';
-import { useWatch } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 
 type PlaylistFormProps = {
   onSubmit: SubmitHandler<PlaylistInputs>;
@@ -24,12 +24,13 @@ export default function PlaylistForm({
   initialValues,
   mode = 'create',
 }: PlaylistFormProps) {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
     setValue,
     control,
-    reset,
     formState: { errors },
   } = useForm<PlaylistInputs>({
     defaultValues: initialValues ?? {
@@ -42,18 +43,11 @@ export default function PlaylistForm({
     },
   });
 
-  useEffect(() => {
-    if (initialValues) {
-      reset(initialValues);
-    }
-  }, [initialValues, reset]);
-
   const TOAST_ID = 'playlist-toast';
 
-  // Watch songsInPlaylist to get instant UI updates
   const songsInPlaylist = useWatch({ name: 'songsInPlaylist', control });
-  // Watch value of public
   const isPublic = useWatch({ name: 'isPublic', control });
+
   const {
     data: songs,
     isLoading,
@@ -104,10 +98,7 @@ export default function PlaylistForm({
 
   const handleFormSubmit: SubmitHandler<PlaylistInputs> = async (data) => {
     await onSubmit(data);
-
-    if (mode === 'create') {
-      reset();
-    }
+    router.push('/');
   };
 
   return (
@@ -119,6 +110,7 @@ export default function PlaylistForm({
         {mode === 'edit' ? 'Rediger spilleliste' : 'Lag ny spilleliste'}
       </h1>
 
+      {/* Title */}
       <span>
         <label htmlFor="title">Tittel*</label>
         {errors.title && <span className="text-red-500 italic ml-2">{errors.title.message}</span>}
@@ -130,6 +122,7 @@ export default function PlaylistForm({
         className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
       />
 
+      {/* Password / New Password */}
       {mode === 'create' ? (
         <>
           <span>
@@ -160,6 +153,7 @@ export default function PlaylistForm({
         </>
       )}
 
+      {/* Songs */}
       <SongList
         songs={songs}
         isLoading={isLoading}
@@ -168,11 +162,13 @@ export default function PlaylistForm({
         isAdded={isSongAdded}
       />
 
+      {/* Public toggle */}
       <span className="inline-flex items-center gap-2 mb-6">
         <p>Offentlig spilleliste:</p>
         <Switch checked={isPublic} onCheckedChange={(value) => setValue('isPublic', value)} />
       </span>
 
+      {/* Duration (only create + public) */}
       {mode === 'create' && isPublic && (
         <section className="mb-4">
           <label htmlFor="duration" className="block mb-2">
@@ -185,25 +181,21 @@ export default function PlaylistForm({
               </MobileTooltip>
             </span>
           </label>
+
           <select
             id="duration"
             {...register('duration', { valueAsNumber: true })}
             className="mt-2 mb-6 p-3 rounded-sm outline-1 hover:cursor-pointer"
             defaultValue={604800}
           >
-            <option value={604800} className="text-black">
-              7 dager
-            </option>
-            <option value={2592000} className="text-black">
-              30 dager
-            </option>
-            <option value={7776000} className="text-black">
-              90 dager
-            </option>
+            <option value={604800}>7 dager</option>
+            <option value={2592000}>30 dager</option>
+            <option value={7776000}>90 dager</option>
           </select>
         </section>
       )}
 
+      {/* Submit */}
       <button
         type="submit"
         className="disabled:opacity-50 self-center font-bold py-2 px-4 rounded-sm cursor-pointer bg-secondary"

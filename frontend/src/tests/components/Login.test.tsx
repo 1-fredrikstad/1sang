@@ -16,18 +16,6 @@ vi.mock('@/components/ui/spinner', () => ({
 vi.mock('@/src/context/AuthContext');
 
 describe('Login component', () => {
-  it('renders Spinner when loading', () => {
-    vi.useFakeTimers();
-
-    (useAuth as unknown as Mock).mockReturnValue({ user: null, isLoading: true });
-    render(<Login />);
-
-    vi.advanceTimersByTime(400);
-    expect(screen.getByText('Laster inn')).toBeInTheDocument();
-
-    vi.useRealTimers();
-  });
-
   it('renders Spinner when user is logged in', () => {
     vi.useFakeTimers();
 

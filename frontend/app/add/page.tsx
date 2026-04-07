@@ -7,10 +7,10 @@ import { createClient } from '@/src/lib/supabase/client';
 import { syncService } from '@/src/lib/syncService';
 
 export default function AddSongPage() {
-  const { isAdmin, isLoading } = useAuth();
+  const { isAdmin } = useAuth();
   const supabase = createClient();
 
-  if (isLoading || isAdmin === null) {
+  if (isAdmin === null) {
     return <div>Henter skjema...</div>;
   }
 

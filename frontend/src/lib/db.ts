@@ -11,6 +11,7 @@ export interface Song {
   created_at?: string;
   updated_at?: string;
   deleted_at?: string | null;
+  spotify_youtube?: string;
 }
 
 export interface Playlist {

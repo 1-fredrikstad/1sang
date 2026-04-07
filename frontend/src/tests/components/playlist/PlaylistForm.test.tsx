@@ -26,7 +26,6 @@ vi.mock('react-toastify', () => {
 vi.mock('@/src/hooks/useData', () => ({
   useSongs: () => ({
     data: [{ id: '1', title: 'Song 1', lyrics: '' } as Song],
-    isLoading: false,
     error: null,
   }),
 }));
