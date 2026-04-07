@@ -110,4 +110,83 @@ describe('PlaylistForm', () => {
 
     expect(onSubmit).toHaveBeenCalled();
   });
+
+  test('renders edit mode correctly', () => {
+    render(
+      <PlaylistForm
+        onSubmit={vi.fn()}
+        mode="edit"
+        initialValues={{
+          title: 'Min spilleliste',
+          password: '',
+          newPassword: '',
+          songsInPlaylist: [],
+          isPublic: false,
+          duration: 604800,
+        }}
+      />
+    );
+
+    expect(screen.getByText(/rediger spilleliste/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /lagre endringer/i })).toBeInTheDocument();
+  });
+
+  test('renders edit mode correctly', () => {
+    render(
+      <PlaylistForm
+        onSubmit={vi.fn()}
+        mode="edit"
+        initialValues={{
+          title: 'Min spilleliste',
+          password: '',
+          newPassword: '',
+          songsInPlaylist: [],
+          isPublic: false,
+          duration: 604800,
+        }}
+      />
+    );
+
+    expect(screen.getByText(/rediger spilleliste/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /lagre endringer/i })).toBeInTheDocument();
+  });
+
+  test('shows new password field in edit mode instead of password field', () => {
+    render(
+      <PlaylistForm
+        onSubmit={vi.fn()}
+        mode="edit"
+        initialValues={{
+          title: 'Min spilleliste',
+          password: '',
+          newPassword: '',
+          songsInPlaylist: [],
+          isPublic: false,
+          duration: 604800,
+        }}
+      />
+    );
+
+    expect(screen.getByLabelText(/nytt passord/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/^passord/i)).not.toBeInTheDocument();
+  });
+
+  test('uses initial values in edit mode', () => {
+    render(
+      <PlaylistForm
+        onSubmit={vi.fn()}
+        mode="edit"
+        initialValues={{
+          title: 'Eksisterende spilleliste',
+          password: '',
+          newPassword: '',
+          songsInPlaylist: [],
+          isPublic: false,
+          duration: 604800,
+        }}
+      />
+    );
+
+    expect(screen.getByDisplayValue('Eksisterende spilleliste')).toBeInTheDocument();
+  });
 });
