@@ -5,29 +5,20 @@ import { getFieldValidation } from '@/src/lib/validation/songSuggestionSchema';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroupTextarea,
-} from '@/components/ui/input-group';
 import { toast } from 'react-toastify';
 import TagSelect from './TagSelect';
-
-type Tag = {
-  id: string;
-  name: string;
-};
-
 import SubmitButton from './SubmitButton';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import SectionInput from './SectionInput';
+import { useState } from 'react';
 
 type Inputs = {
   title: string;
   melody: string;
   author: string;
-  lyrics: string;
+  chorus: string;
+  verses: string[];
   tags?: Tag[];
   spotify_youtube: string;
 };
@@ -41,7 +32,13 @@ type SongFormProps = {
   toastSuccessMessage?: string;
 };
 
-const MAX_LYRICS_LENGTH = 3000;
+type Tag = {
+  id: string;
+  name: string;
+};
+
+const MAX_VERSE_LENGTH = 1000;
+const MAX_CHORUS_LENGTH = 500;
 
 export default function SongForm({
   heading,
@@ -58,12 +55,14 @@ export default function SongForm({
     control,
     reset,
     setValue,
+    clearErrors,
   } = useForm<Inputs>({
     defaultValues: {
       title: '',
       melody: '',
       author: '',
-      lyrics: '',
+      chorus: '',
+      verses: initialValues?.verses?.length ? initialValues.verses : [''],
       spotify_youtube: '',
       tags: [],
       ...initialValues,
@@ -72,22 +71,11 @@ export default function SongForm({
 
   const router = useRouter();
 
-  // useEffect(() => {
-  //   if (initialValues) {
-  //     reset({
-  //       title: initialValues.title ?? '',
-  //       melody: initialValues.melody ?? '',
-  //       author: initialValues.author ?? '',
-  //       lyrics: initialValues.lyrics ?? '',
-  //       spotify_youtube: initialValues.spotify_youtube ?? '',
-  //       tags: initialValues.tags ?? [],
-  //     });
-  //   }
-  // }, [initialValues, reset]);
+  const chorusValue = useWatch({ control, name: 'chorus' }) || '';
+  const chorusCharCount = chorusValue.length;
 
-  const lyricsValue = useWatch({ control, name: 'lyrics' }) || '';
-  const charCount = lyricsValue.length;
-  const isNearLimit = charCount > 2900;
+  const watchVerses = useWatch({ control, name: 'verses' }) || [];
+  const [hasChorus, sethasChorus] = useState(false);
 
   const selectedTags = useWatch({ control, name: 'tags' }) ?? [];
 
@@ -153,28 +141,70 @@ export default function SongForm({
           {errors.melody && <FieldError errors={[errors.melody]} />}
         </Field>
 
-        {/* Lyrics */}
-        <Field data-invalid={!!errors.lyrics}>
-          <FieldLabel htmlFor="form-add-song-lyrics">Sangtekst*</FieldLabel>
-          <InputGroup>
-            <InputGroupTextarea
-              id="form-add-song-lyrics"
-              aria-invalid={!!errors.lyrics}
-              rows={6}
-              {...register('lyrics', getFieldValidation('lyrics'))}
-              className="focus-visible:ring-1 text-sm"
-            />
-            <InputGroupAddon align="block-end">
-              <InputGroupText
-                className={`text-sm text-right mr-2 tabular-nums ${
-                  isNearLimit ? 'text-red-500' : 'text-gray-500'
-                }`}
-              >
-                {charCount} / {MAX_LYRICS_LENGTH}
-              </InputGroupText>
-            </InputGroupAddon>
-          </InputGroup>
-          {errors.lyrics && <FieldError errors={[errors.lyrics]} />}
+        {/* Verses */}
+        <Field>
+          <FieldLabel>Vers*</FieldLabel>
+          {watchVerses.map((verse, i) => {
+            const charCount = verse?.length || 0;
+
+            return (
+              <SectionInput
+                key={i}
+                label={`Vers ${i + 1}`}
+                register={register(`verses.${i}`, getFieldValidation('verses'))}
+                error={errors.verses && errors.verses[i]?.message}
+                removable={i > 0}
+                onRemove={() => {
+                  const updated = [...watchVerses];
+                  updated.splice(i, 1);
+                  setValue('verses', updated);
+                  clearErrors(`verses.${i}`);
+                }}
+                removeText="vers"
+                charCount={charCount}
+                limit={MAX_VERSE_LENGTH}
+              ></SectionInput>
+            );
+          })}
+
+          <Button
+            type="button"
+            onClick={() => setValue('verses', [...watchVerses, ''])}
+            className="cursor-pointer hover:bg-btn-hover"
+          >
+            + Legg til vers
+          </Button>
+          {errors.verses && <FieldError errors={[errors.verses]} />}
+        </Field>
+
+        {/* Chorus */}
+        <Field data-invalid={!!errors.chorus}>
+          <FieldLabel>Refreng</FieldLabel>
+          {hasChorus ? (
+            <SectionInput
+              register={register('chorus', getFieldValidation('chorus'))}
+              error={errors.chorus?.message}
+              removable
+              onRemove={() => {
+                sethasChorus(false);
+                setValue('chorus', '');
+                clearErrors('chorus');
+              }}
+              removeText="refreng"
+              charCount={chorusCharCount}
+              limit={MAX_CHORUS_LENGTH}
+            ></SectionInput>
+          ) : (
+            <Button
+              type="button"
+              onClick={() => {
+                sethasChorus(true);
+              }}
+              className="cursor-pointer hover:bg-btn-hover"
+            >
+              + Legg til refreng
+            </Button>
+          )}
         </Field>
 
         {/* Links */}

@@ -26,15 +26,25 @@ export const songSuggestionSchema = {
       pattern: 'Låtskriver inneholder ugyldige tegn',
     },
   },
-  lyrics: {
+  chorus: {
+    required: false,
+    minLength: 10,
+    maxLength: 500,
+    messages: {
+      minLength: 'Refrenget må være minst 10 tegn',
+      maxLength: 'Refrenget kan maks være 500 tegn',
+      pattern: 'Refrenget inneholder ugyldige tegn',
+    },
+  },
+  verses: {
     required: true,
     minLength: 20,
-    maxLength: 3000,
+    maxLength: 1000,
     messages: {
-      required: 'Du må skrive inn sangtekst',
-      minLength: 'Sangteksten må være minst 20 tegn',
-      maxLength: 'Sangteksten kan maks være 3000 tegn',
-      pattern: 'Sangteksten inneholder ugyldige tegn',
+      required: 'Du må legge til minst ett vers',
+      minLength: 'Verset må være minst 20 tegn',
+      maxLength: 'Verset kan maks være 1000 tegn',
+      pattern: 'Verset inneholder ugyldige tegn',
     },
   },
   spotify_youtube: {
@@ -103,7 +113,8 @@ export type SongInput = {
   title: string;
   melody: string;
   author: string;
-  lyrics: string;
+  chorus: string;
+  verses: string[];
 };
 
 export type SongValidationErrors = Partial<Record<keyof SongInput, string>>;
@@ -113,7 +124,10 @@ export function normalizeSongInput(input: Partial<SongInput>): SongInput {
     title: typeof input.title === 'string' ? input.title.trim() : '',
     melody: typeof input.melody === 'string' ? input.melody.trim() : '',
     author: typeof input.author === 'string' ? input.author.trim() : '',
-    lyrics: typeof input.lyrics === 'string' ? input.lyrics.trim() : '',
+    chorus: typeof input.chorus === 'string' ? input.chorus.trim() : '',
+    verses: Array.isArray(input.verses)
+      ? input.verses.map((v) => (typeof v === 'string' ? v.trim() : ''))
+      : [''],
   };
 }
 
@@ -141,14 +155,32 @@ export function validateSongInput(input: Partial<SongInput>): SongValidationErro
     errors.melody = songSuggestionSchema.melody.messages.pattern;
   }
 
-  if (songSuggestionSchema.lyrics.required && !data.lyrics) {
-    errors.lyrics = songSuggestionSchema.lyrics.messages.required;
-  } else if (data.lyrics.length < songSuggestionSchema.lyrics.minLength) {
-    errors.lyrics = songSuggestionSchema.lyrics.messages.minLength;
-  } else if (data.lyrics.length > songSuggestionSchema.lyrics.maxLength) {
-    errors.lyrics = songSuggestionSchema.lyrics.messages.maxLength;
-  } else if (!TEXT_PATTERN.test(data.lyrics)) {
-    errors.lyrics = songSuggestionSchema.lyrics.messages.pattern;
+  if (data.chorus.length < songSuggestionSchema.chorus.minLength) {
+    errors.chorus = songSuggestionSchema.chorus.messages.minLength;
+  } else if (data.chorus.length > songSuggestionSchema.chorus.maxLength) {
+    errors.chorus = songSuggestionSchema.chorus.messages.maxLength;
+  } else if (!TEXT_PATTERN.test(data.chorus)) {
+    errors.chorus = songSuggestionSchema.chorus.messages.pattern;
+  }
+
+  if (
+    (songSuggestionSchema.verses.required && !data.verses.length) ||
+    data.verses.every((v) => !v)
+  ) {
+    errors.verses = songSuggestionSchema.verses.messages.required;
+  } else {
+    data.verses.forEach((verse, i) => {
+      if (verse.length < songSuggestionSchema.verses.minLength) {
+        errors[`verses.${i}` as keyof SongValidationErrors] =
+          songSuggestionSchema.verses.messages.minLength;
+      } else if (verse.length > songSuggestionSchema.verses.maxLength) {
+        errors[`verses.${i}` as keyof SongValidationErrors] =
+          songSuggestionSchema.verses.messages.maxLength;
+      } else if (!TEXT_PATTERN.test(verse)) {
+        errors[`verses.${i}` as keyof SongValidationErrors] =
+          songSuggestionSchema.verses.messages.pattern;
+      }
+    });
   }
 
   return errors;
