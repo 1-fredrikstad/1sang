@@ -41,7 +41,7 @@ export default function SongList({
 
   return (
     <main className="mb-6">
-      <h1 className="mb-4">Velg sanger</h1>
+      <h1>Velg sanger</h1>
 
       {isLoading && <p>Synkroniserer med supabase...</p>}
 

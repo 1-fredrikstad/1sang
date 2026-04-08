@@ -86,7 +86,7 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
       onSubmit={handleSubmit(handleFormSubmit)}
       className="flex flex-col m-8 mb-4 gap-1 max-w-2xl md:mx-auto"
     >
-      <h1 className="text-xl mb-2">Lag ny spilleliste</h1>
+      <h1>Lag ny spilleliste</h1>
 
       {/* Title */}
       <span>

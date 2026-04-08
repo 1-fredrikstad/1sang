@@ -43,8 +43,8 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div>
-      <h1 className="mb-5 text-xl">Alle sanger</h1>
+    <main>
+      <h1>Alle sanger</h1>
 
       <SearchField value={searchQuery} onChange={setSearchQuery} />
 
@@ -59,11 +59,11 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
       {isLoading && <p>Synkroniserer med supabase...</p>}
 
       {!isLoading && searchQuery.trim() && (
-        <p className="mb-3 text-sm text-neutral-500">{displayedSongs.length} treff</p>
+        <p className="mb-3 text-sm opacity-60">{displayedSongs.length} treff</p>
       )}
 
       {!isLoading && displayedSongs.length === 0 ? (
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm opacity-60">
           {selectedTags.length > 0
             ? 'Ingen sanger matcher søk og valgte tags.'
             : 'Ingen sanger funnet.'}
@@ -77,6 +77,6 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
           ))}
         </ul>
       )}
-    </div>
+    </main>
   );
 }

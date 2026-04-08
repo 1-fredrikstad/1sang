@@ -44,7 +44,7 @@ export default function PlaylistsPage() {
   ];
 
   return (
-    <main className="mb-5  flex flex-col justify-center max-w-5xl mx-auto">
+    <main className="mb-5 flex flex-col justify-center">
       <div className="max-w-5xl">
         <h1>Spillelister</h1>
         <Tabs defaultValue="public">

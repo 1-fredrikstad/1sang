@@ -25,12 +25,12 @@ export default function PlaylistDetailPage() {
   }
 
   return (
-    <main className="mb-5  flex flex-col justify-center max-w-5xl mx-auto gap-4">
+    <main className="flex flex-col justify-center mx-auto gap-4">
       {/* Header */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3 relative">
           <BackButton />
-          <h1 className="text-2xl font-bold tracking-tight">{playlist.title}</h1>
+          <h1 className="title-headline capitalize-first">{playlist.title}</h1>
           <div className="absolute right-0">
             <PlaylistSettingsMenu
               playlist={playlist}
@@ -40,7 +40,7 @@ export default function PlaylistDetailPage() {
           </div>
         </div>
 
-        <div className="flex flex-row gap-2 text-xs opacity-60 ml-9">
+        <div className="flex flex-row text-xs opacity-60 ml-9">
           <span>{playlist.is_public ? 'Offentlig spilleliste' : 'Privat spilleliste'}</span>
         </div>
       </div>

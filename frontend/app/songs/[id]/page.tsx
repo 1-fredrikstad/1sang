@@ -54,7 +54,7 @@ export default function SongPage() {
 
   return (
     <>
-      <div className="mx-auto w-full max-w-300 px-4 flex justify-between mt-4">
+      <div className="mx-auto w-full flex justify-between mt-4">
         <div className="cursor-pointer">
           <BackButton />
         </div>
@@ -62,7 +62,7 @@ export default function SongPage() {
         <WakeLockToggle />
       </div>
 
-      <main className="relative w-full max-w-300 mx-auto text-center px-4">
+      <main className="relative w-full text-center px-4">
         {isAdmin && (
           <div className="absolute right-5 top-0">
             <Link href={`/songs/${id}/edit`}>
@@ -71,7 +71,7 @@ export default function SongPage() {
           </div>
         )}
 
-        <h1 className="mt-15 mb-0 text-3xl font-semibold">{song.title}</h1>
+        <h1 className="mt-15 title-headline capitalize-first">{song.title}</h1>
 
         <div className="opacity-60 mt-1">
           {tags && tags.length > 0 && <p>Tags: {tags.map((tag) => tag.name).join(', ')}</p>}

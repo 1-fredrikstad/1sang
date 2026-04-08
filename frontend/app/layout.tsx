@@ -51,7 +51,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <HeaderColorProvider initialColor={headerColor}>
                 <ConditionalHeader />
 
-                <main className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20 m-5">
+                <main className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20 m-5 max-w-4xl mx-auto px-5">
                   {children}
                 </main>
 
