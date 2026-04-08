@@ -220,12 +220,12 @@ export default function SongForm({
         </Field>
 
         {/* Tags */}
-        <Field className="w-56">
-          <FieldLabel htmlFor="form-add-song-tags">Tags</FieldLabel>
-          {showTags && (
+        {showTags && (
+          <Field className="w-56">
+            <FieldLabel htmlFor="form-add-song-tags">Tags</FieldLabel>
             <TagSelect value={selectedTags} onChange={(tags) => setValue('tags', tags)} />
-          )}
-        </Field>
+          </Field>
+        )}
       </FieldGroup>
 
       {/* Submit and reset */}

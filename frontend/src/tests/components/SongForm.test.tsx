@@ -22,11 +22,11 @@ vi.mock('sonner', () => ({
 }));
 
 // Mock TagSelect and SectionInput with proper prop types
-vi.mock('@/src/components/TagSelect', () => ({
-  default: ({ value, onChange }: { value: unknown; onChange: (tags: unknown) => void }) => (
-    <div data-testid="tag-select">Tags</div>
-  ),
-}));
+// vi.mock('@/src/components/TagSelect', () => ({
+//   default: ({ value, onChange }: { value: unknown; onChange: (tags: unknown) => void }) => (
+//     <div data-testid="tag-select">Tags</div>
+//   ),
+// }));
 
 vi.mock('@/src/components/songs/SectionInput', () => ({
   default: ({ label }: { label?: string }) => (
