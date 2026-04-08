@@ -9,7 +9,7 @@ import { SongListProps } from '@/src/types/songList';
 import { SearchField } from '../SearchField';
 import { useDebounce } from '@/src/hooks/useDebounce';
 import TagSelect from '@/src/components/TagSelect';
-import { searchByTitle } from '@/src/lib/search/searchByTitle';
+import { searchSongs } from '@/src/lib/search/searchSongs';
 
 type Tag = {
   id: string;
@@ -22,7 +22,7 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
 
   const searchedSongs = useMemo(() => {
-    return searchByTitle(songs, debouncedQuery);
+    return searchSongs(songs, debouncedQuery);
   }, [songs, debouncedQuery]);
 
   const matchingSongIds =
