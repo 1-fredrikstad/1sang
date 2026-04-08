@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Song } from '@/src/lib/db';
 import { db } from '@/src/lib/db';
@@ -20,6 +20,20 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedQuery = useDebounce(searchQuery, 300);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const [isOnline, setIsOnline] = useState(() => window.navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const searchedSongs = useMemo(() => {
     return searchSongs(songs, debouncedQuery);
@@ -40,6 +54,8 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
       ? searchedSongs
       : searchedSongs.filter((song: Song) => matchingSongIds.includes(song.id));
 
+  const isSyncingSongs = isLoading && isOnline;
+
   if (error) return <div>Error: {error.message}</div>;
 
   return (
@@ -56,17 +72,21 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
         />
       </div>
 
-      {isLoading && <p>Synkroniserer med supabase...</p>}
+      {isSyncingSongs && <p>Synkroniserer med Supabase...</p>}
 
-      {!isLoading && searchQuery.trim() && (
+      {!isSyncingSongs && searchQuery.trim() && (
         <p className="mb-3 text-sm text-neutral-500">{displayedSongs.length} treff</p>
       )}
 
-      {!isLoading && displayedSongs.length === 0 ? (
+      {!isSyncingSongs && displayedSongs.length === 0 ? (
         <p className="text-sm text-neutral-500">
-          {selectedTags.length > 0
+          {searchQuery.trim() && selectedTags.length > 0
             ? 'Ingen sanger matcher søk og valgte tags.'
-            : 'Ingen sanger funnet.'}
+            : searchQuery.trim()
+              ? 'Ingen sanger matcher søket.'
+              : selectedTags.length > 0
+                ? 'Ingen sanger matcher valgte tags.'
+                : 'Ingen sanger funnet.'}
         </p>
       ) : (
         <ul className="flex flex-col gap-2">
