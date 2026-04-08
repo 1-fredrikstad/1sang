@@ -15,7 +15,8 @@ describe('POST /api/song_suggestions', () => {
         title: '',
         melody: '',
         author: '',
-        lyrics: 'Her er det lyrics med mer enn tjue tegn ja.',
+        chorus: '',
+        verses: ['Et vers med mer enn 20 tegn, ok!'],
       }),
     });
 
@@ -43,7 +44,8 @@ describe('POST /api/song_suggestions', () => {
         title: 'My Song',
         melody: '',
         author: '',
-        lyrics: 'Dette er en gyldig sangtekst med mer enn tjue tegn.',
+        chorus: '',
+        verses: ['Et vers med minst 20 tegn.'],
       }),
     });
 

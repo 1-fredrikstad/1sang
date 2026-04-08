@@ -5,7 +5,7 @@ import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import { InputGroup, InputGroupTextarea } from '@/components/ui/input-group';
 import { UseFormRegisterReturn } from 'react-hook-form';
 
-type SectionInputProps = {
+export type SectionInputProps = {
   label?: string;
   register: UseFormRegisterReturn;
   error?: string;

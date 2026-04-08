@@ -65,8 +65,10 @@ export function getFieldValidation(field: SongFieldKey) {
 
   let pattern: RegExp | undefined;
 
-  if (field !== 'spotify_youtube' && field !== 'chorus' && field !== 'verses') {
-    pattern = TEXT_PATTERN; // only title, author, melody
+  if (field === 'title' || field === 'author' || field === 'melody') {
+    pattern = TEXT_PATTERN;
+  } else if (field === 'chorus' || field === 'verses') {
+    pattern = LYRICS_PATTERN;
   }
 
   return {
@@ -90,15 +92,6 @@ export function getFieldValidation(field: SongFieldKey) {
     ...(pattern && 'pattern' in config.messages
       ? { pattern: { value: pattern, message: config.messages.pattern } }
       : {}),
-
-    // ...(field !== 'spotify_youtube' && 'pattern' in config.messages
-    //   ? {
-    //       pattern: {
-    //         value: pattern,
-    //         message: config.messages.pattern,
-    //       },
-    //     }
-    //   : {}),
 
     validate:
       field === 'spotify_youtube' && 'validate' in config.messages
@@ -127,7 +120,7 @@ export type SongInput = {
   verses: string[];
 };
 
-export type SongValidationErrors = Partial<Record<keyof SongInput, string>>;
+export type SongValidationErrors = Partial<Record<keyof SongInput | `verses.${number}`, string>>;
 
 export function normalizeSongInput(input: Partial<SongInput>): SongInput {
   return {
@@ -165,12 +158,14 @@ export function validateSongInput(input: Partial<SongInput>): SongValidationErro
     errors.melody = songSuggestionSchema.melody.messages.pattern;
   }
 
-  if (data.chorus.length < songSuggestionSchema.chorus.minLength) {
-    errors.chorus = songSuggestionSchema.chorus.messages.minLength;
-  } else if (data.chorus.length > songSuggestionSchema.chorus.maxLength) {
-    errors.chorus = songSuggestionSchema.chorus.messages.maxLength;
-  } else if (!LYRICS_PATTERN.test(data.chorus)) {
-    errors.chorus = songSuggestionSchema.chorus.messages.pattern;
+  if (data.chorus) {
+    if (data.chorus.length < songSuggestionSchema.chorus.minLength) {
+      errors.chorus = songSuggestionSchema.chorus.messages.minLength;
+    } else if (data.chorus.length > songSuggestionSchema.chorus.maxLength) {
+      errors.chorus = songSuggestionSchema.chorus.messages.maxLength;
+    } else if (!LYRICS_PATTERN.test(data.chorus)) {
+      errors.chorus = songSuggestionSchema.chorus.messages.pattern;
+    }
   }
 
   if (

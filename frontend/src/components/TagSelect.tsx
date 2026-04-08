@@ -16,7 +16,7 @@ type Tag = {
   name: string;
 };
 
-type TagSelectProps = {
+export type TagSelectProps = {
   value: Tag[];
   onChange: (tags: Tag[]) => void;
   triggerClassName?: string;
