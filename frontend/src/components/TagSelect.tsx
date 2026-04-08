@@ -73,16 +73,21 @@ export default function TagSelect({ value, onChange, triggerClassName }: TagSele
           <DropdownMenuGroup>
             <DropdownMenuLabel>Tags</DropdownMenuLabel>
 
-            {tags.map((tag) => (
-              <DropdownMenuCheckboxItem
-                key={tag.id}
-                checked={selectedIds.includes(tag.id)}
-                onCheckedChange={() => toggleTag(tag)}
-                onSelect={(e) => e.preventDefault()}
-              >
-                {tag.name}
-              </DropdownMenuCheckboxItem>
-            ))}
+            {tags.map((tag) => {
+              const displayName =
+                tag.name.charAt(0).toUpperCase() + tag.name.slice(1).toLowerCase();
+
+              return (
+                <DropdownMenuCheckboxItem
+                  key={tag.id}
+                  checked={selectedIds.includes(tag.id)}
+                  onCheckedChange={() => toggleTag(tag)}
+                  onSelect={(e) => e.preventDefault()}
+                >
+                  {displayName}
+                </DropdownMenuCheckboxItem>
+              );
+            })}
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -71,8 +71,8 @@ export default function PlaylistsPage() {
                     <Link key={playlist.id} href={`/playlists/${playlist.id}`} className="block">
                       <li className="py-3 hover:bg-black/5 dark:hover:bg-white/5 transition allow-animation cursor-pointer rounded-xs">
                         <div className="flex flex-col pl-1.5">
-                          <span className="text-base font-medium">
-                            {playlist.title.charAt(0).toUpperCase() + playlist.title.slice(1)}
+                          <span className="text-base font-medium capitalize-first">
+                            {playlist.title}
                           </span>
                           <span className="text-xs opacity-60">Spilleliste</span>
                         </div>
