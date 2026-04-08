@@ -20,7 +20,7 @@ import { Trash2Icon } from 'lucide-react';
 import { db } from '@/src/lib/db';
 import { approveSuggestion, deleteSuggestion } from '@/src/lib/actions/songSuggestions';
 import { useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
 interface Props {
   id: string;

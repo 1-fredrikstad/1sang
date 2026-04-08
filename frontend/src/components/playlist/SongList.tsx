@@ -1,5 +1,5 @@
 import { Song } from '@/src/lib/db';
-import { SongBox } from '../SongBox';
+import { SongBox } from '../songs/SongBox';
 import { SongListProps } from '@/src/types/songList';
 
 export type ExtendedSongListProps = SongListProps & {

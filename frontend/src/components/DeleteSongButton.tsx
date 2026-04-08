@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { db } from '@/src/lib/db';
 import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { createClient } from '@/src/lib/supabase/client';
 
 type Props = {

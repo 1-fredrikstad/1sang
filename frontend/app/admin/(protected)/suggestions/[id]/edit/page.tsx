@@ -3,10 +3,10 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/src/lib/db';
-import SongForm from '@/src/components/SongForm';
+import SongForm from '@/src/components/songs/SongForm';
 import { updateSuggestion } from '@/src/lib/actions/songSuggestions';
 import { useMounted } from '@/src/hooks/useMounted';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import BackButton from '@/src/components/BackButton';
 
 export default function EditSuggestionPage() {
@@ -45,7 +45,8 @@ export default function EditSuggestionPage() {
           title: suggestion.title,
           melody: suggestion.melody ?? '',
           author: suggestion.author ?? '',
-          lyrics: suggestion.lyrics ?? '',
+          chorus: suggestion.chorus ?? '',
+          verses: suggestion.verses ?? '',
         }}
         onSubmit={async (data) => {
           const old = suggestion;
@@ -55,7 +56,8 @@ export default function EditSuggestionPage() {
               title: data.title,
               melody: data.melody || undefined,
               author: data.author || undefined,
-              lyrics: data.lyrics,
+              chorus: data.chorus || undefined,
+              verses: data.verses,
             });
 
             if (typeof window !== 'undefined' && db && old) {

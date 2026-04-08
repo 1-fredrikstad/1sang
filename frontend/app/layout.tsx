@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import 'react-toastify/dist/ReactToastify.css';
 import ConditionalHeader from '@/src/components/global/ConditionalHeader';
 import ConditionalNavbar from '@/src/components/global/ConditionalNavbar';
 import { AuthProvider } from '@/src/context/AuthContext';
@@ -10,9 +9,9 @@ import { HeaderColorProvider } from '@/src/context/HeaderColorProvider';
 import { getCookie } from 'cookies-next/server';
 import { cookies } from 'next/headers';
 import { HeaderColor, HEADERCOLOR_OPTIONS } from '@/src/types/theme';
-import { ToastContainer } from 'react-toastify';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import GlobalSync from '@/src/components/global/GlobalSync';
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -57,7 +56,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 </main>
 
                 <ConditionalNavbar />
-                <ToastContainer position="top-center" autoClose={3000} />
+                <Toaster position="top-center" richColors duration={3000} />
               </HeaderColorProvider>
             </ThemeProvider>
           </TooltipProvider>

@@ -74,12 +74,16 @@ export async function PATCH(req: Request, ctx: Ctx) {
     }
 
     const json = await req.json();
+    const versesInput = json.verses as unknown;
 
     const payload = {
       title: typeof json.title === 'string' ? json.title.trim() : '',
       melody: typeof json.melody === 'string' ? json.melody.trim() || null : null,
       author: typeof json.author === 'string' ? json.author.trim() || null : null,
-      lyrics: typeof json.lyrics === 'string' ? json.lyrics.trim() : '',
+      chorus: typeof json.chorus === 'string' ? json.chorus.trim() : '',
+      verses: Array.isArray(versesInput)
+        ? (versesInput as string[]).map((v: string) => v.trim()).filter((v: string) => v.length > 0)
+        : [],
       spotify_youtube:
         typeof json.spotify_youtube === 'string' ? json.spotify_youtube.trim() || null : null,
     };
