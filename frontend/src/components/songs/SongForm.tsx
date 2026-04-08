@@ -6,11 +6,11 @@ import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { toast } from 'react-toastify';
-import TagSelect from './TagSelect';
-import SubmitButton from './SubmitButton';
+import TagSelect from '../TagSelect';
+import SubmitButton from '../SubmitButton';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import SectionInput from './SectionInput';
+import SectionInput from '../SectionInput';
 import { useState } from 'react';
 
 type Inputs = {

@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi, beforeEach, describe, test, expect } from 'vitest';
-import { SongBox } from '@/src/components/SongBox';
+import { SongBox } from '@/src/components/songs/SongBox';
 
 // Mock next/link
 vi.mock('next/link', () => ({

@@ -3,7 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/src/lib/db';
-import SongForm from '@/src/components/SongForm';
+import SongForm from '@/src/components/songs/SongForm';
 import { updateSuggestion } from '@/src/lib/actions/songSuggestions';
 import { useMounted } from '@/src/hooks/useMounted';
 import { toast } from 'react-toastify';

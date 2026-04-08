@@ -3,7 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type Song } from '@/src/lib/db';
-import SongForm from '@/src/components/SongForm';
+import SongForm from '@/src/components/songs/SongForm';
 import { useAuth } from '@/src/context/AuthContext';
 import BackButton from '@/src/components/BackButton';
 import { createClient } from '@/src/lib/supabase/client';

@@ -1,7 +1,7 @@
 import { vi, describe, test, expect } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import SongForm from '@/src/components/SongForm';
+import SongForm from '@/src/components/songs/SongForm';
 
 // Mock react toast - TODO: switch out with Radix UI sonner later
 vi.mock('react-toastify', () => ({

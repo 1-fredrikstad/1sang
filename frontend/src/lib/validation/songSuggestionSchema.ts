@@ -1,4 +1,5 @@
 export const TEXT_PATTERN = /^[a-zA-ZæøåÆØÅ0-9\s.\-/:;,'’*!?()"…–]+$/;
+export const LYRICS_PATTERN = /^[\s\S]+$/;
 
 export const songSuggestionSchema = {
   title: {
@@ -62,6 +63,12 @@ type SongFieldKey = keyof typeof songSuggestionSchema;
 export function getFieldValidation(field: SongFieldKey) {
   const config = songSuggestionSchema[field];
 
+  let pattern: RegExp | undefined;
+
+  if (field !== 'spotify_youtube' && field !== 'chorus' && field !== 'verses') {
+    pattern = TEXT_PATTERN; // only title, author, melody
+  }
+
   return {
     ...('required' in config && config.required ? { required: config.messages.required } : {}),
     ...('minLength' in config && typeof config.minLength === 'number'
@@ -80,15 +87,18 @@ export function getFieldValidation(field: SongFieldKey) {
           },
         }
       : {}),
-
-    ...(field !== 'spotify_youtube' && 'pattern' in config.messages
-      ? {
-          pattern: {
-            value: TEXT_PATTERN,
-            message: config.messages.pattern,
-          },
-        }
+    ...(pattern && 'pattern' in config.messages
+      ? { pattern: { value: pattern, message: config.messages.pattern } }
       : {}),
+
+    // ...(field !== 'spotify_youtube' && 'pattern' in config.messages
+    //   ? {
+    //       pattern: {
+    //         value: pattern,
+    //         message: config.messages.pattern,
+    //       },
+    //     }
+    //   : {}),
 
     validate:
       field === 'spotify_youtube' && 'validate' in config.messages
@@ -159,7 +169,7 @@ export function validateSongInput(input: Partial<SongInput>): SongValidationErro
     errors.chorus = songSuggestionSchema.chorus.messages.minLength;
   } else if (data.chorus.length > songSuggestionSchema.chorus.maxLength) {
     errors.chorus = songSuggestionSchema.chorus.messages.maxLength;
-  } else if (!TEXT_PATTERN.test(data.chorus)) {
+  } else if (!LYRICS_PATTERN.test(data.chorus)) {
     errors.chorus = songSuggestionSchema.chorus.messages.pattern;
   }
 
@@ -176,7 +186,7 @@ export function validateSongInput(input: Partial<SongInput>): SongValidationErro
       } else if (verse.length > songSuggestionSchema.verses.maxLength) {
         errors[`verses.${i}` as keyof SongValidationErrors] =
           songSuggestionSchema.verses.messages.maxLength;
-      } else if (!TEXT_PATTERN.test(verse)) {
+      } else if (!LYRICS_PATTERN.test(verse)) {
         errors[`verses.${i}` as keyof SongValidationErrors] =
           songSuggestionSchema.verses.messages.pattern;
       }
