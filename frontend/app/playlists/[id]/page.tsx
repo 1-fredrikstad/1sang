@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import Spinner from '@/src/components/login/Spinner';
+import { Spinner } from '@/components/ui/spinner';
 import BackButton from '@/src/components/BackButton';
 import { usePlaylistDetails } from '@/src/hooks/usePlaylistDetails';
 import { PlaylistSongItem } from '@/src/components/playlist/PlaylistSongItem';
@@ -13,7 +13,7 @@ export default function PlaylistDetailPage() {
   const id = params?.id as string | undefined;
   const { playlist, songs, isLoading } = usePlaylistDetails(id || '');
 
-  if (!id || isLoading) return <Spinner />;
+  if (!id || isLoading) return <Spinner message="Laster inn spilleliste" />;
 
   if (!playlist) {
     return (

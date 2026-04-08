@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePublicPlaylists } from '@/src/hooks/usePublicPlaylists';
 import { useLiveQuery } from 'dexie-react-hooks';
-import Spinner from '@/src/components/login/Spinner';
+import { Spinner } from '@/components/ui/spinner';
 import Link from 'next/link';
 
 export default function PlaylistsPage() {
@@ -19,7 +19,7 @@ export default function PlaylistsPage() {
 
   const loadingPrivate = playlistsFromDexie === undefined;
 
-  if (loadingPrivate || loadingPublic) return <Spinner />;
+  if (loadingPrivate || loadingPublic) return <Spinner message="Laster inn spillelister" />;
 
   if (publicError) {
     toast.error('Feil i å laste spillelister');
