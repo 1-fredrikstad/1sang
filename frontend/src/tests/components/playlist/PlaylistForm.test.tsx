@@ -6,7 +6,7 @@ import { ExtendedSongListProps } from '@/src/components/playlist/SongList';
 import userEvent from '@testing-library/user-event';
 
 // ---- mocks ----
-vi.mock('react-toastify', () => {
+vi.mock('sonner', () => {
   const mockToastSuccess = vi.fn();
   const mockToastError = vi.fn();
 
@@ -25,7 +25,7 @@ vi.mock('react-toastify', () => {
 
 vi.mock('@/src/hooks/useData', () => ({
   useSongs: () => ({
-    data: [{ id: '1', title: 'Song 1', lyrics: '' } as Song],
+    data: [{ id: '1', title: 'Song 1', chorus: '', verses: [''] } as Song],
     error: null,
   }),
 }));
@@ -33,7 +33,7 @@ vi.mock('@/src/hooks/useData', () => ({
 vi.mock('@/src/components/playlist/SongList', () => ({
   __esModule: true,
   default: ({ onToggleSong }: ExtendedSongListProps) => (
-    <button onClick={() => onToggleSong({ id: '1', title: 'Song 1', lyrics: '' })}>
+    <button onClick={() => onToggleSong({ id: '1', title: 'Song 1', chorus: '', verses: [''] })}>
       toggle-song
     </button>
   ),
@@ -68,12 +68,9 @@ describe('PlaylistForm', () => {
     await user.click(toggle);
 
     // @ts-expect-error access mock inside vi.mock
-    const { mockToastSuccess } = await import('react-toastify');
+    const { mockToastSuccess } = await import('sonner');
 
-    expect(mockToastSuccess).toHaveBeenCalledWith(
-      'Sang lagt til',
-      expect.objectContaining({ toastId: 'playlist-toast' })
-    );
+    expect(mockToastSuccess).toHaveBeenCalledWith('Sang lagt til');
   });
 
   test('removes a song and shows error toast', async () => {
@@ -86,12 +83,9 @@ describe('PlaylistForm', () => {
     await user.click(toggle); // remove
 
     // @ts-expect-error access mock inside vi.mock
-    const { mockToastError } = await import('react-toastify');
+    const { mockToastError } = await import('sonner');
 
-    expect(mockToastError).toHaveBeenCalledWith(
-      'Sang fjernet',
-      expect.objectContaining({ toastId: 'playlist-toast' })
-    );
+    expect(mockToastError).toHaveBeenCalledWith('Sang fjernet');
   });
 
   test('calls onSubmit when form is submitted', async () => {

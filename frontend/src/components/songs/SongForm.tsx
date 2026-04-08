@@ -5,7 +5,7 @@ import { getFieldValidation } from '@/src/lib/validation/songSuggestionSchema';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import TagSelect from '../TagSelect';
 import SubmitButton from '../SubmitButton';
 import { useRouter } from 'next/navigation';

@@ -6,7 +6,7 @@ import { db } from '@/src/lib/db';
 import SongForm from '@/src/components/songs/SongForm';
 import { updateSuggestion } from '@/src/lib/actions/songSuggestions';
 import { useMounted } from '@/src/hooks/useMounted';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import BackButton from '@/src/components/BackButton';
 
 export default function EditSuggestionPage() {
