@@ -1,7 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, expect, vi, beforeEach, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { toast } from 'sonner';
 
 // Mock next/router and toast
 const mockRouter = {
@@ -38,7 +37,6 @@ vi.mock('@/src/components/songs/SectionInput', () => ({
 import SongForm from '@/src/components/songs/SongForm';
 
 describe('SongForm', () => {
-  const mockPush = vi.fn();
   const mockOnSubmit = vi.fn();
   const user = userEvent.setup();
 
@@ -48,18 +46,18 @@ describe('SongForm', () => {
     vi.clearAllMocks();
   });
 
-  it('renders form with initial heading and submit label', async () => {
+  test('renders form with initial heading and submit label', async () => {
     render(<SongForm heading="Add Song" submitLabel="Save" onSubmit={mockOnSubmit} />);
     expect(screen.getByText('Add Song')).toBeInTheDocument();
     expect(screen.getByText('Save')).toBeInTheDocument();
   });
 
-  it('renders default verse input', async () => {
+  test('renders default verse input', async () => {
     render(<SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />);
     expect(screen.getByText('Vers 1')).toBeInTheDocument();
   });
 
-  it('adds a new verse when "+ Legg til vers" is clicked', async () => {
+  test('adds a new verse when "+ Legg til vers" is clicked', async () => {
     render(<SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />);
     const addVerseButton = screen.getByText('+ Legg til vers');
     await user.click(addVerseButton);
@@ -92,7 +90,7 @@ describe('SongForm', () => {
   //   expect(mockPush).toHaveBeenCalledWith('/');
   // });
 
-  it('resets form when reset button is clicked', async () => {
+  test('resets form when reset button is clicked', async () => {
     render(<SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />);
     const resetButton = screen.getByText('Reset');
     await user.click(resetButton);
