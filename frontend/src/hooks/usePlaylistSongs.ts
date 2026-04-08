@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
 type Song = {
   id: string;
   title: string;
-  lyrics: string;
+  chorus: string;
+  verses: string[];
   position?: number;
   [key: string]: unknown;
 };

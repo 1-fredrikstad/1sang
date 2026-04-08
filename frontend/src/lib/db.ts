@@ -6,7 +6,8 @@ export interface Song {
   slug?: string;
   author?: string;
   melody?: string;
-  lyrics: string;
+  chorus?: string;
+  verses: string[];
   chords?: string;
   created_at?: string;
   updated_at?: string;
@@ -54,7 +55,8 @@ export interface SongSuggestion {
   title: string;
   author?: string;
   melody?: string;
-  lyrics: string;
+  chorus?: string;
+  verses: string[];
   chords?: string;
   status?: string;
   submitted_at?: string;

@@ -69,7 +69,8 @@ export async function POST(req: Request) {
       title: data.title,
       melody: data.melody || null,
       author: data.author || null,
-      lyrics: data.lyrics,
+      chorus: data.chorus || null,
+      verses: data.verses,
     };
 
     const target = `${supabaseUrl}/rest/v1/song_suggestions`;
