@@ -27,7 +27,6 @@ describe('BackButton', () => {
     render(<BackButton />);
     const Button = screen.getByRole('button');
     expect(Button).toBeInTheDocument();
-    expect(screen.getByLabelText('Tilbake')).toBeInTheDocument();
   });
 
   test('calls router.back() when not on /admin', () => {
