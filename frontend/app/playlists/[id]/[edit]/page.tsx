@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import PlaylistForm from '@/src/components/playlist/PlaylistForm';
 import { PlaylistInputs } from '@/src/types/playlistInputs';
 import { Song, db } from '@/src/lib/db';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { createClient } from '@/src/lib/supabase/client';
 import { DeletePlaylistButton } from '@/src/components/playlist/DeletePlaylistButton';
 import BackButton from '@/src/components/BackButton';
@@ -117,7 +117,7 @@ export default function EditPlaylistPage() {
         if (!admin) {
           if (!authPassword) {
             toast.error('Du må oppgi passord først', {
-              toastId: 'playlist-auth-required',
+              id: 'playlist-auth-required',
             });
             router.push('/');
             return;
@@ -140,7 +140,7 @@ export default function EditPlaylistPage() {
           if (!verifyRes.ok || !verifyJson?.ok || !verifyJson?.data) {
             sessionStorage.removeItem(`playlist-password-${id}`);
             toast.error('Du må oppgi gyldig passord først', {
-              toastId: 'playlist-auth-invalid',
+              id: 'playlist-auth-invalid',
             });
             router.push('/');
             return;
@@ -195,7 +195,7 @@ export default function EditPlaylistPage() {
       } catch (err) {
         console.error('fetchPlaylistData error:', err);
         toast.error('Kunne ikke hente spilleliste', {
-          toastId: 'playlist-fetch-error',
+          id: 'playlist-fetch-error',
         });
       } finally {
         setLoading(false);

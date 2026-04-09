@@ -43,7 +43,7 @@ vi.mock('@/src/lib/supabase/client', () => ({
   }),
 }));
 
-vi.mock('react-toastify', () => ({
+vi.mock('sonner', () => ({
   toast: {
     success: mockToastSuccess,
     error: mockToastError,

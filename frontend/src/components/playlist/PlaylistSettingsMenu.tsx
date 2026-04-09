@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { EllipsisVerticalIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { Playlist } from '@/src/lib/db';
 
 type PlaylistSettingsMenuProps = {
