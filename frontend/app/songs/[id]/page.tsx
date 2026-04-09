@@ -9,6 +9,7 @@ import { useAuth } from '@/src/context/AuthContext';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import { FaSpotify, FaYoutube } from 'react-icons/fa';
 import Lyrics from '@/src/components/songs/Lyrics';
+import { Badge } from '@/components/ui/badge';
 
 export default function SongPage() {
   const { id } = useParams<{ id: string }>();
@@ -74,11 +75,8 @@ export default function SongPage() {
 
         {/* Song content */}
 
-        <div className="opacity-60 mt-1">
-          {tags && tags.length > 0 && <p>Tags: {tags.map((tag) => tag.name).join(', ')}</p>}
-        </div>
-
-        {song.melody && <p className="opacity-60 mt-1">Melodi: {song.melody}</p>}
+        {/* Melody & link */}
+        {song.melody && <p className="opacity-60 mt-4">Melodi: {song.melody}</p>}
         {song.spotify_youtube && (
           <p className="opacity-60 mt-1 flex flex-col items-center">
             <span>Link:</span>
@@ -93,10 +91,30 @@ export default function SongPage() {
             </a>
           </p>
         )}
-        <pre className="mt-8 flex justify-center text-center whitespace-pre-wrap">
+
+        {/* Lyrics */}
+        <pre className="mt-5 flex justify-center text-center whitespace-pre-wrap">
           <Lyrics chorus={song.chorus} verses={song.verses} />
         </pre>
-        {song.author && <p className="opacity-60 mt-1">Skrevet av: {song.author}</p>}
+
+        {/* Author */}
+        {song.author && <p className="opacity-60">Skrevet av: {song.author}</p>}
+
+        {/* Tags */}
+        <div className="text-center">
+          {tags && tags.length > 0 && (
+            <>
+              <div className="flex flex-wrap justify-center gap-1 mt-5">
+                <span className="opacity-60 leading-tight">Tags: </span>
+                {tags.map((tag) => (
+                  <Badge key={tag.id || tag.name} variant="secondary" className="p-2.5 mr-1">
+                    {tag.name}
+                  </Badge>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </section>
     </main>
   );
