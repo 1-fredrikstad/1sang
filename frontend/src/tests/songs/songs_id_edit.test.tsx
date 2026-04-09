@@ -268,7 +268,6 @@ describe('EditSongPage', () => {
 
     expect(mockUpdate).toHaveBeenCalledWith('123', {
       title: 'Ny tittel',
-      slug: 'ny-tittel',
       melody: 'Ny melodi',
       author: 'Ny forfatter',
       chorus: 'Nytt refreng',
