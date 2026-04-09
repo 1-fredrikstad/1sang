@@ -55,8 +55,6 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
       ? searchedSongs
       : searchedSongs.filter((song: Song) => matchingSongIds.includes(song.id));
 
-  const isSyncingSongs = isLoading && isOnline;
-
   if (error) return <div>Error: {error.message}</div>;
 
   return (
