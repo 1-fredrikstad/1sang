@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { SunIcon } from '@heroicons/react/24/solid';
+import { SunIcon } from '@heroicons/react/24/outline';
 import { useDelayedLoading } from '@/src/hooks/useDelayedLoading';
 interface SpinnerProps extends React.ComponentProps<'svg'> {
   message?: string;
