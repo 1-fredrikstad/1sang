@@ -25,7 +25,7 @@ export default function PlaylistDetailPage() {
   }
 
   return (
-    <main className="flex flex-col justify-center mx-auto gap-4">
+    <main className="flex flex-col justify-center gap-4">
       {/* Header */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3 relative">

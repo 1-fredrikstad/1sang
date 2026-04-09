@@ -6,7 +6,6 @@ import { db, type Song } from '@/src/lib/db';
 import BackButton from '@/src/components/BackButton';
 import Link from 'next/link';
 import { useAuth } from '@/src/context/AuthContext';
-import WakeLockToggle from '@/src/components/songs/WakeLockToggle';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import { FaSpotify, FaYoutube } from 'react-icons/fa';
 import Lyrics from '@/src/components/songs/Lyrics';
@@ -53,25 +52,27 @@ export default function SongPage() {
   const { name, icon: Icon, color } = getLinkPlatform(song.spotify_youtube || '');
 
   return (
-    <>
-      <div className="mx-auto w-full flex justify-between mt-4">
-        <div className="cursor-pointer">
+    <main className="flex flex-col justify-center gap-4">
+      {/* Header */}
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-3 relative">
           <BackButton />
+          <div className="absolute right-0">
+            {isAdmin && (
+              <div>
+                <Link href={`/songs/${id}/edit`}>
+                  <PencilSquareIcon className="size-6 cursor-pointer" />
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
-
-        <WakeLockToggle />
       </div>
 
-      <main className="relative w-full text-center px-4">
-        {isAdmin && (
-          <div className="absolute right-5 top-0">
-            <Link href={`/songs/${id}/edit`}>
-              <PencilSquareIcon className="size-6 cursor-pointer" />
-            </Link>
-          </div>
-        )}
+      <section className="flex flex-col items-center justify-center">
+        <h1 className="title-headline capitalize-first">{song.title}</h1>
 
-        <h1 className="mt-15 title-headline capitalize-first">{song.title}</h1>
+        {/* Song content */}
 
         <div className="opacity-60 mt-1">
           {tags && tags.length > 0 && <p>Tags: {tags.map((tag) => tag.name).join(', ')}</p>}
@@ -96,7 +97,7 @@ export default function SongPage() {
           <Lyrics chorus={song.chorus} verses={song.verses} />
         </pre>
         {song.author && <p className="opacity-60 mt-1">Skrevet av: {song.author}</p>}
-      </main>
-    </>
+      </section>
+    </main>
   );
 }
