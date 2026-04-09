@@ -63,16 +63,13 @@ export default function SongPage() {
     <>
       <div className="mx-auto w-full max-w-300 px-4 flex justify-between mt-4">
         <div className="cursor-pointer">
-          <BackButton />
+          <BackButton href="/" />
         </div>
 
         <WakeLockToggle />
       </div>
 
       <main className="relative w-full max-w-300 mx-auto text-center px-4">
-        <div className="absolute left-5 top-1.5 cursor-pointer">
-          <BackButton href={'/'} />
-        </div>
         {isAdmin && (
           <div className="absolute right-5 top-0">
             <Link href={`/songs/${slug}/edit`}>
