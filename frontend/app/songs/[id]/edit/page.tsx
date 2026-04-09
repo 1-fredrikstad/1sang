@@ -102,10 +102,8 @@ export default function EditSongPage() {
   };
 
   return (
-    <main className="relative w-full">
-      <div className="absolute left-5 cursor-pointer">
-        <BackButton />
-      </div>
+    <main>
+      <BackButton />
 
       <SongForm
         heading="Rediger sang"
@@ -122,7 +120,7 @@ export default function EditSongPage() {
         }}
         onSubmit={handleSubmit}
       />
-      <div className="flex justify-center">
+      <div className="flex justify-start m-2 mt-5">
         <DeleteSongButton
           songId={song.id}
           className="danger"

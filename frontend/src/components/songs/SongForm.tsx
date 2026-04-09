@@ -1,7 +1,6 @@
 'use client';
 
 import { getFieldValidation } from '@/src/lib/validation/songSuggestionSchema';
-// import { useEffect } from 'react';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
@@ -100,7 +99,7 @@ export default function SongForm({
     <form
       id="form-add-song"
       onSubmit={handleSubmit(handleFormSubmit)}
-      className="flex flex-col m-8 mb-4 gap-1 max-w-2xl md:mx-auto"
+      className="flex flex-col m-2 gap-1 max-w-2xl"
     >
       <h1>{heading}</h1>
 
@@ -166,15 +165,16 @@ export default function SongForm({
               ></SectionInput>
             );
           })}
-
-          <Button
-            type="button"
-            onClick={() => setValue('verses', [...watchVerses, ''])}
-            className="cursor-pointer hover:bg-btn-hover"
-          >
-            + Legg til vers
-          </Button>
-          {errors.verses && <FieldError errors={[errors.verses]} />}
+          <div className="flex flex-row">
+            <Button
+              type="button"
+              onClick={() => setValue('verses', [...watchVerses, ''])}
+              className="cursor-pointer hover:bg-btn-hover"
+            >
+              + Legg til vers
+            </Button>
+            {errors.verses && <FieldError errors={[errors.verses]} />}
+          </div>
         </Field>
 
         {/* Chorus */}
@@ -195,15 +195,17 @@ export default function SongForm({
               limit={MAX_CHORUS_LENGTH}
             ></SectionInput>
           ) : (
-            <Button
-              type="button"
-              onClick={() => {
-                sethasChorus(true);
-              }}
-              className="cursor-pointer hover:bg-btn-hover"
-            >
-              + Legg til refreng
-            </Button>
+            <div className="flex flex-row">
+              <Button
+                type="button"
+                onClick={() => {
+                  sethasChorus(true);
+                }}
+                className="cursor-pointer hover:bg-btn-hover"
+              >
+                + Legg til refreng
+              </Button>
+            </div>
           )}
         </Field>
 
@@ -221,7 +223,7 @@ export default function SongForm({
 
         {/* Tags */}
         {showTags && (
-          <Field className="w-56">
+          <Field className="w-full">
             <FieldLabel htmlFor="form-add-song-tags">Tags</FieldLabel>
             <TagSelect value={selectedTags} onChange={(tags) => setValue('tags', tags)} />
           </Field>

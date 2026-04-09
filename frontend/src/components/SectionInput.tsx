@@ -45,14 +45,16 @@ export default function SectionInput({
       </InputGroup>
       {error && <FieldError errors={[{ message: error }]} />}
       {removable && onRemove && (
-        <Button
-          type="button"
-          variant="destructive"
-          onClick={onRemove}
-          className="text-sm mt-1 text-red-500 cursor-pointer"
-        >
-          Slett {removeText}
-        </Button>
+        <div className="flex flex-row">
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={onRemove}
+            className="text-sm mt-1 text-red-500 cursor-pointer"
+          >
+            Slett {removeText}
+          </Button>
+        </div>
       )}
     </Field>
   );
