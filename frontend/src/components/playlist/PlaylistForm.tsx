@@ -14,6 +14,16 @@ import MobileTooltip from '../MobileTooltip';
 import SubmitButton from '../SubmitButton';
 import { useWatch } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
+import { Field, FieldError, FieldGroup, FieldLabel, FieldDescription } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 type PlaylistFormProps = {
   onSubmit: SubmitHandler<PlaylistInputs>;
@@ -26,6 +36,7 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
     setValue,
     control,
     formState: { errors },
+    reset,
   } = useForm<PlaylistInputs>({
     defaultValues: {
       title: '',
@@ -83,87 +94,85 @@ export default function PlaylistForm({ onSubmit }: PlaylistFormProps) {
 
   return (
     <form
+      id="form-add-playlist"
       onSubmit={handleSubmit(handleFormSubmit)}
-      className="flex flex-col m-8 mb-4 gap-1 max-w-2xl md:mx-auto"
+      className="flex flex-col m-4 gap-1 max-w-2xl"
     >
-      <h1 className="text-xl mb-2">Lag ny spilleliste</h1>
+      <h1>Lag ny spilleliste</h1>
+      <FieldGroup className="mb-5">
+        {/* Title */}
+        <Field data-invalid={!!errors.title}>
+          <FieldLabel htmlFor="playlist-title">Tittel*</FieldLabel>
+          <Input id="playlist-title" {...register('title', getPlaylistFieldValidation('title'))} />
+          {errors.title && <FieldError errors={[errors.title]} />}
+        </Field>
 
-      {/* Title */}
-      <span>
-        <label htmlFor="title">Tittel*</label>
-        {errors.title && (
-          <span className="text-red-500 italic ml-2">{errors.title.message}</span>
-        )}{' '}
-      </span>
-      <input
-        id="title"
-        {...register('title', getPlaylistFieldValidation('title'))}
-        className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
-        type="text"
-      ></input>
+        {/* Password */}
+        <Field data-invalid={!!errors.password}>
+          <FieldLabel htmlFor="playlist-password">Passord*</FieldLabel>
 
-      {/* Password */}
-      <span>
-        <label htmlFor="password">Passord* (NB! Husk for å redigere/slette spillelister)</label>
-        {errors.password && (
-          <span className="text-red-500 italic ml-2">{errors.password.message}</span>
+          <FieldDescription>NB: Husk for å redigere/slette spillelister</FieldDescription>
+          <Input
+            id="playlist-password"
+            {...register('password', getPlaylistFieldValidation('password'))}
+          />
+          {errors.password && <FieldError errors={[errors.password]} />}
+        </Field>
+
+        {/* Songlist */}
+        <Field>
+          <FieldLabel>Legg til sanger</FieldLabel>
+          <SongList
+            songs={songs}
+            isLoading={isLoading}
+            error={error}
+            onToggleSong={toggleSong}
+            isAdded={isSongAdded}
+          />
+        </Field>
+
+        {/* Public switch */}
+        <Field className="flex flex-row">
+          <FieldLabel>Offentlig spilleliste</FieldLabel>
+          <Switch checked={isPublic} onCheckedChange={(val) => setValue('isPublic', val)} />
+        </Field>
+
+        {/* Duration - how long the playlist will exist if public */}
+        {isPublic && (
+          <Field>
+            <FieldLabel>
+              <span className="flex items-center gap-2">
+                Varighet
+                <MobileTooltip
+                  trigger={<QuestionMarkCircleIcon className="h-6 w-6 text-foreground" />}
+                >
+                  Hvor lenge spillelisten skal eksistere før den slettes automatisk
+                </MobileTooltip>
+              </span>
+            </FieldLabel>
+            <Select
+              defaultValue="604800"
+              onValueChange={(value) => setValue('duration', Number(value))}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Velg varighet" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="604800">7 dager</SelectItem>
+                <SelectItem value="2592000">30 dager</SelectItem>
+                <SelectItem value="7776000">90 dager</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
         )}
-      </span>
-      <input
-        id="password"
-        {...register('password', getPlaylistFieldValidation('password'))}
-        className="mb-5 p-1 outline outline-[#E6E4E2] rounded-xs"
-      ></input>
-
-      {/* List of songs to add to playlist */}
-      <SongList
-        songs={songs}
-        isLoading={isLoading}
-        error={error}
-        onToggleSong={toggleSong}
-        isAdded={isSongAdded}
-      />
-
-      {/* Public playlist or not */}
-      <span className="inline-flex items-center gap-2 mb-6">
-        <p>Offentlig spilleliste:</p>
-        <Switch checked={isPublic} onCheckedChange={(value) => setValue('isPublic', value)} />
-      </span>
-
-      {isPublic && (
-        <section className="mb-4">
-          {/* Dutation - how long the playlist will exist if public */}
-          <label htmlFor="duration" className="block mb-2">
-            <span className="flex items-center gap-2">
-              Varighet
-              <MobileTooltip
-                trigger={<QuestionMarkCircleIcon className="h-6 w-6 text-foreground" />}
-              >
-                Hvor lenge spillelisten skal eksistere før den slettes automatisk
-              </MobileTooltip>
-            </span>
-          </label>
-          <select
-            id="duration"
-            {...register('duration', { valueAsNumber: true })}
-            className="mt-2 mb-6 p-3 rounded-sm outline-1 hover:cursor-pointer"
-            defaultValue={604800}
-          >
-            <option value={604800} className="text-black">
-              7 dager
-            </option>
-            <option value={2592000} className="text-black">
-              30 dager
-            </option>
-            <option value={7776000} className="text-black">
-              90 dager
-            </option>
-          </select>
-        </section>
-      )}
-
-      {/* Submit button */}
-      <SubmitButton submitLabel="Opprett spilleliste" />
+      </FieldGroup>
+      {/* Submit and reset */}
+      <div className="flex gap-4 mt-4">
+        <SubmitButton submitLabel="Opprett spilleliste" />
+        <Button type="button" variant="outline" onClick={() => reset()}>
+          Reset
+        </Button>
+      </div>{' '}
     </form>
   );
 }

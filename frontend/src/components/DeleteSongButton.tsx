@@ -84,9 +84,9 @@ export function DeleteSongButton({
       onClick={onDelete}
       disabled={isDeleting}
       aria-label="Slett sang"
-      className={`p-3 bg-danger hover:cursor-pointer hover:bg-danger-hover rounded ${className ?? ''}`}
+      className={`p-3 bg-danger hover:cursor-pointer hover:bg-danger-hover rounded-sm ${className ?? ''}`}
     >
-      <Image src="/trash.png" alt="" width={20} height={20} />
+      <Image src="/trash.png" alt="" width={18} height={18} />
     </button>
   );
 }

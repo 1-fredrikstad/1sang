@@ -8,6 +8,7 @@ import { updateSuggestion } from '@/src/lib/actions/songSuggestions';
 import { useMounted } from '@/src/hooks/useMounted';
 import { toast } from 'sonner';
 import BackButton from '@/src/components/BackButton';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function EditSuggestionPage() {
   const { id } = useParams<{ id: string }>();
@@ -24,7 +25,7 @@ export default function EditSuggestionPage() {
   const suggestion = dexieSuggestion ?? null;
 
   if (!mounted || dexieSuggestion === undefined) {
-    return <div className="flex justify-center items-center min-h-[60vh]">Laster...</div>;
+    return <Spinner message="Laster inn" />;
   }
 
   if (!suggestion) {
@@ -32,10 +33,8 @@ export default function EditSuggestionPage() {
   }
 
   return (
-    <main className="relative w-full max-w-300 mx-auto px-4 mt-15">
-      <div className="absolute **:left-5 cursor-pointer">
-        <BackButton />
-      </div>
+    <main>
+      <BackButton />
 
       <SongForm
         heading="Rediger forslag"

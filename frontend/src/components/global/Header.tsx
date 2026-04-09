@@ -5,13 +5,9 @@ export default function Header() {
   // Responsive header: centered for desktop (lg) and left-aligned for mobile
   return (
     <header className="w-full bg-navbar-bg">
-      <div className="mx-auto px-4 py-3">
-        <div className="mx-auto max-w-md lg:max-w-4xl">
-          <Link
-            href="/"
-            aria-label="Go to homepage"
-            className="flex items-center gap-3 justify-start lg:justify-center"
-          >
+      <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="flex items-center gap-3 justify-start lg:justify-center">
+          <Link href="/" aria-label="Go to homepage" className="flex items-center gap-3">
             <Image
               src="/favicon/favicon.svg"
               alt="Scout Logo"

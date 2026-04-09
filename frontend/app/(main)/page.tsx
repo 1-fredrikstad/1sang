@@ -16,11 +16,7 @@ function SongDataDisplay() {
     syncOnMount: true,
   });
 
-  return (
-    <div>
-      <HomePage songs={songs} isLoading={isLoading} error={error} />
-    </div>
-  );
+  return <HomePage songs={songs} isLoading={isLoading} error={error} />;
 }
 
 export default function Page() {

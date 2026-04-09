@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import Spinner from '@/src/components/login/Spinner';
+import { Spinner } from '@/components/ui/spinner';
 import BackButton from '@/src/components/BackButton';
 import { usePlaylistDetails } from '@/src/hooks/usePlaylistDetails';
 import { PlaylistSongItem } from '@/src/components/playlist/PlaylistSongItem';
@@ -13,7 +13,7 @@ export default function PlaylistDetailPage() {
   const id = params?.id as string | undefined;
   const { playlist, songs, isLoading } = usePlaylistDetails(id || '');
 
-  if (!id || isLoading) return <Spinner />;
+  if (!id || isLoading) return <Spinner message="Laster inn spilleliste" />;
 
   if (!playlist) {
     return (
@@ -25,12 +25,12 @@ export default function PlaylistDetailPage() {
   }
 
   return (
-    <main className="mb-5  flex flex-col justify-center max-w-5xl mx-auto gap-4">
+    <main className="flex flex-col justify-center gap-4">
       {/* Header */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3 relative">
           <BackButton />
-          <h1 className="text-2xl font-bold tracking-tight">{playlist.title}</h1>
+          <h1 className="title-headline capitalize-first">{playlist.title}</h1>
           <div className="absolute right-0">
             <PlaylistSettingsMenu
               playlist={playlist}
@@ -40,7 +40,7 @@ export default function PlaylistDetailPage() {
           </div>
         </div>
 
-        <div className="flex flex-row gap-2 text-xs opacity-60 ml-9">
+        <div className="flex flex-row text-xs opacity-60 ml-9">
           <span>{playlist.is_public ? 'Offentlig spilleliste' : 'Privat spilleliste'}</span>
         </div>
       </div>
