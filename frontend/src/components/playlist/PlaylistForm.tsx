@@ -43,8 +43,6 @@ export default function PlaylistForm({
     },
   });
 
-  const router = useRouter();
-
   const songsInPlaylist = useWatch({ name: 'songsInPlaylist', control });
   const isPublic = useWatch({ name: 'isPublic', control });
 
