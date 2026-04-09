@@ -7,7 +7,7 @@ import SongList from './SongList';
 import { useSongs } from '@/src/hooks/useData';
 import { Song } from '@/src/lib/db';
 import { useCallback } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import MobileTooltip from '../MobileTooltip';
@@ -43,7 +43,7 @@ export default function PlaylistForm({
     },
   });
 
-  const TOAST_ID = 'playlist-toast';
+  const router = useRouter();
 
   const songsInPlaylist = useWatch({ name: 'songsInPlaylist', control });
   const isPublic = useWatch({ name: 'isPublic', control });
@@ -71,26 +71,10 @@ export default function PlaylistForm({
           'songsInPlaylist',
           songsInPlaylist.filter((s) => s.id !== song.id)
         );
-
-        if (toast.isActive(TOAST_ID)) {
-          toast.update(TOAST_ID, {
-            render: 'Sang fjernet',
-            type: 'error',
-          });
-        } else {
-          toast.error('Sang fjernet', { toastId: TOAST_ID });
-        }
+        toast.error('Sang fjernet');
       } else {
         setValue('songsInPlaylist', [...songsInPlaylist, song]);
-
-        if (toast.isActive(TOAST_ID)) {
-          toast.update(TOAST_ID, {
-            render: 'Sang lagt til',
-            type: 'success',
-          });
-        } else {
-          toast.success('Sang lagt til', { toastId: TOAST_ID });
-        }
+        toast.success('Sang lagt til');
       }
     },
     [songsInPlaylist, setValue]
