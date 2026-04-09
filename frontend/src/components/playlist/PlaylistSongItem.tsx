@@ -1,5 +1,5 @@
 import { Song } from '@/src/lib/db';
-import { SongBox } from '../SongBox';
+import { SongBox } from '../songs/SongBox';
 
 export function PlaylistSongItem({ song, index }: { song: Song; index: number }) {
   return (

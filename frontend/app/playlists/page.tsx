@@ -1,7 +1,7 @@
 'use client';
 
 import { db } from '@/src/lib/db';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePublicPlaylists } from '@/src/hooks/usePublicPlaylists';
 import { useLiveQuery } from 'dexie-react-hooks';

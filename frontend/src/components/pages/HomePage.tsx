@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Song } from '@/src/lib/db';
 import { db } from '@/src/lib/db';
-import { SongBox } from '../SongBox';
+import { SongBox } from '../songs/SongBox';
 import { SongListProps } from '@/src/types/songList';
 import { SearchField } from '../SearchField';
 import { useDebounce } from '@/src/hooks/useDebounce';

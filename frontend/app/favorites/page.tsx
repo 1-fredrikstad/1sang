@@ -2,7 +2,7 @@
 
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/src/lib/db';
-import { SongBox } from '@/src/components/SongBox';
+import { SongBox } from '@/src/components/songs/SongBox';
 
 export default function FavoritesPage() {
   const songs = useLiveQuery(async () => {

@@ -9,7 +9,7 @@ const { mockToastSuccess, mockToastError } = vi.hoisted(() => ({
   mockToastError: vi.fn(),
 }));
 
-vi.mock('react-toastify', () => ({
+vi.mock('sonner', () => ({
   toast: {
     success: mockToastSuccess,
     error: mockToastError,

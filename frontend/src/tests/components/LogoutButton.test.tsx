@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import LogoutButton from '@/src/components/admin/LogoutButton';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
 const mockLogout = vi.fn().mockResolvedValue(undefined);
 
@@ -26,7 +26,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 // --- Mock toast ---
-vi.mock('react-toastify', () => ({
+vi.mock('sonner', () => ({
   toast: {
     error: vi.fn(),
   },

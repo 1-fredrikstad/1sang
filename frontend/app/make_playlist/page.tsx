@@ -1,7 +1,7 @@
 'use client';
 
 import { SubmitHandler } from 'react-hook-form';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import PlaylistForm from '@/src/components/playlist/PlaylistForm';
 import { PlaylistInputs } from '@/src/types/playlistInputs';
 import { savePlaylist } from '@/src/lib/playlists/savePlaylists';

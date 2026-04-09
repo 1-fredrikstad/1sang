@@ -45,6 +45,7 @@
   --sidebar-ring: oklch(0.708 0 0);
   --divider: oklch(80.78% 0.00009 271.152);
   --shadow: oklch(77.628% 0.00009 271.152);
+  --btn-hover: oklch(39.042% 0.00004 271.152);
 }
 
 /* Dark mode overrides */
@@ -87,6 +88,7 @@
   --sidebar-ring: oklch(0.556 0 0);
   --divider: oklch(49.261% 0.00006 271.152);
   --shadow: oklch(93.705% 0.00011 271.152);
+  --btn-hover: oklch(84.212% 0.0001 271.152);
 }
 
 /* --- Themes for header --- */
@@ -332,6 +334,7 @@ pre {
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-btn-hover: var(--btn-hover);
 }
 
 @layer base {
