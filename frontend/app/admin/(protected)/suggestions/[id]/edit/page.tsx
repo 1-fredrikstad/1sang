@@ -33,10 +33,8 @@ export default function EditSuggestionPage() {
   }
 
   return (
-    <main className="relative w-full">
-      <div className="absolute **:left-5 cursor-pointer">
-        <BackButton />
-      </div>
+    <main>
+      <BackButton />
 
       <SongForm
         heading="Rediger forslag"
