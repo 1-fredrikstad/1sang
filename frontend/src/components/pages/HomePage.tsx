@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Song } from '@/src/lib/db';
 import { db } from '@/src/lib/db';
@@ -9,7 +9,7 @@ import { SongListProps } from '@/src/types/songList';
 import { SearchField } from '../SearchField';
 import { useDebounce } from '@/src/hooks/useDebounce';
 import TagSelect from '@/src/components/TagSelect';
-import { searchByTitle } from '@/src/lib/search/searchByTitle';
+import { searchSongs } from '@/src/lib/search/searchSongs';
 import { Skeleton } from '@/components/ui/skeleton';
 
 type Tag = {
@@ -21,9 +21,23 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedQuery = useDebounce(searchQuery, 300);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const [isOnline, setIsOnline] = useState(() => window.navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const searchedSongs = useMemo(() => {
-    return searchByTitle(songs, debouncedQuery);
+    return searchSongs(songs, debouncedQuery);
   }, [songs, debouncedQuery]);
 
   const matchingSongIds =
@@ -49,6 +63,8 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
 
       {isLoading ? (
         <div className="flex flex-col gap-4">
+          {isOnline && <p className="text-sm text-neutral-500">Synkroniserer med Supabase...</p>}
+
           {/* Skeletons */}
           <Skeleton className="h-10 w-full rounded-md" />
           <Skeleton className="h-10 w-64 rounded-md" />
@@ -71,15 +87,19 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
             />
           </div>
 
-          {!isLoading && searchQuery.trim() && (
-            <p className="mb-3 text-sm opacity-60">{displayedSongs.length} treff</p>
+          {searchQuery.trim() && (
+            <p className="mb-3 text-sm text-neutral-500">{displayedSongs.length} treff</p>
           )}
 
-          {!isLoading && displayedSongs.length === 0 ? (
-            <p className="text-sm opacity-60">
-              {selectedTags.length > 0
+          {displayedSongs.length === 0 ? (
+            <p className="text-sm text-neutral-500">
+              {searchQuery.trim() && selectedTags.length > 0
                 ? 'Ingen sanger matcher søk og valgte tags.'
-                : 'Ingen sanger funnet.'}
+                : searchQuery.trim()
+                  ? 'Ingen sanger matcher søket.'
+                  : selectedTags.length > 0
+                    ? 'Ingen sanger matcher valgte tags.'
+                    : 'Ingen sanger funnet.'}
             </p>
           ) : (
             <ul className="flex flex-col gap-2">
