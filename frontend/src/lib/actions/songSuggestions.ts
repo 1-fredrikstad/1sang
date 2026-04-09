@@ -8,7 +8,8 @@ type SongInput = {
   title: string;
   melody?: string | null;
   author?: string | null;
-  lyrics: string;
+  chorus?: string | null;
+  verses: string[];
 };
 
 export async function updateSuggestion(id: string, data: SongInput) {
@@ -22,7 +23,8 @@ export async function updateSuggestion(id: string, data: SongInput) {
       title: data.title.trim(),
       melody: data.melody?.trim() || null,
       author: data.author?.trim() || null,
-      lyrics: data.lyrics.trim(),
+      chorus: data.chorus?.trim() || null,
+      verses: data.verses,
     })
     .eq('id', id);
 
@@ -77,7 +79,8 @@ export async function approveSuggestion(id: string) {
     title: suggestion.title,
     melody: suggestion.melody,
     author: suggestion.author,
-    lyrics: suggestion.lyrics,
+    chorus: suggestion.chorus,
+    verses: suggestion.verses,
   });
 
   if (insertErr) {

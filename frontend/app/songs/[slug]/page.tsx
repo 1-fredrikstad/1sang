@@ -6,9 +6,10 @@ import { db, type Song } from '@/src/lib/db';
 import BackButton from '@/src/components/BackButton';
 import Link from 'next/link';
 import { useAuth } from '@/src/context/AuthContext';
-import WakeLockToggle from '@/src/components/WakeLockToggle';
+import WakeLockToggle from '@/src/components/songs/WakeLockToggle';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import { FaSpotify, FaYoutube } from 'react-icons/fa';
+import Lyrics from '@/src/components/songs/Lyrics';
 
 export default function SongPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -102,7 +103,7 @@ export default function SongPage() {
           </p>
         )}
         <pre className="mt-8 flex justify-center text-center whitespace-pre-wrap">
-          {song.lyrics || 'Ingen sangtekst'}
+          <Lyrics chorus={song.chorus} verses={song.verses} />
         </pre>
         {song.author && <p className="opacity-60 mt-1">Skrevet av: {song.author}</p>}
       </main>

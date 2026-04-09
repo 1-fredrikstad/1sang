@@ -3,7 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type Song } from '@/src/lib/db';
-import SongForm from '@/src/components/SongForm';
+import SongForm from '@/src/components/songs/SongForm';
 import { useAuth } from '@/src/context/AuthContext';
 import BackButton from '@/src/components/BackButton';
 import { createClient } from '@/src/lib/supabase/client';
@@ -51,7 +51,8 @@ export default function EditSongPage() {
     title: string;
     melody?: string;
     author?: string;
-    lyrics: string;
+    chorus?: string;
+    verses: string[];
     tags?: string[];
   }) => {
     const supabase = createClient();
@@ -88,8 +89,8 @@ export default function EditSongPage() {
       title: data.title,
       melody: data.melody || undefined,
       author: data.author || undefined,
-      lyrics: data.lyrics,
-      slug: updatedSong?.slug ?? song.slug,
+      chorus: data.chorus || undefined,
+      verses: data.verses,
     });
 
     await db.song_tags.where('song_id').equals(song?.id).delete();
@@ -121,7 +122,8 @@ export default function EditSongPage() {
           title: song.title,
           melody: song.melody ?? '',
           author: song.author ?? '',
-          lyrics: song.lyrics ?? '',
+          chorus: song.chorus ?? '',
+          verses: song.verses,
           tags: songTags ?? [],
         }}
         onSubmit={handleSubmit}

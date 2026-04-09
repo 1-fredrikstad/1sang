@@ -1,14 +1,17 @@
+import { Button } from '@/components/ui/button';
+
 type SubmitButtonProps = {
   submitLabel: string;
 };
 
 export default function SubmitButton({ submitLabel }: SubmitButtonProps) {
   return (
-    <button
+    <Button
       type="submit"
-      className="disabled:opacity-50 self-center font-bold py-2 px-4 rounded-sm cursor-pointer bg-secondary"
+      variant="default"
+      className="disabled:opacity-50 cursor-pointer hover:bg-btn-hover"
     >
       {submitLabel}
-    </button>
+    </Button>
   );
 }

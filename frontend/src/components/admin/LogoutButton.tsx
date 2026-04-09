@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
 export default function LogoutButton() {
   const { logout } = useAuth();

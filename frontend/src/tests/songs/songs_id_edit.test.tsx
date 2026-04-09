@@ -33,7 +33,8 @@ type SongFormSubmitData = {
   title: string;
   melody?: string;
   author?: string;
-  lyrics: string;
+  chorus?: string;
+  verses: string[];
   tags?: string[];
 };
 
@@ -42,7 +43,8 @@ type SongFormProps = {
     title: string;
     melody: string;
     author: string;
-    lyrics: string;
+    chorus: string;
+    verses: string[];
     tags?: Tag[];
   };
   onSubmit: (data: SongFormSubmitData) => void;
@@ -99,7 +101,7 @@ vi.mock('@/src/lib/db', () => ({
   },
 }));
 
-vi.mock('@/src/components/SongForm', () => ({
+vi.mock('@/src/components/songs/SongForm', () => ({
   default: (props: SongFormProps) => {
     mockSongForm(props);
 
@@ -115,7 +117,8 @@ vi.mock('@/src/components/SongForm', () => ({
               title: 'Ny tittel',
               melody: 'Ny melodi',
               author: 'Ny forfatter',
-              lyrics: 'Ny tekst',
+              chorus: 'Nytt refreng',
+              verses: ['Et nytt vers med minst 20 tegn.'],
               tags: ['tag2', 'tag3'],
             })
           }
@@ -184,7 +187,8 @@ describe('EditSongPage', () => {
       slug: 'min-sang',
       melody: 'Melodi',
       author: 'Forfatter',
-      lyrics: 'Tekst',
+      chorus: '',
+      verses: ['Dette er et vers med mer enn 20 tegn.'],
     };
 
     const songTags: Tag[] = [
@@ -221,7 +225,8 @@ describe('EditSongPage', () => {
       slug: 'min-sang',
       melody: 'Melodi',
       author: 'Forfatter',
-      lyrics: 'Tekst',
+      chorus: '',
+      verses: ['Dette er et vers med mer enn 20 tegn.'],
     };
 
     const songTags: Tag[] = [
@@ -255,7 +260,8 @@ describe('EditSongPage', () => {
         title: 'Ny tittel',
         melody: 'Ny melodi',
         author: 'Ny forfatter',
-        lyrics: 'Ny tekst',
+        chorus: 'Nytt refreng',
+        verses: ['Et nytt vers med minst 20 tegn.'],
         tags: ['tag2', 'tag3'],
       }),
     });
@@ -265,7 +271,8 @@ describe('EditSongPage', () => {
       slug: 'ny-tittel',
       melody: 'Ny melodi',
       author: 'Ny forfatter',
-      lyrics: 'Ny tekst',
+      chorus: 'Nytt refreng',
+      verses: ['Et nytt vers med minst 20 tegn.'],
     });
 
     expect(mockDelete).toHaveBeenCalled();

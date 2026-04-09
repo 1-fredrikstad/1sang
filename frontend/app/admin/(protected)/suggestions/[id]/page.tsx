@@ -9,6 +9,7 @@ import { useMounted } from '@/src/hooks/useMounted';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import { Spinner } from '@/components/ui/spinner';
 import { SuggestionActions } from '@/src/components/suggestions/SuggestionActions';
+import Lyrics from '@/src/components/songs/Lyrics';
 
 export default function SuggestionPage() {
   const { id } = useParams<{ id: string }>();
@@ -54,7 +55,7 @@ export default function SuggestionPage() {
       {suggestion.melody && <p className="opacity-60 mt-1">Melodi: {suggestion.melody}</p>}
 
       <pre className="mt-8 flex justify-center text-center whitespace-pre-wrap">
-        {suggestion.lyrics}
+        <Lyrics chorus={suggestion.chorus} verses={suggestion.verses} />
       </pre>
 
       {suggestion.author && <p className="opacity-60 mt-1">Skrevet av: {suggestion.author}</p>}
