@@ -10,6 +10,7 @@ import { SearchField } from '../SearchField';
 import { useDebounce } from '@/src/hooks/useDebounce';
 import TagSelect from '@/src/components/TagSelect';
 import { searchByTitle } from '@/src/lib/search/searchByTitle';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type Tag = {
   id: string;
@@ -46,36 +47,50 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
     <main>
       <h1>Alle sanger</h1>
 
-      <SearchField value={searchQuery} onChange={setSearchQuery} />
+      {isLoading ? (
+        <div className="flex flex-col gap-4">
+          {/* Skeletons */}
+          <Skeleton className="h-10 w-full rounded-md" />
+          <Skeleton className="h-10 w-64 rounded-md" />
 
-      <div className="mb-10 w-fit">
-        <TagSelect
-          value={selectedTags}
-          onChange={setSelectedTags}
-          triggerClassName="inline-flex w-fit min-w-[120px] max-w-[400px] justify-between"
-        />
-      </div>
-
-      {isLoading && <p>Synkroniserer med supabase...</p>}
-
-      {!isLoading && searchQuery.trim() && (
-        <p className="mb-3 text-sm opacity-60">{displayedSongs.length} treff</p>
-      )}
-
-      {!isLoading && displayedSongs.length === 0 ? (
-        <p className="text-sm opacity-60">
-          {selectedTags.length > 0
-            ? 'Ingen sanger matcher søk og valgte tags.'
-            : 'Ingen sanger funnet.'}
-        </p>
+          <div className="flex flex-col gap-2 mt-2">
+            {[...Array(5)].map((_, idx) => (
+              <Skeleton key={idx} className="h-16 w-full rounded-md" />
+            ))}
+          </div>
+        </div>
       ) : (
-        <ul className="flex flex-col gap-2">
-          {displayedSongs.map((song: Song) => (
-            <li key={song.id}>
-              <SongBox song={song} />
-            </li>
-          ))}
-        </ul>
+        <>
+          <SearchField value={searchQuery} onChange={setSearchQuery} />
+
+          <div className="mb-10 w-fit">
+            <TagSelect
+              value={selectedTags}
+              onChange={setSelectedTags}
+              triggerClassName="inline-flex w-fit min-w-[120px] max-w-[400px] justify-between"
+            />
+          </div>
+
+          {!isLoading && searchQuery.trim() && (
+            <p className="mb-3 text-sm opacity-60">{displayedSongs.length} treff</p>
+          )}
+
+          {!isLoading && displayedSongs.length === 0 ? (
+            <p className="text-sm opacity-60">
+              {selectedTags.length > 0
+                ? 'Ingen sanger matcher søk og valgte tags.'
+                : 'Ingen sanger funnet.'}
+            </p>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {displayedSongs.map((song: Song) => (
+                <li key={song.id}>
+                  <SongBox song={song} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
       )}
     </main>
   );
