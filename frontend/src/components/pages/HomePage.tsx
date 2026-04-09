@@ -65,6 +65,8 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
 
       {isLoading ? (
         <div className="flex flex-col gap-4">
+          {isOnline && <p className="text-sm text-neutral-500">Synkroniserer med Supabase...</p>}
+
           {/* Skeletons */}
           <Skeleton className="h-10 w-full rounded-md" />
           <Skeleton className="h-10 w-64 rounded-md" />
@@ -87,21 +89,11 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
             />
           </div>
 
-          <div className="mb-10 w-fit">
-            <TagSelect
-              value={selectedTags}
-              onChange={setSelectedTags}
-              triggerClassName="inline-flex w-fit min-w-[120px] max-w-[400px] justify-between"
-            />
-          </div>
-
-          {isSyncingSongs && <p>Synkroniserer med Supabase...</p>}
-
-          {!isSyncingSongs && searchQuery.trim() && (
+          {searchQuery.trim() && (
             <p className="mb-3 text-sm text-neutral-500">{displayedSongs.length} treff</p>
           )}
 
-          {!isSyncingSongs && displayedSongs.length === 0 ? (
+          {displayedSongs.length === 0 ? (
             <p className="text-sm text-neutral-500">
               {searchQuery.trim() && selectedTags.length > 0
                 ? 'Ingen sanger matcher søk og valgte tags.'
