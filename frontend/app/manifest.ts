@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Sanger under liljen',
-    short_name: 'Sanger under liljen',
+    short_name: 'Liljesanger',
     description: 'A PWA for Fredrikstad Scouts displaying their scout songs',
     start_url: '/',
     display: 'standalone',
