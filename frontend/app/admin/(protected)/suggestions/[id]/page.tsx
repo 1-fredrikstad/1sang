@@ -33,7 +33,7 @@ export default function SuggestionPage() {
   }
 
   return (
-    <main className="relative w-full max-w-300 mx-auto text-center px-4">
+    <main className="relative w-full text-center px-4">
       {/* Back */}
       <div className="absolute **:left-5 cursor-pointer">
         <BackButton />

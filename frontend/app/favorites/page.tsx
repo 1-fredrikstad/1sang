@@ -3,6 +3,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/src/lib/db';
 import { SongBox } from '@/src/components/songs/SongBox';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function FavoritesPage() {
   const songs = useLiveQuery(async () => {
@@ -13,7 +14,7 @@ export default function FavoritesPage() {
     return result.filter((song): song is NonNullable<typeof song> => !!song);
   }, []);
 
-  if (!songs) return <p className="p-4">Laster...</p>;
+  if (!songs) return <Spinner message="Laster inn favoritter" />;
 
   if (songs.length === 0) {
     return <p className="p-4">Ingen favorittsanger</p>;
@@ -22,7 +23,7 @@ export default function FavoritesPage() {
   // TODO: add searchbar and filtering on this page + alphabetic sorting of songs
   return (
     <div>
-      <h1 className="mb-5">Dine favorittsanger</h1>
+      <h1>Dine favorittsanger</h1>
       <ul className="space-y-2">
         {songs.map((song) => (
           <SongBox key={song.id} song={song} />

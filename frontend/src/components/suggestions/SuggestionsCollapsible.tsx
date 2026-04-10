@@ -17,7 +17,7 @@ export function SuggestionsCollapsible({ suggestions }: SuggestionsCollapsiblePr
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger asChild>
         <div className="group w-full flex items-center justify-between cursor-pointer">
-          <span>Inkomne forslag</span>
+          <span>Inkomne sangforslag</span>
           <ChevronDownIcon className="h-5 w-5 allow-animation transition-transform duration-500 group-data-[state=open]:rotate-180" />
         </div>
       </CollapsibleTrigger>

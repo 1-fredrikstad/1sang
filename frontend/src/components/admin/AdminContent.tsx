@@ -22,7 +22,7 @@ export default function AdminContent() {
   }
 
   return (
-    <main className="mb-5 flex flex-col justify-between max-w-5xl mx-auto">
+    <main className="mb-5 flex flex-col justify-between">
       <div className="flex flex-row justify-between">
         <div>
           <p>Logget inn som:</p>

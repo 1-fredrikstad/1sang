@@ -9,6 +9,7 @@ import BackButton from '@/src/components/BackButton';
 import { createClient } from '@/src/lib/supabase/client';
 import { DeleteSongButton } from '@/src/components/DeleteSongButton';
 import { useState } from 'react';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function EditSongPage() {
   const { id } = useParams<{ id: string }>();
@@ -40,9 +41,7 @@ export default function EditSongPage() {
     return <p className="text-center mt-10">Fant ikke sang.</p>;
   }
 
-  if (!song || songTags === undefined) {
-    return <p className="text-center mt-10">Laster...</p>;
-  }
+  if (!song || songTags === undefined) return <Spinner message="Laster inn redigeringsside" />;
 
   const handleSubmit = async (data: {
     title: string;
@@ -103,10 +102,8 @@ export default function EditSongPage() {
   };
 
   return (
-    <main className="relative w-full max-w-300 mx-auto px-4">
-      <div className="absolute left-5 cursor-pointer">
-        <BackButton />
-      </div>
+    <main>
+      <BackButton />
 
       <SongForm
         heading="Rediger sang"
@@ -123,7 +120,7 @@ export default function EditSongPage() {
         }}
         onSubmit={handleSubmit}
       />
-      <div className="flex justify-center">
+      <div className="flex justify-start m-2 mt-5">
         <DeleteSongButton
           songId={song.id}
           className="danger"

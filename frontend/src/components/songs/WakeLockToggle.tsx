@@ -15,11 +15,8 @@ export default function WakeLockToggle() {
   if (!supported) return null;
 
   return (
-    <div className="flex items-center gap-2">
-      <label htmlFor="wake-lock" className="text-sm opacity-80">
-        Unngå at skjermen går i dvale
-      </label>
-
+    <div className="flex flex-row justify-between">
+      <label htmlFor="wake-lock">Unngå at skjermen går i dvale</label>
       <Switch
         id="wake-lock"
         className="cursor-pointer"

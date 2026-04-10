@@ -460,9 +460,6 @@ export default function EditPlaylistPage() {
 
   return (
     <main className="relative w-full max-w-300 mx-auto px-4">
-      <div className="absolute left-5 cursor-pointer">
-        <BackButton />
-      </div>
       <PlaylistForm onSubmit={handleSubmit} initialValues={initialValues} mode="edit" />
       <div className="flex justify-center">
         <DeletePlaylistButton playlistId={id} isPublic={isPublicPlaylist} />

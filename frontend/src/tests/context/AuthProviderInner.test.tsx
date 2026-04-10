@@ -64,7 +64,7 @@ describe('AuthProviderInner', () => {
 
     renderProvider();
 
-    await waitFor(() => expect(screen.queryByText('Laster...')).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText('Laster')).not.toBeInTheDocument());
 
     await waitFor(() => {
       expect(screen.getByTestId('name').textContent).toBe('null');

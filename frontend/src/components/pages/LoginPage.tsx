@@ -13,11 +13,11 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex justify-center items-center h-screen">
+    <main className="flex min-h-[80vh] justify-center items-center relative">
       <div className={`absolute left-4 ${user ? 'top-24' : 'top-4'}`}>
         <BackButton />
       </div>
-      <section className="grid place-items-center relative">
+      <section className="grid place-items-center">
         <div className="flex flex-col items-center gap-4">
           <Image
             src="/favicon/favicon.svg"
@@ -27,7 +27,7 @@ export default function LoginPage() {
             className="h-29 w-auto"
             priority
           />
-          <h1 className="text-3xl font-bold mb-2">Admin innlogging</h1>
+          <h1>Admin innlogging</h1>
           <GoogleLoginButton />
         </div>
       </section>

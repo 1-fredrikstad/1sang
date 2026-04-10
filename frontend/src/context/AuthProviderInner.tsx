@@ -2,6 +2,7 @@
 import { useState, useEffect, ReactNode, useRef } from 'react';
 import { createClient } from '../lib/supabase/client';
 import { AuthContext } from './AuthContext';
+import { Spinner } from '@/components/ui/spinner';
 
 export const AuthProviderInner = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
@@ -92,11 +93,7 @@ export const AuthProviderInner = ({ children }: { children: ReactNode }) => {
   };
 
   if (!isInitialized) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <p>Laster...</p>
-      </div>
-    );
+    return <Spinner message="Laster inn" />;
   }
 
   return <AuthContext.Provider value={{ user, isAdmin, logout }}>{children}</AuthContext.Provider>;
