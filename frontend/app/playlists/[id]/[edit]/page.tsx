@@ -8,7 +8,6 @@ import { Song, db } from '@/src/lib/db';
 import { toast } from 'sonner';
 import { createClient } from '@/src/lib/supabase/client';
 import { DeletePlaylistButton } from '@/src/components/playlist/DeletePlaylistButton';
-import BackButton from '@/src/components/BackButton';
 
 type PlaylistResponse = {
   id: string;
