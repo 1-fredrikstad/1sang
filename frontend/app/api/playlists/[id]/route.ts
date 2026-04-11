@@ -30,30 +30,26 @@ async function getIsAdmin(req: Request) {
   }
 }
 
-export async function GET(req: Request) {
-  try {
-    const url = new URL(req.url);
-    const limit = url.searchParams.get('limit');
-    const playlistId = url.searchParams.get('playlist_id');
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
 
+export async function GET(_: Request, { params }: RouteContext) {
+  try {
+    const { id } = await params;
     const { supabaseUrl, anonKey } = getEnv();
 
-    let target = `${supabaseUrl}/rest/v1/playlist_items?select=*`;
-
-    if (playlistId) {
-      target += `&playlist_id=eq.${encodeURIComponent(playlistId)}`;
-    }
-
-    if (limit) {
-      target += `&limit=${encodeURIComponent(limit)}`;
-    }
-
-    const res = await fetch(target, {
+    const res = await fetch(`${supabaseUrl}/rest/v1/rpc/playlists_get_detail`, {
+      method: 'POST',
       headers: {
         apikey: anonKey,
         Authorization: `Bearer ${anonKey}`,
         Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        p_playlist_id: id,
+      }),
     });
 
     const body = await res.json().catch(() => null);
@@ -62,30 +58,37 @@ export async function GET(req: Request) {
       return NextResponse.json({ ok: false, error: body }, { status: res.status });
     }
 
-    return NextResponse.json({ ok: true, data: body }, { status: 200 });
+    return NextResponse.json({ ok: true, data: body?.[0] ?? null }, { status: 200 });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }
 
-export async function POST(req: Request) {
+export async function PATCH(req: Request, { params }: RouteContext) {
   try {
+    const { id } = await params;
     const { supabaseUrl, anonKey } = getEnv();
     const payload = await req.json();
     const isAdmin = await getIsAdmin(req);
 
-    const rpcName = isAdmin ? 'playlists_admin_add_item' : 'playlists_add_item';
+    const rpcName = isAdmin ? 'playlists_admin_update' : 'playlists_update';
 
     const rpcBody = isAdmin
       ? {
-          p_playlist_id: payload.playlist_id,
-          p_song_id: payload.song_id,
+          p_playlist_id: id,
+          p_new_password: payload.newPassword ?? '',
+          p_title: payload.title,
+          p_is_public: payload.is_public,
+          p_expires_at: payload.expires_at,
         }
       : {
-          p_playlist_id: payload.playlist_id,
-          p_password: payload.password,
-          p_song_id: payload.song_id,
+          p_playlist_id: id,
+          p_current_password: payload.password,
+          p_new_password: payload.newPassword ?? '',
+          p_title: payload.title,
+          p_is_public: payload.is_public,
+          p_expires_at: payload.expires_at,
         };
 
     const res = await fetch(`${supabaseUrl}/rest/v1/rpc/${rpcName}`, {
@@ -112,23 +115,22 @@ export async function POST(req: Request) {
   }
 }
 
-export async function DELETE(req: Request) {
+export async function DELETE(req: Request, { params }: RouteContext) {
   try {
+    const { id } = await params;
     const { supabaseUrl, anonKey } = getEnv();
     const payload = await req.json();
     const isAdmin = await getIsAdmin(req);
 
-    const rpcName = isAdmin ? 'playlists_admin_remove_item' : 'playlists_remove_item';
+    const rpcName = isAdmin ? 'playlists_admin_delete' : 'playlists_delete';
 
     const rpcBody = isAdmin
       ? {
-          p_playlist_id: payload.playlist_id,
-          p_song_id: payload.song_id,
+          p_playlist_id: id,
         }
       : {
-          p_playlist_id: payload.playlist_id,
+          p_playlist_id: id,
           p_password: payload.password,
-          p_song_id: payload.song_id,
         };
 
     const res = await fetch(`${supabaseUrl}/rest/v1/rpc/${rpcName}`, {
