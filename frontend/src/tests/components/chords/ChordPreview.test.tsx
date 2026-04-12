@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ChordPreview from '@/src/components/chords/ChordPreview';
 
@@ -44,7 +44,7 @@ describe('ChordPreview', () => {
     await user.click(screen.getByText('hello'));
     expect(screen.getByPlaceholderText('Egen akkord')).toBeInTheDocument();
 
-    fireEvent.mouseDown(document.body);
+    await user.click(document.body);
 
     expect(screen.queryByPlaceholderText('Egen akkord')).not.toBeInTheDocument();
   });
