@@ -10,10 +10,13 @@ import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import { FaSpotify, FaYoutube } from 'react-icons/fa';
 import Lyrics from '@/src/components/songs/Lyrics';
 import { Badge } from '@/components/ui/badge';
+import { useState } from 'react';
+import { Switch } from '@/components/ui/switch';
 
 export default function SongPage() {
   const { id } = useParams<{ id: string }>();
   const { isAdmin } = useAuth();
+  const [showChords, setShowChords] = useState(false);
 
   const tags = useLiveQuery(async () => {
     if (!id) return [];
@@ -51,6 +54,8 @@ export default function SongPage() {
   };
 
   const { name, icon: Icon, color } = getLinkPlatform(song.spotify_youtube || '');
+
+  const hasChords = song.verses?.some((v) => v.includes('[')) || song.chorus?.includes('[');
 
   return (
     <main className="flex flex-col justify-center gap-4">
@@ -92,9 +97,16 @@ export default function SongPage() {
           </p>
         )}
 
-        {/* Lyrics */}
+        {/* Lyrics and chord toggle */}
+        {hasChords && (
+          <div className="flex items-center gap-2 mt-3">
+            <Switch checked={showChords} onCheckedChange={setShowChords} />
+            <span className="text-sm opacity-60">Vis akkorder</span>
+          </div>
+        )}
+
         <pre className="mt-5 flex justify-center text-center whitespace-pre-wrap">
-          <Lyrics chorus={song.chorus} verses={song.verses} />
+          <Lyrics chorus={song.chorus} verses={song.verses} showChords={showChords} />{' '}
         </pre>
 
         {/* Author */}
