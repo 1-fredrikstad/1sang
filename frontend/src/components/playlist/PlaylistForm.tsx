@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import MobileTooltip from '../MobileTooltip';
+import SubmitButton from '../SubmitButton';
 import { useRouter } from 'next/navigation';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldDescription } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
@@ -41,7 +42,7 @@ export default function PlaylistForm({
     handleSubmit,
     setValue,
     control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
   } = useForm<PlaylistInputs>({
     defaultValues: initialValues ?? {
@@ -146,7 +147,11 @@ export default function PlaylistForm({
         {/* Public switch */}
         <Field className="flex flex-row">
           <FieldLabel>Offentlig spilleliste</FieldLabel>
-          <Switch checked={isPublic} onCheckedChange={(val) => setValue('isPublic', val)} />
+          <Switch
+            checked={isPublic}
+            onCheckedChange={(val) => setValue('isPublic', val)}
+            disabled={isSubmitting}
+          />
         </Field>
 
         {/* Duration */}
@@ -165,6 +170,7 @@ export default function PlaylistForm({
             <Select
               defaultValue="604800"
               onValueChange={(value) => setValue('duration', Number(value))}
+              disabled={isSubmitting}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Velg varighet" />
@@ -180,8 +186,11 @@ export default function PlaylistForm({
       </FieldGroup>
 
       <div className="flex gap-4 mt-4">
-        <Button type="submit">{mode === 'edit' ? 'Lagre endringer' : 'Opprett spilleliste'}</Button>
-        <Button type="button" variant="outline" onClick={() => reset()}>
+        <SubmitButton
+          submitLabel={mode === 'edit' ? 'Lagre endringer' : 'Opprett spilleliste'}
+          disabled={isSubmitting}
+        />
+        <Button type="button" variant="outline" onClick={() => reset()} disabled={isSubmitting}>
           Reset
         </Button>
       </div>
