@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
+import { withDefaultSongTags } from '@/src/lib/constants/tags';
 
 function getPublicEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -91,6 +92,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
     const tags = Array.isArray(json.tags)
       ? json.tags.filter((tagId: unknown): tagId is string => typeof tagId === 'string')
       : [];
+    const finalTags = withDefaultSongTags(tags);
 
     const { isAdmin } = await checkAdminAccess(token);
 
@@ -149,8 +151,8 @@ export async function PATCH(req: Request, ctx: Ctx) {
     }
 
     // 3. Legg inn nye tag-relasjoner
-    if (tags.length > 0) {
-      const tagRows = tags.map((tagId: string) => ({
+    if (finalTags.length > 0) {
+      const tagRows = finalTags.map((tagId: string) => ({
         song_id: id,
         tag_id: tagId,
       }));

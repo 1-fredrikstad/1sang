@@ -10,6 +10,7 @@ import { createClient } from '@/src/lib/supabase/client';
 import { DeleteSongButton } from '@/src/components/DeleteSongButton';
 import { useState } from 'react';
 import { Spinner } from '@/components/ui/spinner';
+import { withDefaultSongTags } from '@/src/lib/constants/tags';
 
 export default function EditSongPage() {
   const { id } = useParams<{ id: string }>();
@@ -79,6 +80,8 @@ export default function EditSongPage() {
       throw new Error(typeof body?.error === 'string' ? body.error : 'Kunne ikke oppdatere sang');
     }
 
+    const finalTagIds = withDefaultSongTags(data.tags ?? []);
+
     await db.songs.update(id, {
       title: data.title,
       melody: data.melody || undefined,
@@ -89,9 +92,9 @@ export default function EditSongPage() {
 
     await db.song_tags.where('song_id').equals(id).delete();
 
-    if (data.tags && data.tags.length > 0) {
+    if (finalTagIds.length > 0) {
       await db.song_tags.bulkAdd(
-        data.tags.map((tagId) => ({
+        finalTagIds.map((tagId) => ({
           song_id: id,
           tag_id: tagId,
         }))
