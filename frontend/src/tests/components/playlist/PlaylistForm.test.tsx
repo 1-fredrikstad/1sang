@@ -183,4 +183,35 @@ describe('PlaylistForm', () => {
 
     expect(screen.getByDisplayValue('Eksisterende spilleliste')).toBeInTheDocument();
   });
+
+  test('does not submit multiple times when submit is clicked repeatedly during lag', async () => {
+    const user = userEvent.setup();
+
+    let resolveSubmit!: (value: unknown) => void;
+    const slowPromise = new Promise((resolve) => {
+      resolveSubmit = resolve;
+    });
+
+    const onSubmit = vi.fn().mockReturnValue(slowPromise);
+
+    render(<PlaylistForm onSubmit={onSubmit} />);
+
+    await user.type(screen.getByRole('textbox', { name: /tittel/i }), 'Test playlist');
+    await user.type(screen.getByRole('textbox', { name: /passord/i }), '1234');
+
+    await user.click(screen.getByRole('button', { name: /toggle-song/i }));
+
+    const submitButton = screen.getByRole('button', { name: /opprett spilleliste/i });
+
+    await user.click(submitButton);
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+
+    await user.click(submitButton);
+    await user.click(submitButton);
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+
+    resolveSubmit({ type: 'private', localId: 'local-1' });
+  });
 });
