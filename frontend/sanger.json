@@ -1,0 +1,778 @@
+{
+  "songs": [
+    {
+      "title": "Troppsang",
+      "melody": "Yipee-ai",
+      "author": "S. N.",
+      "verses": [
+        "Hos den kjære, gamle første tropp,\n er humøret stadig høyt på topp.\n Når humøret er tilstede,\n da går alt med liv og glede,\n i den kjære, gamle første tropp.",
+        ":/: Vi ofte trasker rundt i vær og vind. :/:\n Men når ryggsekken den tynger,\n vi en liten vise synger.\n Dermed er vi jo straks lysere i sinn.",
+        " :/: Når lederne er strenge mang en gang. :/:\n Vi da tar en serenade\n og straks føler vi oss glade,\n selv om lederne er harde mang en gang.",
+        ":/: Å koke mat er ofte nokså stritt. :/:\n Med en liten sang så jager\n vi bort alle dagens plager,\n og straks smiler vi jo bredere og blidt.",
+        ":/: Vi lengter etter mamma og han far. :/:\n Vi en liten strofe nynner\n og vår lengsel straks forsvinner,\n og vi glemmer både mamma og han far.",
+        "Første tropp har jo alltid vært bekjent,\n for å synge både høyt og klart og rent.\n Ja, vi alltid har det målet,\n høyt mot him’lens sky å skråle,\n så det høres kan at Første tropp er her!"
+      ]
+    },
+    {
+      "title": "Speiderbønnen",
+      "melody": "",
+      "author": "Hans Møller Gasmann",
+      "verses": [
+        "Kjære far i høye himmel,\n hør mitt hjertes stille bønn:\n Hvor jeg er i verdens vrimmel,\n la meg ferdes som din sønn.\n La meg leve deg til ære,\n hedre Norge, far og mor,\n andre folk til nytte være,\n lyde speiderlovens ord."
+      ],
+      "img": "img/speiderhilsen.png"
+    },
+    {
+      "title": "Fold deg ut",
+      "melody": "Kristi stridsmenn",
+      "author": "Anna Meyer",
+      "verses": [
+        "Fold deg ut, vårt frihetsmerke,\n fagre norske flagg.\n Under deg vi vokser sterke\n frem til frihetsdag;\n under deg på fredens bane\n vil vi stevne frem;\n under deg, vår hedersfane,\n slå for frihet, hjem.",
+        "Fold deg sammen under sangen,\n fagre norske flagg.\n Hjelp oss at vi under gangen\n blir et virksomt lag.\n Signe du oss i vårt yrke,\n viljen bli som stål,\n der kan gi oss kraft og styrke\n til å nå vårt mål."
+      ],
+      "img": "img/flagheis.png"
+    },
+    {
+      "title": "Østfoldsangen",
+      "author": "",
+      "verses": [
+        "Mitt Østfold er et fagert land \n hvor gyldne akrer bølger, \n hvor skog og mark og stille vann \n så skjønt hverandre følger. \n Der svømmer elven lun og klar, \n med fisk bak nøkkerosens blad. \n :/: I Østfold har jeg hjemme :/: ",
+        "I Østfold er der intet fjell \n som stolt mot sky seg hever. \n Men kom en solblank sommerkveld \n når aspeløvet bever. \n I vest hvor fjordens bølger slår, \n i øst hvor grenseskogen står. \n :/: I Østfold har jeg hjemme :/:",
+        "Se Glomma renner stolt og trygg \n mot syd hvor Sarpen drønner. \n Med tømmer på sin brede rygg, \n med bud fra dalens sønner. \n Jeg hører sang fra sag i sag, \n og fossedur og hammerslag.  \n :/: I Østfold har jeg hjemme :/: ",
+        "Bak Jeløys sommerkledde lund, \n vær hilset Moss derinne.  \n Og Fredriks by på gammel grunn, \n og Borg med Olavs minne. \n Og gamle Halden lengst i syd, \n jeg nevne vil ditt navn med fryd. \n :/: I Østfold har jeg hjemme :/:",
+        "Det nynner gjennom skog og eng.  \n Og det er bondens vise. \n Han styrer lett sin tunge plog, \n hans verk er verd å prise. \n Vi vandrer gjennom odelsjord. \n Her strevet far, her strevet mor. \n :/: I Østfold har jeg hjemme :/: "
+      ]
+    },
+    {
+      "title": "Uglesangen",
+      "melody": "",
+      "author": "P. G.",
+      "verses": [
+        "Det er tussmørke i skogen,\n alt er stille, bålet dør.\n Fra den store, gamle granen\n flyver uglen ut, ja hør!\n Denne lyd som er så langsom\n er den gamle uglens skrik.\n Den er klok og full av visdom,\n vi vil bli den ugle lik.\n Uglenes ætt, alltid beredt!\n Speiderbål med speiderånd\n og sangen går så lett.\n Våre mål er sterke bånd,\n binder sammen oss til ett.\n Sommerkveld med stjernevell,\n høyt over oss er tent.\n Ugle, husk på all din ferd,\n lev ditt liv så det har verd!"
+      ],
+      "img": "img/ugle.png"
+    },
+    {
+      "title": "Haukesangen",
+      "melody": "Vi ere en nasjon vi med",
+      "author": "J. N.",
+      "verses": [
+        "Vi bærer liljens merke vi\n og liljen vil vi heve.\n Vi drar på tur i skog og li,\n ja, speidersaken leve!\n Selv om det ikke går så lett,\n så blir det nok snart greit og rett.\n Ja, hvis vi alle er beredt,\n går ingenting på skjeve.",
+        "Vi er naturens rette venn,\n naturen vil vi verne.\n Vi hauker ofte gjester den,\n vi drar på tur så gjerne.\n Vi samles titt rundt leirens ild,\n i sommerluft så varm og mild,\n Alt levende vi verge vil,\n selv blomstene og trærne.",
+        "Når alle hauker er på tur,\n så skal du bare høre:\n Vi bruker kart, kompass og ur,\n ja, det er nok å gjøre.\n Når det er vinter og det sner,\n en speider smiler og en speider ler.\n Det kommer stadig fler og fler,\n snart blir det fint skiføre."
+      ],
+      "img": "img/hauk.png"
+    },
+    {
+      "title": "Tiursangen",
+      "melody": "My bonnie.",
+      "author": "J. Å. P.",
+      "chorus": "Tiur, Tiur, å holde vårt løfte det bli’kke lett. \n Tiur, Tiur, vårt motto er alltid beredt!",
+      "verses": [
+        "En tiur er no’ som kan flyge.\n Den kunsten den kan ikke vi.\n Men at vi vårt beste vil yte,\n i alt er vi enige i.",
+        "En dag ga vi alle vårt løfte:\n Jeg lover å gjøre min plikt,\n Mot fedreland, og i mot andre,\n For speiderne løftet er likt.",
+        "Forskjellig er Tiurnes mening,\n om merker og grader og sånn.\n Men det er ingen tvil, vi er enig\n Vi vil ikke være på bånn.",
+        "Men humor er også tilstede.\n Hos oss, ja, det har du jo sett.\n Ja, bort med all ondskap og vrede,\n Jag sorgen og mismotet vekk.",
+        "Med speiderlov alle vi strever,\n vær hjelpsom, selvhjulpen og glad.\n Og Tiurpatruljen den strever\n for å få et plettfritt rulleblad."
+      ],
+      "img": "img/tiur.png"
+    },
+    {
+      "title": "Ørnesangen",
+      "melody": "Den glade vandrer.",
+      "author": "A. S. Ø.",
+      "chorus": "Gamle Ørn, ta din tørn, ørnegutt – \n vi rygg mot rygg skal stå –\n og fra vårt reir, fram til seir\n vi Ørner flyger ut.",
+      "verses": [
+        "Her kommer troppens Ørneflokk\n i lett og luftig svev.\n Vi er en glad og lystig skokk,\n vår sak er stor og gjev.",
+        "Vi eier ørnens kamphumør,\n vår vilje er som stål.\n Vi stevner slik som ørner gjør:\n med kraft mot høye mål!",
+        "Vi har det skarpe ørneblikk\n og speider vidt omkring.\n Hos oss slår aldri noe klikk\n – vi mestrer alle ting."
+      ],
+      "img": "img/orn.png"
+    },
+    {
+      "title": "Ravnesangen",
+      "melody": "Mot i brystet.",
+      "author": "H. M.",
+      "verses": [
+        "Her er Ravnegutter samlet i det store brorskap. \n Kan du svare villig her ditt vær beredt! \n Bli med oss på leir og tur i alvor og i morskap. \n Å, slik liv og lyst det har du aldri sett. \n Først på lina står, speidersmilet på, \n aldri trist og sur på speiderleir. \n For med glede, samhold og med iver kan vi bringe \n Vår patrulje fram til dagens store seir."
+      ],
+      "img": "img/ravn.png"
+    },
+    {
+      "title": "Ravnebabe’sa 2012",
+      "author": "Ravnebabe’sa",
+      "verses": [
+        "Ravnebabe’sa, det er vi, \n speiding er no’ berte’ri. \n Synes du vi lukter godt,  \n er det bare bål og knott. \n Alle gutta er vår BFF, \n det er de vi digger aller mest, \n men vi digger staben og \n for de er jo super rå!"
+      ]
+    },
+    {
+      "title": "Elgesangen",
+      "melody": "Han er kniven.",
+      "author": "A. H.",
+      "verses": [
+        "Elgen, skogens store konge,\n er vårt merke og vår leder.\n Hvor vi går på tur i skog og hei,\n synger, jodler alltid på vår vei.\n Overalt en speider finner\n i naturen vakre minner.\n Speider, husk ditt løfte, lov og bønn.\n Vær beredt du den store konges sønn.",
+        "Speiderlivet det vil gi deg,\n minner som du aldri glemmer.\n Hvor i verden så du kommer hen,\n Alltid husker du din speidervenn.\n Elgevenner husk nå målet,\n aldri snobbet eller jålet.\n Engang speider, alltid speidergutt,\n Husk ditt løfte hele livet ut."
+      ],
+      "img": "img/elg.png"
+    },
+    {
+      "title": "Falkesangen",
+      "melody": "Yankee Doodle",
+      "author": "M. V.",
+      "chorus": "Falkegutt på tur og leir,\n spretter opp om morran.\n En artig gjeng som tar oss fram når fører’n han går foran!",
+      "verses": [
+        "Se falkegutta kommer her, \n du hører vel vår latter.\n Vi falker setter vennskap fremst\n blant speidersakens skatter.",
+        "Vi lager mat, vi går på haik, \n vi etter skatten leter, \n vi kaster livline så langt, \n sånn ca 1000 meter!"
+      ],
+      "img": "img/falk.png"
+    },
+    {
+      "title": "Gaupesangen",
+      "melody": "Min hatt den har tre kanter",
+      "author": "M. V.",
+      "verses": [
+        "En gaupe ser man sjelden, \n men om du møter én\n Så hils fra vår patrulje,\n som er’ oppkalt etter den.",
+        "I solskinn og i regnvær, patruljen vår står på\n For når vi jobber sammen, \n vi store mål kan nå.",
+        "Å lage liv i leiren, \n vi vet hva det vil si.  \n Og ikke for å skryte, \n men gaupe det er vi!",
+        "Gaupe, gaupe, gaupe, gaupe, gaupe, gaup\n Nei, ikke for å skryte, \n men gaupe det er vi!"
+      ]
+    },
+    {
+      "title": "Hakkespettsangen",
+      "melody": "Glory glory hallelujah",
+      "author": "M. V.",
+      "chorus": "Hakke-hakke-hakkespetter!\n Assistenten heter Petter. (Aldri klagemål framsetter)\n Hakke-hakke-hakkespetter,\n se smilet er vårt sverd.",
+      "verses": [
+        "Her kan du se patruljen som alltid stiller opp.\n Det er de kjekke hakkespetter i fra Første tropp.\n Beredt til alt det lover vi, til flid har vi en hang.\n Og hør vår glade sang:",
+        "For lærevilligheten vår så finnes ingen stopp.\n Slik må det være for en gjeng som alltid søker opp.\n Men leken den er også med,\n nei, aldri lediggang \n Og hør vår glade sang:"
+      ]
+    },
+    {
+      "title": "Rypene og typen-sangen",
+      "melody": "Vise for gærne jenter",
+      "author": "M. V.",
+      "verses": [
+        "Ut i løøøvskogen flyr det ryper, \n mange ryper og no’n typer!\n Speidersaken vi samles kring\n i vår slutne rypering. \n Fram til vi en gang går hen og dør,\n så kan vi skimte i bålets glør.\n De vakre minner som vi skapte sammen,\n den gang vi var i vår ungdoms vår.",
+        "Ut i verden så flyr det ryper,\n sjeldne ryper og no’n typer. \n Rett blikket opp, ut og frem, \n Og over eget liv bestem. \n La deg ei anfektes av det tåp,\n som verden bringer, men ha fast håp.\n Om evig lykke  og om egne framskritt.\n For alle ryper både før og nå."
+      ]
+    },
+    {
+      "title": "Gjøkesangen",
+      "melody": "Blant alle lande",
+      "author": "M. V.",
+      "verses": [
+        "Vær hilset gjøker av edelt blod\n med karslig humor og atalt mot.\n Vi skaper glede, alle steder hvor vi slår rot.",
+        "Anders, Maggi og Bendik med.\n Vøllo, Henrik og Ole E. \n Hans Jacob, Sondre, og ingen andre får være med.",
+        "Å skape nytt det er vår visjon,\n men ei forakter vi tradisjon. \n Med oss i striden, vi viser tiden den rette akt.",
+        "Til topps går gjøkenes fane skjønn,\n et svar på kvinnehjerters bønn. \n Men selv for piker vi aldri sviker vårt edle mål.",
+        "Der ser du henne som er i nød,\n der ser du ham som er uten brød.\n Til noens frelse og andres helse, en gjøk flyr frem.",
+        "Selv om vi en gang blir gamle menn,\n vi ei forglemmer en Gjøkevenn!\n I brødres lenker vi ned oss senker helt til vi dør."
+      ]
+    },
+    {
+      "title": "Rold Skov, 1958",
+      "melody": "Yipee-ai",
+      "author": "S. N.",
+      "chorus": "Yipee-a-ay . . .",
+      "verses": [
+        "Over Skagerak dro første tropp på tur.\n Det var ingen speidergutt som da var sur.\n Ja, hver liten eller stor, vinket kjekt til far og mor.\n Ha det godt, ja, ha det godt, det lød i kor.",
+        "Over Skagerak dro ”Peter Wessel” frem.\n Og tenk Skagerak var riktig stygg og slem.\n Alle sammen syke ble, det var riktig ynk å se,\n ingen var så friske at de kunne le.",
+        "Utpå dagen kom vi frem til leiren vår.\n Det var Rold Skov nedi Danmark dette år.\n Ja, hver liten speidergutt, fikk arbeide jevnt og trutt,\n Neste morra var det ingen som var mutt.",
+        "Når vi sitter her ved leirbålet hver kveld,\n og er ferdig med all mat og kjøkkenstell,\n vil nok mange lengte hjem, til ho mamma og en klem,\n for de synes kanskje Aage han er slem."
+      ]
+    },
+    {
+      "title": "ONO, 1970",
+      "melody": "King-kang-kolli",
+      "author": "H. M.",
+      "verses": [
+        "Så drar 1. tropp på leir til Onoøya\n :/: nok en gang :/:\n Ni og femti, femogseksti, nittensytti\n :/: ta en sang :/:\n Alle skal nok få tralle. Hør hornet kalle alle mann.\n Sangen, med rette klangen vil lyde over Farrisvann.\n :/: Farrisvannet etc. :/: Ono."
+      ]
+    },
+    {
+      "title": "Nord-Odal, 1971",
+      "melody": "Johan på Snippen",
+      "author": "H. M.",
+      "chorus": "Velkommen til leiren / til speiderleiren /\n på Vatningseter. / På Vatningseter sommeren 71.",
+      "verses": [
+        "1. tropp reiser / til Nord-Odal. /\n Vi flaggene heiser / pluss en portal. /",
+        "Våre patruljer / Gaupe og Ørn /\n Ravn, Hauk og Elger / skal få ta sin tørn. /",
+        "Huff, vi må bade / i kalde vann. /\n Og Rettvin ”spesiale” / knekker alle mann. /",
+        "Grøten får klumper / og røken svir. /\n På hiken bena humper / i første gir. /",
+        "Men bare ballen triller / i fotballkamp. /\n Da glemmer vi jo fluksens / all den hiketramp. /",
+        "Gjett om maten smaker / ved middagstid. / \n Kotletter og seikaker / gjennom halsen glir. /",
+        "Og alle konkurranser / vi vinner lett. /\n Vi gjennom løypa danser / for vi er beredt. /",
+        "Vi samles ved bålet / hver aftenstund. /\n Her får vi alle skråle / med hver vår munn. /"
+      ]
+    },
+    {
+      "title": "Dömle i  Deje, 1974",
+      "melody": "Det skal bli solskinn",
+      "author": "H. M.",
+      "verses": [
+        "Kom hit til bålet, til speiderbålet, på speidernes vis.\n Hvor flammen brenner, blant våre venner, vårt \n leirparadis!\n Kom hit til Deje, i gamle Sverige, ”hör skogarnas sus”.\n Det er vi nødt ti’, i firogsøtti, her holder vi hus."
+      ]
+    },
+    {
+      "title": "Rold Skov, 1979",
+      "melody": "Viggen",
+      "author": "H. M.",
+      "chorus": "Hurra for Leir og Norge, Rold Skov, \n Danmark -79!        (HEI!)\n ::/:: Speidervenner ::/::\n det er vi!                (TJO!)\n Hurra for Leir og Norge, Rold Skov, \n Danmark -79!        (HEI!)\n ::/:: Speidervenner ::/::\n i det fri!                 (TJO!)",
+      "verses": [
+        "D(et) er Norge som er størst!\n Fedrelandet kommer først!\n Men derpå får vi kanskje lov\n å sett’ en knapp på kjære Rold Skov.\n D(et) er her vi har det best!\n Hvor hverdagen blir fest,\n Når speidere fra Fredrikstad\n får rope høyt hurra!"
+      ]
+    },
+    {
+      "title": "Nelaug, 1990",
+      "melody": "Kanskje kommer kongen",
+      "author": "H. R.",
+      "chorus": "Nelaug, se vi kommer,\n vi har troppsleir her i år.\n Og en ekte sørlandssommer\n det vet vi at vi får.",
+      "verses": [
+        "Vi drar fra Speiderhuset\n og lar bussen gå mot sør.\n Du skal snart få føle bruset\n i fra leirbålet, ja, hør.",
+        "Nå skal vi bygge leiren,\n vi setter telter opp.\n Du skal se vi tar nok seire'n\n og humøret er på topp.",
+        "Vi lager mat på bålet,\n og på haik vi alle går.\n Som indianer kan du skråle,\n kanskje du en premie får.",
+        "Falker, Ørner, Ravner\n og Elger de er med.\n Og selv om mor vi savner\n vi synger med for det.",
+        "Og leirsjefen på Stornes\n det er Ole, som du vet.\n Espen, Mads og Jon og Anders\n og Harald er beredt.",
+        "Du har kanskje lært å spleise,\n du har funnet deg en venn,\n når vi nå til slutt skal reise\n hjem til Fredrikstad igjen.",
+        "Nelaug, se vi kommer\n nok tilbake hit en gang.\n Og helt til neste sommer\n vil vi synge denne sang."
+      ],
+      "lastVerse": {
+        "label": "Ref:",
+        "verse": "Nelaug, se vi kommer\n nok tilbake hit en gang.\n Og helt til neste sommer\n vil vi synge denne sang."
+      }
+    },
+    {
+      "title": "Jeg er fri, Fri:05 landsleir Ingelsrud",
+      "melody": "",
+      "author": "Vibeke Saugestad",
+      "chorus": "Jeg er fri\n Som første tegn på sommer\n I øyet alt som kommer\n I hjertet det som var\n Jeg er fri\n Nå tar jeg sats og hopper\n Går på der veien stopper\n Med mine egne svar",
+      "verses": [
+        "Det er en helt alminnelig lørdag i april\n Kafébesøk og gode venner, radio \n og det som hører med\n Så plutselig kjennes hele kroppen som et smil\n Alt inni meg vil eksplodere,\n Hodet snurrer rundt, hva er det som skjer?\n \n Jeg kjenner noe strømme\n Jeg kjenner noe er på vei\n Jeg lukker øynene, og halvt i drømme skjønner jeg",
+        "Det er som alt med ett er klart og lett å se\n Og det som sa seg selv en gang,\n blir nytt og interessant å tenke på\n Som verden åpner seg og himmelen faller ned\n Jeg løper ut i sola,\n Jeg må finne ut hva jeg skal gjøre nå\n \n For nå er allting mulig\n Alt ligger som en åpen vei\n Der jeg skal storme fram,\n og ingenting skal hindre meg",
+        "Og det som er så fint\n Er å komme til et sted der ingen kjenner alle\n Vet de er en del av det å være fri\n Å være du og jeg du, jeg, VI",
+        "Jeg er fri x 3"
+      ]
+    },
+    {
+      "title": "Welcome to Rollywood, 2007",
+      "melody": "Chipz in black",
+      "author": "Lars Erik Svendsen",
+      "chorus": "Spell your name, cause you can do the same,\n du kan få din egen stjerne on the “walk of  fame”.",
+      "verses": [
+        "Hey Listen up! You can really be a star,\n gjøre virklighet av alle drømmene du har.\n I Rollywood! med glitter og med stas,\n kameraene rullær og de første skritt kan tas.",
+        "Flotte klær med diamant og limosin,\n welcome to rollywood!\n Til alle som vil være med nå er sjansen din,\n we are in the reality mood!\n \n Hey watch out! Et drama rullæs opp,\n en skuddveksling og biljakt her er spenningen på topp.\n Litt kjærlighet, en grøssær hvis du tør ,\n historien den går sæ te med deg som regiør.",
+        "Flotte klær med diamant og limosin,\n welcome to rollywood!\n Til alle som vil være med nå er sjansen din,\n we are in the reality mood!\n \n Flotte klær med diamant og limosin,\n welcome to rollywood!\n Til alle som vil være med nå er sjansen din,\n we are in the reality mood!\n \n Limo`n rullær inn, blankpolert og fin,\n døra den går opp, nå er den røde løpær`n din.\n Limo`n rullær inn, blankpolert og fin,\n døra den går opp, nå er den røde løpær`n din.",
+        "Flotte klær med diamant og limosin,\n welcome to rollywood!\n Til alle som vil være med nå er sjansen din,\n we are in the reality mood!\n \n Flotte klær med diamant og limosin,\n welcome to rollywood!\n Til alle som vil være med nå er sjansen din,\n we are in the reality mood!"
+      ]
+    },
+    {
+      "title": "Dömle i Deje, 2008",
+      "melody": "Alt for Norge",
+      "author": "M. V.",
+      "chorus": "Er på leir,\n leir i Dømle.\n Blir’e løøøv?\n Ja, om det gjør!\n Vi skal\n padle, bade, og lage maten så vi stjerner får\n i Dømle På speiderleir.",
+      "verses": [
+        "Norge er et vakkert land\n med fjell og daler,    \n hav og strand,     \n men vi vet noe som er bedre.\n Myggestikk og supert vær,\n sommerens eventyr er her.\n Det byr på action for oss alle.\n Du og jeg min venn,\n vi skal på leir igjen."
+      ]
+    },
+    {
+      "title": "Rold Skov, 2012",
+      "melody": "Lady Gaga- Bad Romance",
+      "author": "A. V, B. V. og M. V.",
+      "chorus": "Roldskovleiren i 2012\n Det banker i en viss innvoll\n Roldskovleiren med full kontroll\n I hundre I 2012\n \n Oh-oh-oh-oh-oooh!\n Oh-oh-oooh-oh-oh!\n Chiller’n på speiderleir\n Oh-oh-oh-oh-oooh!\n Oh-oh-oooh-oh-oh!\n Griller’n på speiderleir",
+      "verses": [
+        "Jeg vil ha pølse\n Jeg vil ha jollybrus\n Jeg vil ha bading\n Jeg vil ha leirbålsrus\n Jeg vil ha love\n Love love love\n Med speiderlov\n \n Til Roldskov reiser\n tre- og førti pax\n Her ska vi kose oss\n og chille'n max\n Med masse love\n Love love love\n Med Speiderlov",
+        "På innspeksjonen\n da er det full bikk\n Rydde teltet\n og vise folkeskikk\n Men også love\n Love love love\n Med speiderlov\n \n Opptre på leirbål\n og sende postkort hjem\n Skaffe leirhest\n og kanskje en ny venn\n Jeg ska få love\n Love love love\n Med Speiderlov"
+      ]
+    },
+    {
+      "title": "Drömle, 2014",
+      "melody": "Call me maybe",
+      "author": "M. V.",
+      "chorus": "Hei Drömleleiren - den er helt crazy. Vi\n holder sammen - aldri mer solo! Din drøm\n kan bli sann - for her går alt an! Vi blir for\n alltid - say hashtag YOLO!",
+      "verses": [
+        "Årets leir blir en fest, for\n førstetroppinger flest. Hos søta bror er vi\n gjest, det er vår drømmeleir. Speidere,\n rovere se, alle de beste ble med. Her kan vi\n kose, chille, her blir det løv og SWAG.\n Ekke' vanlig telttur, det er haik, lek, bad og\n bytur. I herlig svensk natur, ja dette er vår drømmeleir!",
+        "Ravnebabes mekker liv, tiurbros kaster\n kniv, falkedudes er i driv, ørnebrusj twerker\n fett! Roverne hvor ble de av? Jeg hakke sett\n dem i dag? De slapper helt sikkert av, og\n drømmer om no' rart!\n En kul stab vi har med, og Jørgen han er hel\n ved, vi danser rundt vårt ildsted,\n for dette er en drømmeleir!",
+        "Holder surringa mi? Er inspeksjonen på\n gli? Dette får bli som det blir, det er vår\n drømmeleir! Revelja teltduken når, pæsa i\n påsan i går, her er det tøffe kår, men alltid\n med et smil.\n \n For her i Dølme' i Deje, skal vi rule,\n steke' og eie. Aldri går vi leie, for dette er\n vår drømmeleir!",
+        "I kiosken kjøper du coke, ved bålet\n lager du smoke, beatemor draren joke,\n og leker kattemann! Og om det\n kommer en elg, øks eller kniv bare velg\n i Karlstad kjøttet ditt selg! Speidern er morsom yeah!\n \n Røykvenderen har blitt tett, så henta litt\n sleggefett.\n Doble i deje's budsjett vil aldri ta slutt,\n hurra!"
+      ]
+    },
+    {
+      "title": "Apelhult, 2016",
+      "melody": "Viva Colonia",
+      "author": "M. V.",
+      "chorus": "Se alt blir en fest i svensk klima -\n leirliv er prima!\n Inspeksjonen gikk prettfritt,\n og maten den sa pang\n Nå vil vi hylle Apelhult med\n den glade sang!",
+      "verses": [
+        "Vi reiser gjerne sørover,\n til skog og dyp blå sjø\n Der solen er litt større,\n og der limpa betyr brød\n Her har vi leir for første gang,\n vi kommer nok gjerne igjen!\n Her skal vi pyrre, leke, bade og...\n kanskje møte Glenn!",
+        "Elg og Ravn og Falk og Ørn\n og Hakkespettene\n Lager liv i leiren,\n tvinger kjedsomhet i kne!\n Men oppvaska gikk unna,\n tror nesten at den løp\n Like fort som jeg løp til vår kiosk...\n for å gjør' et godt kjøp!",
+        "Ryper og en type har flydd til\n leiren inn med dobbel dose\n Magnus, Beate, Hans og Nils\n Styrer de vår leir,\n og gjør de ikke jobben godt\n Kaster vi dem ut i stora Hålsjön -\n det hadde vært flott"
+      ]
+    },
+    {
+      "title": "Helt vilt, 2017 landsleir Bodø",
+      "melody": "",
+      "author": "Min Trio",
+      "chorus": "Det e så vilt, med hav og fjell, \n lyst opp av sola fra morra til kveld \n Vi e hær det e hær det skjer, \n alt e så enkelt vi treng ikke mer \n Vænna i nuet, vænna 4-life, \n Sommer kjæresta, husband and wife. \n Eventyrlige sommer du kom som bestillt \n Det e helt vilt",
+      "verses": [
+        "D’e fint å hør stæmmen din\n Bilda i max ti sekund\n Men nu e vi hær på ækte\n Sammen i samme stund\n Vind mellom fjellan som ruva\n Hør du naturns melodi?\n Følelsa helt uti fingran\n Gir du mæ fæm, så får vi tid\n \n Tid til å ta opp det tapte.\n tid til å samles på ny.\n Tid til å vær, \n bare akkurat hær midt mellom holma og skjær",
+        "…Trollfjell som sprætt opp av havet\n Vænna som hyla i kor\n Rød sol som lys midt i natta\n Wæow det e deilig hær nord"
+      ],
+      "lastVerse": {
+        "label": "Ref:",
+        "verse": "Det e så vilt, med hav og fjell,\n lyst opp av sola fra morra til kveld\n Vi e hær det e hær det skjer,\n alt e så enkelt vi treng ikke mer\n Vænna i nuet, vænna 4-life,\n Sommerkjæresta, husband and wife."
+      }
+    },
+    {
+      "title": "Rold Skov, 2018",
+      "melody": "Vil du værra med meg hjem i natt",
+      "author": "M. V.",
+      "chorus": "16 ganger har vi vært her før\n I 60 år har vi sett samme glør\n Og selv når vi drar hjem og bålet dør'\n - husker vi!\n \n Store Øksø som vi bada i,\n Haiken som gikk over stokk og sti\n At det var her jeg følte meg helt fri\n - i Rold Skov",
+      "verses": [
+        "Skolen er snart over,\n Lengter bort fra muttern's gnell\n Til et sted med vakre sletter\n Uten høye fjell.\n \n Over Skagerak vi hørte,\n Skovmesterns djungelvrål\n En gnist ble tent i meg\n Og her i Rold Skov er vårt bål",
+        "Dagen er snart over\n Lengter bort fra peffen's gnell\n Til et sted helt uten zalo\n Og oppvask hver kveld\n \n Men om vi skrubber sammen\n Blir med reneste magi,\n Gryta fri for svidd kartoffel\n Og da vanker litt fritid",
+        "Leiren' er snart over\n Kan'ke si jeg lengter bort\n Når hver dag er et eventyr\n går det alt for fort.\n \n Surringer og knuter,\n Ja, visst fikk jeg bruk for dem\n Men det viktigte av alt\n - jeg fikk meg en helt ny venn!"
+      ]
+    },
+    {
+      "title": "Zellhof, 2019 Østerrike",
+      "melody": "",
+      "author": "Irene Kittinger",
+      "chorus": "Tiii-riiii-aaa \n ://: Holla-re-tiria Holla-re Kokoo Kokko ://: \n Holla-re-tiria-Ho!",
+      "verses": [
+        "Once some Austrians held summer camp \n with their Norwegian Friends!\n When along came a \n **Thunderstorm* \n  interrupting their camp!",
+        "Grabensee",
+        "The one Ring",
+        "a Saltmine",
+        "a Summer tobbogan run",
+        "some open pots",
+        "Salzburg city",
+        "a campfire",
+        "goodbye to good friends"
+      ]
+    },
+    {
+      "title": "Nærleir-sangen, 2020 Sandaa",
+      "melody": "Til vi sees igjen",
+      "author": "Min Trio og M. V.",
+      "chorus": "Jodde-le-liii jodde-la-loo,\n Til vi sees igjen\n Jodde-le-liii jodde-la-loo,\n Til vi sees igjen",
+      "verses": [
+        "Hele kroppen dirrer nu i deilig sommerkveld,\n Selv om vi ikke møtes alle skal vi finn på sprell,\n Vi skal samle alle tinga i en magisk sang,\n Neste gang vi møtes skal vi jodle natta lang.",
+        "Ved Vannsjøs bredde ligger sommerens speiderparadis,\n Her ble det endelig leir på førstetropp sitt vis,\n Vi feirer leir på sandaa med denne sang,\n Og før vi går i påsan skal vi jodle nok en gang."
+      ]
+    },
+    {
+      "title": "Vaktsang",
+      "description": "Onoøya ved Larvik 1959",
+      "melody": "",
+      "note": "*Bytt ut Aagemann med tropps- eller leirsjef",
+      "author": "S. N.",
+      "verses": [
+        "Nå stiger flammene mot det \n :/: mørke blå, :/: mørke blå.\n En liten speidergutt, han skal på \n :/: vakt snart gå, :/: vakt snart gå.\n :/: Men hvis det rasler litt i skogen \n – huisssj... så væ’kke redd lille venn, du har jo \n Aagemann* og meg, og vi skal hjelpe deg. :/:"
+      ]
+    },
+    {
+      "title": "I speiderleir",
+      "melody": "",
+      "author": "",
+      "chorus": "For nå skal vi ta og rette på’n,\n vi henger ei lita bjelle på’n.\n Ding-dang, ding-dang, dinge-linge-lei.\n Nå ska’n ikke lenger lure meg,\n for når han kommer hører jeg:\n ding-dang, ding-dang, dinge-linge-lei.",
+      "verses": [
+        "Det å være i speiderleir\n og gå omkring i speiderklær,\n er prøvelse for noen og enhver.\n For fører’n  gir oss aldri fred,\n vi burde rette litt på det.\n Hør min venn, jeg har en god idé:",
+        "At jeg er blitt patruljens kokk,\n ja, det forstår du sikkert nok.\n å lage mat den kunsten den kan jeg.\n Men maten blir nok så som så,\n når den får bein å løpe på,\n en time før den egentlig skal gå.",
+        "Fører’n vår er veldig sint,\n om morran pleier’n å fly i flint.\n Jeg hører stemmen: Kom deg opp litt svint!\n Forleden dag forsov jeg meg,\n reveljen jeg hørte ei.\n Plutselig så sto han over meg.",
+        "Forleden dag var jeg på tur.\n Jeg brukte kart, kompass og ur.\n Å finne posten det var ingen sak.\n For fyren før meg, gløgg han var,\n skal si han var en snartenkt kar,\n tenk han hadde hengt e’ bjelle kvar.",
+        "Refr.: For han hadde tatt og rette på’n,\n og hengt ei lita bjelle på’n.\n Ding-dang, ding-dang, dinge-linge-lei.\n Gå feil det kunne ikke jeg,\n på 10 mils avstand hørte jeg:\n ding-dang, ding-dang, dinge-linge-lei."
+      ]
+    },
+    {
+      "title": "Her kommer vi...",
+      "melody": "",
+      "author": "S. N.",
+      "chorus": "Bom-da-da-bom-bom-bom . . . etc.",
+      "verses": [
+        "Her kommer vi,\n glade speidergutter som av glede strutter,\n ute i det fri.\n Humøret er på topp,\n i vår første tropp,\n derfor synger vi:\n Bom-da-da-bom-bom-bom."
+      ]
+    },
+    {
+      "title": "Vi har leibål her",
+      "melody": "",
+      "author": "",
+      "verses": [
+        "Vi har leirbål her / ved den dype sjø /\n mellom slanke trær / på vår egen ø. /",
+        "Alt hva vi har kjært / om i nord og sør /\n kan vi skimte her / i de gyldne glør. /",
+        "Og ved solnedgang / stilner skog og sjø /\n mens vår egen sang / toner om vår ø. /",
+        "Vi har leirbål her / ved den dype fjord /\n mellom slanke trær / på vår egen jord. /"
+      ]
+    },
+    {
+      "title": "Å mor, å mor",
+      "melody": "Amour, amour.",
+      "author": "S. N.",
+      "verses": [
+        "Å mor, å mor, å mor,\n han Aage er slem, jeg lengter hjem, til deg og pappa.\n Å mor, å mor, å mor,\n jeg ønsker at jeg hjemme satt, på kjøkkentrappa.\n Her må jeg jo gå etter vann etter ved,\n får aldri tid til å være i fred.\n Kan ikke få sitte og ta det med ro,\n får nesten ikke tid t’å gå på do.\n Å mor, å mor, å mor,\n han Aage* er slem, jeg lengter hjem, til deg og pappa.\n Å mor, å mor, å mor,\n jeg ønsker at jeg hjemme satt, på kjøkkentrappa."
+      ],
+      "note": "* Bytt ut Aage med tropps- eller leirsjef"
+    },
+    {
+      "title": "Smil, smil, smil",
+      "melody": "",
+      "author": "",
+      "verses": [
+        "Smil, smil, smil til hele verden,\n og ta allting med humør.\n For da vil du sikkert se,\n folk som blidt til deg vil le.\n Også de som ikke smilte til deg før."
+      ]
+    },
+    {
+      "title": "Speiderlivet er fint i kanten",
+      "melody": "",
+      "author": "S. N.",
+      "verses": [
+        "Speiderlivet er fint i kanten, faria, faria.\n Speidergutten er fri som fanten, faria, faria.\n Smile gjør han jo dagen lang,\n hilser verden med munter sang.\n Faria, faria, faria, faria, faria."
+      ]
+    },
+    {
+      "title": "Har du stemme",
+      "melody": "",
+      "author": "",
+      "verses": [
+        "Har du stemme må du bruke den,\n meld deg inn i sangforeningen.\n For synger ikke du, så synger ikke jeg,\n så blir det ingen sangforening av, fallera!"
+      ]
+    },
+    {
+      "title": "Trampa på gassen",
+      "melody": "",
+      "author": "",
+      "verses": [
+        "Trampa på gassen og lette ankar,\n sett inn under pannan fyr.\n Før flammande segel og fyllde tankar,\n drar vi fram mot eventyr."
+      ]
+    },
+    {
+      "title": "Greven hadde en liten hund",
+      "melody": "",
+      "author": "",
+      "verses": [
+        ":/: Greven hadde en liten hund,\n Trulle var dens navn, serru. :/:\n ://: T - R - U - L - L - E, ://: \n Trulle var dens navn, serru.",
+        ":/: Greven hadde en liten katt,\n Trille var dens navn, serru. :/:\n ://: T - R - I - L - L - E, ://: \n Trille var dens navn, serru.",
+        ":/: Greven hadde en liten hest,\n Kjell Oddvar var dens navn, serru. :/: \n :/:K-J-ELL ODD-ODD-VAR:/: \n Kjell Oddvar var dens navn, serru"
+      ]
+    },
+    {
+      "title": "Det er en fin ting...",
+      "melody": "Tipperary",
+      "author": "Pus Brodal",
+      "verses": [
+        "Det er en fin ting å vinne venner,\n og så lett går det til:\n Den som sitter her ved din side\n kan du vinne med et smil.\n Du skal aldri mer alene i mørke natten gå.\n Det er en fin, fin ting å vinne venner.\n Du kan gjøre det nå!"
+      ]
+    },
+    {
+      "title": "Det skal bli solskinn",
+      "melody": "",
+      "author": "",
+      "verses": [
+        "Det skal bli solskinn,\n det skal bli solskinn\n fra morgen til kveld.\n Om regnet flommer,\n se sola kommer\n nok fram likevel.\n Det lar seg gjøre\n når blott humøret\n er tipp-topp, ja vel,\n det skal bli solskinn,\n det skal bli solskinn\n fra morgen til kveld."
+      ]
+    },
+    {
+      "title": "Kjære fatter, kjære mutter",
+      "melody": "Brevet fra kolonien.",
+      "author": "H.M., 1964.",
+      "verses": [
+        "Kjære fatter, kjære mutter\n her er jeg i leir blant gutter.\n Det er moro her blant venner\n både ildsted, hud og rygg og sola brenner.",
+        "Si meg mamma, hvis du gidder\n det er en som har hemoroider,\n er den smittsom, denne sykdom,\n for det er jo noe som jeg ikke visst’ om.",
+        "Ordonansen, han fikk sjansen,\n poeng fikk han, kom på lista.\n Alle andre, de fikk resta,\n mens din egen gutt står oppført der som sista.",
+        "Kjære mamma, hent meg hjem\n så skal jeg være god og snill,\n jeg skal aldri være slem\n hvis jeg nå kan slipp’ å være en dag til.",
+        "Jeg skal gjøre alt du liker,\n kaste hammer, kaste spiker.\n Jeg skal følge Petter hjem\n og la gamle tante Berta få en klem.",
+        "Kom og hent meg, sukkerungen,\n her er jeg jo, ganske tvungen.\n Vi får aldri noen fridag,\n jeg får nesten ikke tid t’ å sove middag.",
+        "Se på staben, som de lever,\n de tror nesten de er grever.\n Kommanderer, organiserer,\n men vi alle syns de er no’n or’ntli’ blærer.",
+        "Kjære mamma, dett’ er slutten,\n savner du den lille gutten?\n Som du klemmer, som du kysser\n og som om kvelden du til søvnens rike bysser.",
+        "Kom til søndag, ta med pappa,\n ta med pakka med potetstappa,\n ta med pæler, ta med penger . . .\n Kort og godt så må du ta med alt jeg trenger."
+      ],
+      "lastVerse": {
+        "label": "P.S",
+        "verse": "Kom til søndag, ta med pappa,\n ta med pakka med potetstappa,\n ta med pæler, ta med penger . . .\n Kort og godt så må du ta med alt jeg trenger."
+      }
+    },
+    {
+      "title": "Anton Loppa",
+      "melody": "",
+      "author": "",
+      "verses": [
+        "Hver gang han Anton Loppa, skulle regne divisjon,\n da var det som hjernen stoppa,\n for den nekta all funksjon.\n Han regna divisjon som brøk og subtraksjon.\n På skolen var’n det største null i fattigkommisjon.",
+        "Nå, Anton, sa vår lærer, vis meg i dag en gunst,\n gi meg i dag en liten prøve på din regnekunst.\n Men vær nå flink og grei, og husk, det haster ei.\n Nei, hovedsaken er jo at du ei forregner deg.",
+        "I femogtyve tønner er femti tusen sild.\n Hvor mange sild pr. tønne? \n Regn det ut så er du snill.\n Men vær nå flink og grei, og husk, det haster ei.\n Nei, hovedsaken er jo at du ei forregner deg.",
+        "Da de andre gutta slutta, satt Loppa like sta.\n Og lenge etter friminuttet regna han enda.\n Da siste timen lir, spør lærer’n med et flir:\n Hør, si hvor mange sild pr. tønne nå da dette blir.",
+        "Nå har du lenge plundra, nå må det vel bli bra.\n Da spør han Anton Loppa:\n Si meg, var det sild De sa?\n Nei, sku’ De sett slikt stell, nå blir det gæli lell,\n for jeg har hele tida sitti og regna med makrell."
+      ]
+    },
+    {
+      "title": "Egil Loppa",
+      "melody": "Anton Loppa",
+      "author": "M. V.",
+      "verses": [
+        "Du har vel hørt om Anton, men kjenner du hans bror?\n Han heter Egil Loppa og han er fra Sandefjord. \n Han er en snodig fyr, men matta har’n på styr\n Løser gjerne ligninger så x’ og y’ de flyr.",
+        "Men en dag så sa lærer’n til Egil ”hør minn venn\n Det er på tide og ta fram geografiboken”. \n Da ble han svett og kald, for detta va’kke tall!\n Når kartet kom på bordet gikk han Egil helt i ball!",
+        "Tenk at du skal til Roma, hvor må du reise da?\n Og videre til Serbia går turen derifra. \n Så vil vi se natur i indiske Jaipur.\n Tegn nå opp på kartet en fin rute for vår tur!",
+        "Så lette han og lette, fant Roma og Jaipur. \n Så var det bare Serbia som stod igjen for tur. \n Kartet er gammelt vel, men jeg leter i til i kveld.\n For finner jeg det ikke går jeg på en real smell.",
+        "Og der var tiden ute, sa lærern med et flir. \n Men vise fram no’n rute kunne ikke vår Egil. \n Og det var ikke rart, det skjønner du nok snart.\n Du finner ikke Serbia på gamle eple-kart!"
+      ]
+    },
+    {
+      "title": "Speiderola",
+      "melody": "Musevisa",
+      "author": "",
+      "chorus": ":/: Heisan og hoppsan og falle-ralle-ra,\n vi synger alle sammen og så går det riktig bra. :/:",
+      "verses": [
+        "Da Ola var blitt elve, så tenkte han som så:\n Det skulle være moro å få et tørkle på.\n Han meldte seg i troppen, og det ble liv og spell.\n Han skulle knyte båtsmann, \n men han fikk det ikke tell.",
+        "Han lærte lov og løfte og mange andre ting.\n Med Rutebok for Norge han kjørte rundt i ring.\n Han brukte åtte dager fra Moss til Sandefjord.\n Da lo de andre gutta og de tralla fint i kor.",
+        "Men øvelse gjør mester, som alle kan forstå,\n og Ola han fikk skjorte og speiderlilje på.\n Han spjelker ben og armer, og viser hva han kan,\n til pasienten stønner og roper etter vann.",
+        "Når troppen skal på turer, da er ha alltid med.\n Og sekken til han Ola, den er et syn å se.\n Men det som sto på lista da jeg dro hjemmefra,\n spør Ola høyst forundra, hvor er det mon tro blitt a’?",
+        "Her skal bli andre boller, sa Ola til seg selv,\n og rørte rundt i deigen til det var blitt sent på kveld.\n Så tvinna han en pinne og fyrte riktig flott.\n Det smakte svidde såler, men allikevel så godt."
+      ]
+    },
+    {
+      "title": "Fra Fredrikstad kommer vi",
+      "melody": "Tordivelen og flua",
+      "author": "S. N.",
+      "verses": [
+        "Fra Fredrikstad kommer vi. Piriom.\n Fra hverdagen vi tok oss fri. Pirimitt, mitt, parian,\n dann, diri, ditt, ditt, darian, dann, piriom.",
+        "Her har vi det jo ekstra bra. Piriom.\n Vi legger på oss dag for dag. Pirimitt...",
+        "Når sola ler mot leiren ned. Piriom.\n Da smiler alle gutta med. Pirimitt...",
+        "Og om det regner, hva gjør det? Piriom.\n Det verre var hvis det ble sne. Pirimitt...",
+        "Vi har det flott på speidervis. Piriom.\n Men kveldens bål tar førstepris. Pirimitt...",
+        "Vi rekker villig frem vår hånd. Piriom.\n Og knytter nye brorskapsbånd. Pirimitt...",
+        "På hike til fjell og li vi drar. Piriom.\n Der eventyret ligger klar. Pirimitt...",
+        "Vi glade drar i sluttet tropp. Piriom.\n På veien frem, mot målet opp. Pirimitt..."
+      ]
+    },
+    {
+      "title": "King-kang-kå",
+      "melody": "",
+      "author": "",
+      "verses": [
+        ":/: King kang kolli-kolli-kolli-kolli-watcha,\n king-kang-kå, king-kang-kå. :/:\n :/: Ela-ohelachela-ohelachela-eeelaaoh :/:\n :/: Jolly-wolly-jolly-wolly :/:\n Ompha-ompha-ompha-OMPHA."
+      ]
+    },
+    {
+      "title": "Johan på snippen",
+      "melody": "",
+      "author": "",
+      "verses": [
+        "Johan på Snippen / kjøpte et klaver /\n Med hundreogåtti basser / og fin finér. /\n Men finéren gikk sønder / i slagsmål med bønder /\n om en tønne sild / \n om en tønne islandsk sild med silden i dill.",
+        "Mors lille Ole / i skogen gikk / \n med roser på kinnet / og solskinn i blikk. /\n Men blikket gikk sønder...",
+        "Stig framåt i vagnen / så långt det går /\n og tenk på dom andra / som på gatan står. /\n Men vagnen gick sönder...",
+        "Moses i ørkenen / med stråhatt på /\n fikk sand mellom tærne / så han ei kunne gå. /\n Men tærne gikk sønder..."
+      ]
+    },
+    {
+      "title": "Den mobile speider",
+      "melody": "La Donna e Mobile",
+      "author": "M. V.",
+      "verses": [
+        "Gå ut i skog og mark,\n Gå på tur og leir og haik!\n Og når du kommer frem, \n Send da en hilsen hjem.\n Men posten går for langsomt\n Flaskepost er brysomt\n Nei, løsningen min – på facebook sjekke inn!\n O aaaa På facebook sjekke inn!",
+        "Teltet det reises må,\n Bålet skal tennes på.\n Etter alle gjøremål,\n Finner du frem nål og tråd?\n eller tar du pennen fatt,\n Skriver et romanutkast?\n Nei det jeg alltid vil – spille Ipad-spill!\n O aaaa spille Ipad-spill!",
+        "En gang vi kom i nød\n Armen var vond og rød\n Her må det skje no fort,\n Helikopter må frakte oss bort!\n sender vi opp røyksignal?\n Etter indianers mal?\n Nei her må’n være rapp – vi  sender ut en snap!\n o aaaaa Vi sender yt en snapp!",
+        "Padler man i en sjø,\n Er det best å ikke dø,\n Hvis du har rednignsvest,\n Flyter du som en hest!\n Men selv om du kan svømme,\n Vannet det kan strømme,\n Nei hold deg helst på land – Iphone tar inn vann!\n O aaaa Iphone tar inn vann!",
+        "Speidersøster, speiderbror, \nHvor er sør og hvor er nord?\nHvor er den stien hen,\nSom fører oss helt frem?\nKartet som skal vise vei,\nEkke no for lille meg,\nNei bare chill relax – finn fram Google maps!\no aaaa finn fram google maps!",
+        "Tenk deg om hundre år,\n Skogen den fortsatt står,\n Iphone og gps, \n Ekke lenger noe tess!\n Så hvis du vil bli husket\n Blant alt it-rusket,\n Anbefales mest – helleristingsfest!\n o aaa Helleristningsfest!"
+      ]
+    },
+    {
+      "title": "Nugatti uten nøtter?",
+      "melody": "Vem kan segla",
+      "author": "M. V.",
+      "verses": [
+        "Hvem kan spikke foruten kniv? \n Hvem kan gå uten føtter?\n Hvem kan lage nugatti selv, uten hasselnøtter?",
+        "Jeg kan spikke med øksa mi,\n å gå på hender ekke no sak det!\n Men nuggati uten nøtt, det er jo bare sjokade!"
+      ]
+    },
+    {
+      "title": "Dotømmervise",
+      "melody": "Bestemor skogmus vise",
+      "author": "M. V",
+      "chorus": "Kanskje blir det deg, kanskje blir det meg,\n Kanskje blir det tralalei!",
+      "verses": [
+        "Da troppen vår på leiren dro,\n Var vi alle med og gjorde no’.\n Til slutt så gjenstod bare ett,\n Hvem skal tømme hele troppens skitne toalett?",
+        "Kanskje kan vi trekke lodd, dra strå, Eller velge noen å stemme på. Sikkert er at dassen tømmes må. Men av hvem ja det er jammen ikke lett og spå!",
+        "Den som gjør det den skal få poeng, kanskje til og med en liten peng. Faktisk lover vi at tømmer’n får hele overskuddet i fra kiosken vår i år!",
+        "Tømme doen det kan bli en straff, For en speider som har vært for slapp! Men så fort straffen den er lest opp. Har vi plutselig fått en ren og vakker engletropp!",
+        "Nei, det beste er om alle mann går i gang med hvert sitt tømmespann. Men med flere kokker, mere søl! Snart så ligger hele troppen i en møkkapøl!",
+        "Borti skogen er et revehi, Og en dag kom det en rev forbi. Reven spiste alt hva den var kar av det hele troppen hadde hatt til middagsmat!"
+      ],
+      "lastVerse": {
+        "label": "Ref:",
+        "verse": "Det ble ikke meg, det  ble ikke deg, Reven tømte do’n tjohei!"
+      }
+    },
+    {
+      "title": "Dialektmysteriar",
+      "melody": "Den fyrste song",
+      "author": "M. V.",
+      "verses": [
+        "Den fyrste leir eg lysta til, \n var krinsleir i nordre Førde.\n Eg fann ein gut så ven som ein gran,\n så gul i håret som ein banan.",
+        "Eg bad han kverrsetje teltet mitt. \n Eg ville vedta hans dugleik. \n Men hans åtak og framferd var veik, \n med omsyn til førehandstrua.",
+        "Eg gjelda han for bestøveri,\n Som høveleg er ved eit semje,\n Og førebu hans melting og øksl,\n Med ovesyn, framhald og attgløymd.",
+        "Men guten han så så rart på meg, \n og sa Jæ skjønner’nte bæret!\n Hvis du ente preke kan, \n ja da kan det bara være!"
+      ]
+    },
+    {
+      "title": "Kom rovertid, du milde!",
+      "melody": "Kom mai du skjønne milde",
+      "author": "M. V.",
+      "verses": [
+        "Kom rovertid du milde, med ansvar lærdom og mot!\n Jeg vil nye ting lære, hvor hen jeg setter min fot!\n Men for å kunne lære, må jeg ha min roversøvn!\n Hør derfor nå min roverbønn, la dagen begynne ved 17.00 (fem).",
+        "Jeg vandrer o, så gjerne, ja lange haiker jeg går.\n Jeg finner mat i skogen hver sommer, høst og hver vår! \n Men når så vinteren kommer hit, da gjør jeg som bjørnen min venn!\n Legger meg i koma, til våren igjen titter frem.",
+        "Da jeg kom hjem fra leiren, i fjor så var jeg så trøtt! \n Da ble jeg meget bange, har noe i meg dødt? \n Jeg oppsøkte en spesialist, og det legen sa gjorde meg blid!\n Du bør nok holde sengen, du har fått narkolepsi!"
+      ]
+    },
+    {
+      "title": "Òde til Rekepatruljen!",
+      "melody": "Vi ere en nasjon vi med.",
+      "author": "M. V.",
+      "verses": [
+        "Velkommen til patruljen vår, velkommen blant de beste.\n Vi vinner det som vinnes kan, for vi har lært det meste.\n Vi knuter kan og dyrespor, ja vi kan 70 latinske ord. \n Og vi kan surre større bord, enn alle bord til sammen.",
+        "Her ser du Bubu Scandicus og her er Eques Muule.  \n Vi leker aldri noe gøy, vi skakke være kule! \n For dersom vi skal nå vårt mål, og finne gulo gulo spor! \n Så kan vi kan vi ikke sløse tid, på simple pøbelstreker.",
+        "Når alle andre drar i flokk, så blir vi her alene.\n For om vi finner Diptera, så kan vi priser tjene. \n Men når teller opp til slutt, var alt vi fant litt Pandalus."
+      ]
+    },
+    {
+      "title": "Idyll",
+      "melody": "",
+      "author": "Postgirobygget",
+      "verses": [
+        "Det var solnedgang \ndet var latter det var sang \ndet var sommerfri \ndet var sjø og magi \nDet var deg og det var meg \ndet var minner som aldri vil dø \ndet var evighet \nog en sol som farga himmelen rød",
+        "Det var øl \n berusende ord \n det var sommer det var sol \n det var hjerter i brann \n blikkstille vann alt på denne jord \n Og det var kjærlighet \n ja det var kjærlighet \n og minner som aldri vil dø \n en sol som farga himmelen rød - Idyll",
+        "Sommer'n var på hell \n dette var siste kveld \n vi lå på rygg jeg følte meg trygg \n men frøs litt likevel \n Vi lå og så på stjernene \n og hørte på sangen fra ternene \n vi visste begge hvor det bar \n og at vi aldri skulle glemme hvordan det var",
+        "Det var øl \n berusende ord \n det var sommer det var sol \n det var hjerter i brann \n blikkstille vann alt på denne jord \n Og kanskje en dag vi sees igjen \n vi stopper og prater og du blir med meg hjem \n så ser vi med tiden hva som skjer \n mens vi tenker tilbake på minner og ler",
+        "Det var øl \n berusende ord \n det var sommer det var sol \n det var hjerter i brann \n blikkstille vann alt på denne jord \n Og det var kjærlighet \n ja det var kjærlighet \n og minner som aldri vil dø \n en sol som farga himmelen rød - Idyll"
+      ]
+    },
+    {
+      "title": "Tenke sjæl",
+      "melody": "",
+      "author": "Trond Viggo Torgersen",
+      "verses": [
+        "Du vekker 'æ sjæl og kjenner æ helt aleine \n Du kjenner at nå, det er nå du må stå for det du gjør sjæl \n Skaffe 'ræ lønn - aleine \n Lage 'ræ mat - aleine \n For nå må du finne ut hvem du er",
+        "De gir 'række fri, de gamle vil ha dæ hjemme \n De trøkker ræ' ned og gir deg'ke fri til å tenke sjæl \n Starte et liv - aleine \n Tenke ut alt - aleine \n For da (For da) Får du fri (Får du fri) Får du prøvd hva du vil bli",
+        "Tenke sjæl og mene, måtte stå for det du sa \n Ikke vri deg unna, ikke være likeglad \n Ikke late som du ikke mente det du sa \n Ikke si som andre \n Du må tenke sjæl",
+        "En dag er det slutt, så står du der helt aleine \n Du kan ikke gå til skolen mer nå, du må starte sjæl \n Skaffe 'ræ klær - aleine \n Finne 'ræ jobb - aleine \n For da (For da) Får du fri (Får du fri) \n Får du prøvd hva du vil bli",
+        "Tenke sjæl og mene, måtte stå for det du sa \n Ikke vri deg unna, ikke være likeglad \n Ikke late som du ikke mente det du sa \n Ikke si som andre \n Du må tenke sjæl"
+      ]
+    },
+
+    {
+      "title": "Adieu",
+      "melody": "",
+      "author": "Jahn Teigen og Anita Skorgan",
+      "chorus": "Vi har våre minner, de vil aldri dø \n Nå er tiden inne til å si adieu",
+
+      "verses": [
+        "Si meg, hva betyr adieu? \n Er det bare trist, no’ som sårer deg? \n Tro meg, vi skal ta adieu \n Ikke sånn som sist, da jeg gikk fra deg \n Jeg vil alltid huske deg som en venn \n Om vi aldri mere ses igjen",
+        "Si meg, hva betyr adieu? \n Kan det ha verdi om alt er forbi? \n Tro meg, vi skal ta adieu \n Vise kjærlighet om vi skilles helt \n Jeg vil alltid huske deg som en venn \n Om vi aldri mere ses igjen"
+      ],
+      "lastVerse": {
+        "label": "Ref:",
+        "verse": "Vi har våre minner, de vil aldri dø \n Nå er tiden inne til å si adieu \n Adieu"
+      }
+    },
+    {
+      "title": "For Fredrikstad",
+      "melody": "",
+      "author": "",
+      "chorus": "For Fredrikstad, for Fredrikstad \n Står vi en for alle, og alle for en \n For Fredrikstad, for Fredrikstad \n Står vi en for alle, og alle for en",
+
+      "verses": [
+        "I gode og onde dager, vil vi trofast møte opp \n Når guttane går på banen, står vi i samla tropp \n For sammen er vi sterke, og det kjennes ille bra \n Å væra fra den byen, som laget kommer fra",
+        "Du går aldri mer alene, når du er en av oss \n Som stiller opp på kampen, når FFK skal sloss \n Ja det er godt å være, i den rød-hvite armè \n At vi er best i verden, skal alle snart få se"
+      ]
+    },
+    {
+      "title": "Sommer’n i Fredrikstad",
+      "melody": "",
+      "author": "Tor Andersen og Per Grimstad",
+      "verses": [
+        "Når lemmæne faller på Flora \n og stolær og bord settes frem, \n når finger'n kan stikkes i jorda \n og trekkfuglæne kommer hjem. \n Da ligger du snart utpå Søster \n og fiskær og gjør som du løstær. \n Takk kjære Trægde for høytrykk i kø, \n borte er kulde og holke og snø. \n Sommer'n er herlig i Fredrikstad, \n når du bare kan tælle og vele omkring, \n du føler deg oppstemt og sjeleglad \n - som en skreddersydd scoring fra en FFK-ving. \n Å sludre en samtale på byens torv, \n ta båten til Strømstad og der keka korv. \n Ja, da har du det bra \n - og det skal du ha i Fredrikstad.",
+        "Å sitte på brygga med reker \n og tenke på sletts ingenting.\n Det krittæs opp paradis-streker \n og småjentene slår på ring. \n Ved Tollboden sparkær no'n guttær, \n og vinter'n er best når han sluttær. \n Kjenn at det dufter av nystekt makrell \n - deilig i korterma til sent på kveld. \n Sommer'n er herlig i Fredrikstad, \n når du bare kan tælle og vele omkring, \n du føler deg oppstemt og sjeleglad \n - om det kommer en særping det gjør ingenting. \n Du treffer en kjenning og slår av en prat \n - du ligger på svaberget brunstekt og lat.\n  Ja, da har du det bra \n - og det skal du ha i Fredrikstad.",
+        "I Gågata surrær det stemmær \n og du er en røst iblant dem. \n Se jordbæra kostær en femmer \n - kjøp fløte og ta med deg hjem. \n Det døsas på benkær i parken \n og kjærlighet rissæs i barken. \n Ikke no' sted er det finære nå \n - kom og se sjøl det er lett å forstå: \n At sommer'n er herlig i Fredrikstad, \n når du bare kan tælle og vele omkring. \n Du føler deg oppstemt og sjeleglad, \n og en skydott for sola det gjør ingenting. \n Spis middag i friluft og smak nypotet. \n Kjøl ned no' kaldt når en dag blir for het. \n Ja, da har du det bra \n og det skal du ha i Fredrikstad. \n Ja, det skal du ha i Fredrikstad."
+      ]
+    },
+    {
+      "title": "Huvud, axlar, knä och tå",
+      "melody": "",
+      "author": "",
+      "verses": [
+        "Havre (armar och ben ut), \n vete (armar ner längs med kroppen), \n korn (armar sträckta rakt upp) \n och råg (armarna böjda uppåt), \n korn och råg havre, vete, \n korn och råg, \n korn och råg gröt (rör i en gryta) \n och bullar (knåda med händerna) \n är bra att ha på tåg (tuff, tuff med armarna) \n havre, vete, korn och råg, korn och råg "
+      ]
+    },
+    {
+      "title": "Brevet från kolonin",
+      "melody": "",
+      "author": "Cornelis Vreeswijk",
+      "verses": [
+        "Hejsan morsan, hejsan Stabben \n här é brev från älsklingsgrabben \n Vi har kul på kolonien \n vi bor tjugoåtta gangstergrabbar i en …",
+        "… stor barack med massa sängar \n Kan ni skicka mera pengar \n för det vore en god gärning \n Jag har spelat bort vartenda dugg på tärning",
+        "Här é roligt, vill jag lova \n fasten lite svårt att sova \n Killen som har sängen över mig \n han vaknar inte han när han behöver nej",
+        "Jag har tappat två framtänder \n för jag skulle gå på händer \n när vi lattjade charader \n Så när morsan nu får se mig får hon spader",
+        "Uti skogen, finns baciller \n men min kompis, han har piller \n som han köpt utav en ful typ \n Och om man äter dom blir man en jättekul typ",
+        "Jag är inte rädd för spöken \n Och min kompis han har kröken \n som han gjort av potatis \n och den säljer han i baracken nästan gratis",
+        "Våran fröken, är försvunnen \n hon har dränkt sig uti brunnen \n för en morgon blev hon galen \n för vi släppte ut en huggorm i matsalen",
+        "Föreståndarn, han har farit \n han blir aldrig va’ han varit \n för polisen kom och tog hand \n om honom för en vecka när vi lekte skogsbrand",
+        "Uti skogen, finns det rådjur \n I baracken, finns det smådjur \n Och min bäste kompis Tage \n han har en liten fickkniv inuti sin mage",
+        "Honom ska dom operera \n Ja, nu vet jag inge’ mera \n Kram och kyss och hjärtligt tack sen \n men, nu ska vi ut och bränna grannbaracken"
+      ]
+    },
+    {
+      "title": "Jopp hej-da",
+      "melody": "",
+      "author": "Bröderna Slut",
+      "verses": [
+        "I naturen ut vi gå, jopp hej di, jopp hej da. \n Äventyr vi pröva på, jopp hej di, hej da. \n Utom stadens hank och stör, tåga vi med glatt humör. \n Jopp hej di, hej di, hej da. Jopp hej di, jopp hej da. \n Jopp hej di, hej di, hej da. Jopp hej di, hej da. \n Falleri, fallera, fallerallalala la hej, hej."
+      ]
+    },
+    {
+      "title": "Country Roads",
+      "melody": "",
+      "author": "John Denver, Bill Danoff og Taffy Nivert",
+      "chorus": "Country roads, take me home \n To the place I belong \n West Virginia, mountain mama \n Take me home, country roads",
+
+      "verses": [
+        "Almost heaven, West Virginia \n Blue Ridge Mountains, Shenandoah River \n Life is old there, older than the trees \n Younger than the mountains, growin' like a breeze",
+        "All my memories gather 'round her \n Miner's lady, stranger to blue water \n Dark and dusty, painted on the sky \n Misty taste of moonshine, teardrop in my eye",
+        "I hear her voice in the mornin' hour, she calls me \n The radio reminds me of my home far away \n Drivin' down the road, I get a feelin' \n That I should've been home yesterday, yesterday",
+        "Country roads, take me home \n To the place I belong \n West Virginia, mountain mama \n Take me home, country roads \n Country roads, take me home \n To the place I belong"
+      ],
+      "lastVerse": {
+        "label": "Ref:",
+        "verse": "West Virginia, mountain mama \n Take me home, country roads \n Take me home, down country roads \n Take me home, down country roads"
+      }
+    },
+    {
+      "title": "My Stomach Has Had It",
+      "author": "",
+      "melody": "My Bonnie Lies Over the Ocean",
+      "chorus": ":/:Bring back, bring back, Oh bring \n Back my bucket to me, to me . . .:/:",
+      "verses": [
+        "My breakfast lies over the ocean, \n My dinner lies over the sea, \n My stomach is in a commotion, \n Don’t mention my supper to me.",
+        "I really felt rotten this morning, \n They tell me I really looked pale, \n My stomach gave adequate warning, \n To lean far out over the rail.",
+        "The sound of a stomach in motion, \n A murmuring noise inside me, \n I looked down and there on the water, \n Was breakfast and dinner and tea."
+      ]
+    },
+    {
+      "title": "It’s a good time to get acquainted",
+      "melody": "Smil, smil, smil",
+      "author": "",
+      "verses": [
+        "It’s a good time to get acquainted \n It’s a good time to know \n Who is sitting close beside you \n And to smile and say “Hello” \n Goodbye, chilly feeling \n Goodbye, glassy stare \n If we all join hands and pull together \n We’re sure to get there."
+      ]
+    },
+    {
+      "title": "When the Scouts Come Hiking In",
+      "melody": "When the Saints go Marching In",
+      "author": "",
+      "chorus": "Now here comes *Dave, he needs a shave* \n When the Scouts come hiking in, \n And we’ll have Dave at that camp-fire, \n When the Scouts come hiking in.",
+      "verses": [
+        "Oh when the Scouts come hiking in, \n When the Scouts come hiking in, \n I want to be at that camp-fire \n When the Scouts come hiking in.",
+        "Now here comes Nils, he got some skills ...",
+        "Now here comes Odd, he’s selling lodd ...",
+        "Now here comes Hans, with a weird dance ...",
+        "Now here comes Kim – Oh No, not him! ..."
+      ]
+    }
+  ]
+}

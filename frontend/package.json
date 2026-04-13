@@ -6,6 +6,7 @@
     "dev": "next dev --webpack",
     "build": "rm -rf .next && next build --webpack",
     "start": "next start --webpack",
+    "seed:songs": "node --env-file=.env.local ./scripts/seed-songs.mjs",
     "lint": "eslint",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
