@@ -10,7 +10,9 @@ import SubmitButton from '../SubmitButton';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import SectionInput from '../SectionInput';
+import ChordPreview from '../chords/ChordPreview';
 import { useState } from 'react';
+import { Switch } from '@/components/ui/switch';
 
 type Inputs = {
   title: string;
@@ -75,6 +77,7 @@ export default function SongForm({
 
   const watchVerses = useWatch({ control, name: 'verses' }) || [];
   const [hasChorus, sethasChorus] = useState(false);
+  const [chordMode, setChordMode] = useState(false);
 
   const selectedTags = useWatch({ control, name: 'tags' }) ?? [];
 
@@ -94,6 +97,23 @@ export default function SongForm({
       toast.error(error instanceof Error ? error.message : 'Noe gikk galt');
     }
   };
+
+  const chordSections = [
+    ...watchVerses.map((verse, i) => ({
+      label: `Vers ${i + 1}`,
+      value: verse || '',
+      onChange: (val: string) => setValue(`verses.${i}`, val),
+    })),
+    ...(hasChorus
+      ? [
+          {
+            label: 'Refreng',
+            value: chorusValue,
+            onChange: (val: string) => setValue('chorus', val),
+          },
+        ]
+      : []),
+  ];
 
   return (
     <form
@@ -140,75 +160,6 @@ export default function SongForm({
           {errors.melody && <FieldError errors={[errors.melody]} />}
         </Field>
 
-        {/* Verses */}
-        <Field>
-          <FieldLabel>Vers*</FieldLabel>
-          {watchVerses.map((verse, i) => {
-            const charCount = verse?.length || 0;
-
-            return (
-              <SectionInput
-                key={i}
-                label={`Vers ${i + 1}`}
-                register={register(`verses.${i}`, getFieldValidation('verses'))}
-                error={errors.verses && errors.verses[i]?.message}
-                removable={i > 0}
-                onRemove={() => {
-                  const updated = [...watchVerses];
-                  updated.splice(i, 1);
-                  setValue('verses', updated);
-                  clearErrors(`verses.${i}`);
-                }}
-                removeText="vers"
-                charCount={charCount}
-                limit={MAX_VERSE_LENGTH}
-              ></SectionInput>
-            );
-          })}
-          <div className="flex flex-row">
-            <Button
-              type="button"
-              onClick={() => setValue('verses', [...watchVerses, ''])}
-              className="cursor-pointer hover:bg-btn-hover"
-            >
-              + Legg til vers
-            </Button>
-            {errors.verses && <FieldError errors={[errors.verses]} />}
-          </div>
-        </Field>
-
-        {/* Chorus */}
-        <Field data-invalid={!!errors.chorus}>
-          <FieldLabel>Refreng</FieldLabel>
-          {hasChorus ? (
-            <SectionInput
-              register={register('chorus', getFieldValidation('chorus'))}
-              error={errors.chorus?.message}
-              removable
-              onRemove={() => {
-                sethasChorus(false);
-                setValue('chorus', '');
-                clearErrors('chorus');
-              }}
-              removeText="refreng"
-              charCount={chorusCharCount}
-              limit={MAX_CHORUS_LENGTH}
-            ></SectionInput>
-          ) : (
-            <div className="flex flex-row">
-              <Button
-                type="button"
-                onClick={() => {
-                  sethasChorus(true);
-                }}
-                className="cursor-pointer hover:bg-btn-hover"
-              >
-                + Legg til refreng
-              </Button>
-            </div>
-          )}
-        </Field>
-
         {/* Links */}
         <Field data-invalid={!!errors.spotify_youtube}>
           <FieldLabel htmlFor="add-form-song-link">Spotify/YouTube-lenke</FieldLabel>
@@ -229,6 +180,85 @@ export default function SongForm({
           </Field>
         )}
       </FieldGroup>
+
+      {/* Verses */}
+      <Field>
+        <FieldLabel>Vers*</FieldLabel>
+        {watchVerses.map((verse, i) => {
+          const charCount = verse?.length || 0;
+
+          return (
+            <SectionInput
+              key={i}
+              label={`Vers ${i + 1}`}
+              register={register(`verses.${i}`, getFieldValidation('verses'))}
+              error={errors.verses && errors.verses[i]?.message}
+              removable={i > 0}
+              onRemove={() => {
+                const updated = [...watchVerses];
+                updated.splice(i, 1);
+                setValue('verses', updated);
+                clearErrors(`verses.${i}`);
+              }}
+              removeText="vers"
+              charCount={charCount}
+              limit={MAX_VERSE_LENGTH}
+            ></SectionInput>
+          );
+        })}
+        <div className="flex flex-row">
+          <Button
+            type="button"
+            onClick={() => setValue('verses', [...watchVerses, ''])}
+            className="cursor-pointer hover:bg-btn-hover"
+          >
+            + Legg til vers
+          </Button>
+          {errors.verses && <FieldError errors={[errors.verses]} />}
+        </div>
+      </Field>
+
+      {/* Chorus */}
+      <Field data-invalid={!!errors.chorus}>
+        <FieldLabel>Refreng</FieldLabel>
+        {hasChorus ? (
+          <SectionInput
+            register={register('chorus', getFieldValidation('chorus'))}
+            error={errors.chorus?.message}
+            removable
+            onRemove={() => {
+              sethasChorus(false);
+              setValue('chorus', '');
+              clearErrors('chorus');
+            }}
+            removeText="refreng"
+            charCount={chorusCharCount}
+            limit={MAX_CHORUS_LENGTH}
+          ></SectionInput>
+        ) : (
+          <div className="flex flex-row">
+            <Button
+              type="button"
+              onClick={() => {
+                sethasChorus(true);
+              }}
+              className="cursor-pointer hover:bg-btn-hover"
+            >
+              + Legg til refreng
+            </Button>
+          </div>
+        )}
+      </Field>
+
+      {/* Chord-toggle */}
+      <div className="flex items-center gap-3 mt-2">
+        <Switch checked={chordMode} onCheckedChange={setChordMode} />
+        <label className="text-sm cursor-pointer" onClick={() => setChordMode((v) => !v)}>
+          Legg til akkorder
+        </label>
+      </div>
+
+      {chordMode && <ChordPreview sections={chordSections} />}
 
       {/* Submit and reset */}
       <div className="mt-4 flex flex-row gap-4">
