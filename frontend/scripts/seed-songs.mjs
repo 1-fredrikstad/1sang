@@ -29,9 +29,7 @@ function normalizeSong(song) {
     author: song?.author ? String(song.author).trim() || null : null,
     chorus: song?.chorus ? String(song.chorus).trim() || null : null,
     verses,
-    spotify_youtube: song?.spotify_youtube
-      ? String(song.spotify_youtube).trim() || null
-      : null,
+    spotify_youtube: song?.spotify_youtube ? String(song.spotify_youtube).trim() || null : null,
   };
 }
 
@@ -48,9 +46,7 @@ if (!sourceSongs) {
   throw new Error('Input JSON must be an array or an object with a songs array');
 }
 
-const normalizedSongs = sourceSongs
-  .map(normalizeSong)
-  .filter((song) => song.title.length > 0);
+const normalizedSongs = sourceSongs.map(normalizeSong).filter((song) => song.title.length > 0);
 
 if (normalizedSongs.length === 0) {
   throw new Error('No valid songs found after normalization');
