@@ -12,7 +12,6 @@ import { Switch } from '@/components/ui/switch';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import MobileTooltip from '../MobileTooltip';
 import SubmitButton from '../SubmitButton';
-import { useRouter } from 'next/navigation';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldDescription } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -35,8 +34,6 @@ export default function PlaylistForm({
   initialValues,
   mode = 'create',
 }: PlaylistFormProps) {
-  const router = useRouter();
-
   const {
     register,
     handleSubmit,
@@ -92,7 +89,6 @@ export default function PlaylistForm({
 
   const handleFormSubmit: SubmitHandler<PlaylistInputs> = async (data) => {
     await onSubmit(data);
-    router.push('/playlists');
   };
 
   return (
