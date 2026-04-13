@@ -91,7 +91,7 @@ export default function PlaylistForm({
 
   const handleFormSubmit: SubmitHandler<PlaylistInputs> = async (data) => {
     await onSubmit(data);
-    router.push('/');
+    router.push('/playlists');
   };
 
   return (
