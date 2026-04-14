@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 
-const ALLOWED_ROLES = ['user', 'admin'] as const;
+const ALLOWED_ROLES = ['regular', 'admin'] as const;
 type AllowedRole = (typeof ALLOWED_ROLES)[number];
 
 export async function PATCH(req: NextRequest) {

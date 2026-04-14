@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     }
 
     const usersRes = await fetch(
-      `${supabaseUrl}/rest/v1/users?select=user_id,name,email,role&order=name.asc`,
+      `${supabaseUrl}/rest/v1/users?select=user_id,name,email,role,created_at&order=created_at.desc`,
       {
         headers: {
           apikey: serviceRoleKey,
@@ -37,7 +37,11 @@ export async function GET(req: NextRequest) {
     const usersBody = await usersRes.json().catch(() => null);
 
     if (!usersRes.ok) {
-      throw new Error('Kunne ikke hente brukere');
+      throw new Error(
+        typeof usersBody === 'object' && usersBody !== null
+          ? JSON.stringify(usersBody)
+          : 'Kunne ikke hente brukere'
+      );
     }
 
     return NextResponse.json({
