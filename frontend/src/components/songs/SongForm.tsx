@@ -52,7 +52,7 @@ export default function SongForm({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     control,
     reset,
     setValue,
@@ -262,7 +262,7 @@ export default function SongForm({
 
       {/* Submit and reset */}
       <div className="mt-4 flex flex-row gap-4">
-        <SubmitButton submitLabel={submitLabel} />
+        <SubmitButton submitLabel={submitLabel} disabled={isSubmitting} />
         <Button type="button" variant="outline" onClick={() => reset()} className="cursor-pointer">
           Reset
         </Button>
