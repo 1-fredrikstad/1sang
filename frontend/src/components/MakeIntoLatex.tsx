@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Song } from '../lib/db';
+import { toast } from 'sonner';
 
 // AI has helped me write escapeLatex and formatLine as I was unsure about regex
 
@@ -94,60 +95,65 @@ export default function MakeIntoLatex() {
   }
 
   async function generateLatex() {
-    const res = await fetch('/api/songs');
+    try {
+      const res = await fetch('/api/songs');
 
-    if (!res.ok) {
-      throw new Error('Kunne ikke hente sanger');
+      if (!res.ok) {
+        throw new Error('Kunne ikke hente sanger');
+      }
+
+      const json = await res.json();
+      const songs: Song[] = json.data;
+
+      const latex = `\\documentclass{article}
+        \\usepackage[utf8]{inputenc}
+        \\usepackage[T1]{fontenc}
+        \\usepackage{leadsheets}
+
+        \\newlength{\\versenumberwidth}
+        \\setlength{\\versenumberwidth}{2em}
+
+        \\newcommand{\\verseline}[2]{%
+          \\noindent
+          \\makebox[0.7em][1]{#1}%
+          \\hspace{0.4em}%
+          \\parbox[t]{\\dimexpr\\linewidth-1.5em}{#2}%
+        }
+
+        % --- Innstillinger for leadsheets ---
+        \\setleadsheets{
+          chords/format = \\bfseries,
+          align-chords = l,
+          bar-shortcuts = false,
+          chorus/name = \\bfseries{Ref:},
+          verse/after-label = {},
+          chorus/after-label = {},
+        }
+
+        % --- Layout og innrykk ---
+        \\setlength{\\parindent}{0pt}
+        \\setlength{\\leftmargini}{0.4em}
+        \\setlength{\\leftmarginii}{0.4em}
+
+        \\begin{document}
+
+        ${songs.map((s) => songToLatex(s)).join('\n\n')}
+
+        \\end{document}
+        `;
+
+      const blob = new Blob([latex], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'sanger.tex';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Feil ved generering av LaTex:', error);
+      toast.error('Kunne ikke laste ned LaTex');
     }
-
-    const json = await res.json();
-    const songs: Song[] = json.data;
-
-    const latex = `\\documentclass{article}
-      \\usepackage[utf8]{inputenc}
-      \\usepackage[T1]{fontenc}
-      \\usepackage{leadsheets}
-
-      \\newlength{\\versenumberwidth}
-      \\setlength{\\versenumberwidth}{2em}
-
-      \\newcommand{\\verseline}[2]{%
-        \\noindent
-        \\makebox[0.7em][1]{#1}%
-        \\hspace{0.4em}%
-        \\parbox[t]{\\dimexpr\\linewidth-1.5em}{#2}%
-      }
-
-      % --- Innstillinger for leadsheets ---
-      \\setleadsheets{
-        chords/format = \\bfseries,
-        align-chords = l,
-        bar-shortcuts = false,
-        chorus/name = \\bfseries{Ref:},
-        verse/after-label = {},
-        chorus/after-label = {},
-      }
-
-      % --- Layout og innrykk ---
-      \\setlength{\\parindent}{0pt}
-      \\setlength{\\leftmargini}{0.4em}
-      \\setlength{\\leftmarginii}{0.4em}
-
-      \\begin{document}
-
-      ${songs.map((s) => songToLatex(s)).join('\n\n')}
-
-      \\end{document}
-      `;
-
-    const blob = new Blob([latex], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'sanger.tex';
-    a.click();
-    URL.revokeObjectURL(url);
   }
 
   return <Button onClick={generateLatex}>Last ned LaTeX</Button>;
