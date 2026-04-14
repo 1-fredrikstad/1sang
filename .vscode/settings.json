@@ -1,12 +1,3 @@
 {
-  "conventionalCommits.scopes": [
-    "frontend",
-    "format",
-    "setup",
-    "songform",
-    "colortheme",
-    "pwabanner",
-    "adminaccess",
-    "loading"
-  ]
+	"conventionalCommits.scopes": ["frontend", "format", "setup", "songform", "colortheme", "pwabanner", "adminaccess", "loading", "latex"]
 }
