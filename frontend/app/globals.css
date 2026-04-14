@@ -230,6 +230,7 @@ a[href] .no-underline {
 }
 
 /* Collapsible animation */
+
 @layer utilities {
   .collapsible-content {
     overflow: hidden;
@@ -260,6 +261,48 @@ a[href] .no-underline {
     to {
       height: 0;
     }
+  }
+}
+
+/* Fire */
+
+.fire-idle {
+  filter: brightness(0.85) saturate(0.8);
+  opacity: 0.75;
+}
+
+.dark .fire-idle {
+  filter: brightness(0.75) saturate(0.7);
+  opacity: 0.75;
+}
+
+.fire-boost {
+  opacity: 0.85;
+  animation: fireBoost 2s ease-in-out infinite;
+  will-change: transform, filter;
+}
+
+@keyframes fireBoost {
+  0%,
+  100% {
+    transform: scale(1) rotate(0.5deg);
+    filter: brightness(1.02) contrast(1.05);
+  }
+  20% {
+    transform: scale(1.025) rotate(0deg);
+    filter: brightness(1.07) contrast(1.1);
+  }
+  40% {
+    transform: scale(1) rotate(-0.5deg);
+    filter: brightness(1.1) contrast(1.2);
+  }
+  60% {
+    transform: scale(1) rotate(-0.5deg);
+    filter: brightness(1.2) contrast(1.15);
+  }
+  80% {
+    transform: scale(1.025) rotate(0deg);
+    filter: brightness(1.07) contrast(1.1);
   }
 }
 
