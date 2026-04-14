@@ -12,7 +12,7 @@ export default function Campfire() {
 
     try {
       if (!audioRef.current) {
-        const audio = new Audio('campfire/sounds/fire_crackling_75.mp3');
+        const audio = new Audio('/campfire/sounds/fire_crackling_75.mp3');
         audio.volume = 0.4;
         audioRef.current = audio;
       }
@@ -46,7 +46,7 @@ export default function Campfire() {
         onClick={handleClick}
       >
         <Image
-          src="campfire/only_fire.svg"
+          src="/campfire/only_fire.svg"
           alt="Fire"
           width={100}
           height={100}
@@ -54,7 +54,7 @@ export default function Campfire() {
           className={`allow-transition transition-all duration-300 z-5 ${boost ? 'fire-boost' : 'fire-idle'}`}
         ></Image>
         <Image
-          src="campfire/wood2.png"
+          src="/campfire/wood2.png"
           alt="Wood"
           width={80}
           height={80}
