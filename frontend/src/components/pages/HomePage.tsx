@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Song } from '@/src/lib/db';
 import { db } from '@/src/lib/db';
 import { SongBox } from '../songs/SongBox';
@@ -18,10 +19,32 @@ type Tag = {
 };
 
 export function HomePage({ songs = [], isLoading, error }: SongListProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const searchQuery = searchParams.get('q')
+    ? decodeURIComponent(searchParams.get('q') as string)
+    : '';
+
   const debouncedQuery = useDebounce(searchQuery, 300);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [isOnline, setIsOnline] = useState(() => window.navigator.onLine);
+
+  const handleSearchChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (value.trim()) {
+      // encode special characters (æ, ø, å)
+      params.set('q', encodeURIComponent(value));
+    } else {
+      params.delete('q');
+    }
+
+    const queryString = params.toString();
+
+    router.replace(queryString ? `${pathname}?${queryString}` : pathname);
+  };
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -77,7 +100,7 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
         </div>
       ) : (
         <>
-          <SearchField value={searchQuery} onChange={setSearchQuery} />
+          <SearchField value={searchQuery} onChange={handleSearchChange} />
 
           <div className="mb-10 w-fit">
             <TagSelect
