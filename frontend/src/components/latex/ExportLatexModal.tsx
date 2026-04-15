@@ -13,7 +13,7 @@ import {
 import { Song } from '@/src/lib/db';
 import { Button } from '@/components/ui/button';
 import SongList from '../playlist/SongList';
-import { generateLatex } from './generateLatex';
+import { generateLatex } from './GenerateLatex';
 import { useSongPicker } from '@/src/hooks/useSongPicker';
 import { SearchField } from '../SearchField';
 import { useState } from 'react';

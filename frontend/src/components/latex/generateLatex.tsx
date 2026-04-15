@@ -4,7 +4,7 @@ import { Song } from '../../lib/db';
 
 // AI has helped me write escapeLatex and formatLine as I was unsure about regex
 
-export function generateLatex(songs: Song[], totalAvailableSongs?: number) {
+export function GenerateLatex(songs: Song[], totalAvailableSongs?: number) {
   // List of songs that should have last verse and not last chorus (based on the json-file sent by the customer)
   const specialLastVerseSongs = [
     'Nelaug, 1990',
