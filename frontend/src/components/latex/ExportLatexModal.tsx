@@ -13,7 +13,7 @@ import {
 import { Song } from '@/src/lib/db';
 import { Button } from '@/components/ui/button';
 import SongList from '../playlist/SongList';
-import { generateLatex } from './GenerateLatex';
+import { GenerateLatex } from './GenerateLatex';
 import { useSongPicker } from '@/src/hooks/useSongPicker';
 import { SearchField } from '../SearchField';
 import { useState } from 'react';
@@ -99,7 +99,7 @@ export default function ExportLatexModal({
           </DialogClose>
 
           <Button
-            onClick={() => generateLatex(selectedSongs, songs.length)}
+            onClick={() => GenerateLatex(selectedSongs, songs.length)}
             disabled={selectedCount === 0}
           >
             Eksporter ({selectedCount})
