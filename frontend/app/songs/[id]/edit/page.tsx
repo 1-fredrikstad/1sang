@@ -116,6 +116,7 @@ export default function EditSongPage() {
           author: song.author ?? '',
           chorus: song.chorus ?? '',
           verses: song.verses,
+          spotify_youtube: song.spotify_youtube ?? '',
           tags: songTags ?? [],
         }}
         onSubmit={handleSubmit}

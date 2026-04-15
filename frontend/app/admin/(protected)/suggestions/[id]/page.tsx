@@ -12,6 +12,7 @@ import { SuggestionActions } from '@/src/components/suggestions/SuggestionAction
 import Lyrics from '@/src/components/songs/Lyrics';
 import { Switch } from '@/components/ui/switch';
 import { useState } from 'react';
+import { FaSpotify, FaYoutube } from 'react-icons/fa';
 
 export default function SuggestionPage() {
   const { id } = useParams<{ id: string }>();
@@ -34,6 +35,25 @@ export default function SuggestionPage() {
   if (dexieSuggestion === null || !suggestion) {
     return <Spinner message="Oppdaterer data" />;
   }
+
+  const getLinkPlatform = (url: string) => {
+    try {
+      const hostname = new URL(url).hostname;
+
+      if (hostname.includes('spotify.com')) {
+        return { name: 'Spotify', icon: FaSpotify, color: 'text-green-500' };
+      }
+      if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
+        return { name: 'YouTube', icon: FaYoutube, color: 'text-red-500' };
+      }
+    } catch {
+      return { name: 'Link' };
+    }
+
+    return { name: 'Link' };
+  };
+
+  const { name, icon: Icon, color } = getLinkPlatform(suggestion.spotify_youtube || '');
 
   const hasChords =
     suggestion.verses?.some((v) => v.includes('[')) || suggestion.chorus?.includes('[');
@@ -58,8 +78,25 @@ export default function SuggestionPage() {
       {/* Content */}
       <h1 className="mt-15 mb-0 text-3xl font-semibold">{suggestion.title}</h1>
 
+      {/* Melody */}
       {suggestion.melody && <p className="opacity-60 mt-1">Melodi: {suggestion.melody}</p>}
+      {/* Spotify/Youtube */}
+      {suggestion.spotify_youtube && (
+        <p className="opacity-60 mt-1 flex flex-col items-center">
+          <span>Link:</span>
+          <a
+            href={suggestion.spotify_youtube}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 font-semibold hover:underline"
+          >
+            {Icon && <Icon className={`w-4 h-4 ${color}`} />}
+            <span>{name}</span>
+          </a>
+        </p>
+      )}
 
+      {/* Chords */}
       {hasChords && (
         <div className="flex items-center justify-center gap-2 mt-3">
           <Switch checked={showChords} onCheckedChange={setShowChords} />
@@ -67,10 +104,12 @@ export default function SuggestionPage() {
         </div>
       )}
 
+      {/* Lyrics */}
       <pre className="mt-8 flex justify-center text-center whitespace-pre-wrap">
         <Lyrics chorus={suggestion.chorus} verses={suggestion.verses} showChords={showChords} />
       </pre>
 
+      {/* Author */}
       {suggestion.author && <p className="opacity-60 mt-1">Skrevet av: {suggestion.author}</p>}
 
       {/* Actions */}

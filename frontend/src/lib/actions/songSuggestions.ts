@@ -10,8 +10,10 @@ type SongInput = {
   author?: string | null;
   chorus?: string | null;
   verses: string[];
+  spotify_youtube?: string;
 };
 
+// Update suggestion
 export async function updateSuggestion(id: string, data: SongInput) {
   await requireAdmin();
 
@@ -25,6 +27,7 @@ export async function updateSuggestion(id: string, data: SongInput) {
       author: data.author?.trim() || null,
       chorus: data.chorus?.trim() || null,
       verses: data.verses,
+      spotify_youtube: data.spotify_youtube,
     })
     .eq('id', id);
 
@@ -40,6 +43,7 @@ export async function updateSuggestion(id: string, data: SongInput) {
   return { success: true };
 }
 
+// Delete suggestion
 export async function deleteSuggestion(id: string) {
   await requireAdmin();
 
@@ -81,6 +85,7 @@ export async function approveSuggestion(id: string) {
     author: suggestion.author,
     chorus: suggestion.chorus,
     verses: suggestion.verses,
+    spotify_youtube: suggestion.spotify_youtube,
   });
 
   if (insertErr) {
