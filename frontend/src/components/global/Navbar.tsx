@@ -17,15 +17,16 @@ import SongOrPlaylistBox from '../SongOrPlaylistBox';
 type NavItem = {
   id: string;
   href: string;
+  label: string;
   Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 };
 
 const navItems: NavItem[] = [
-  { id: 'home', href: '/', Icon: HomeIcon },
-  { id: 'playlists', href: '/playlists', Icon: MusicalNoteIcon },
-  { id: 'add', href: '/add', Icon: PlusIcon },
-  { id: 'favorites', href: '/favorites', Icon: StarIcon },
-  { id: 'settings', href: '/settings', Icon: Cog6ToothIcon },
+  { id: 'home', href: '/', label: 'Hjem', Icon: HomeIcon },
+  { id: 'playlists', href: '/playlists', label: 'Spillelister', Icon: MusicalNoteIcon },
+  { id: 'add', href: '/add', label: 'Opprett', Icon: PlusIcon },
+  { id: 'favorites', href: '/favorites', label: 'Favoritter', Icon: StarIcon },
+  { id: 'settings', href: '/settings', label: 'Innstillinger', Icon: Cog6ToothIcon },
 ];
 
 // Navigation component
@@ -36,9 +37,13 @@ export default function Navbar() {
   const [showSongOrPlaylistBox, setShowSongOrPlaylistBox] = useState(false);
   const songChoice = isAdmin ? 'Publiser sang' : 'Send inn sangforslag';
 
-  const handleAddClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setShowSongOrPlaylistBox((prev) => !prev);
+  const handleNavClick = (e: React.MouseEvent, isAdd: boolean) => {
+    if (isAdd) {
+      e.preventDefault();
+      setShowSongOrPlaylistBox((prev) => !prev);
+    } else {
+      setShowSongOrPlaylistBox(false);
+    }
   };
 
   return (
@@ -54,7 +59,7 @@ export default function Navbar() {
         aria-label="Bottom navigation"
       >
         <div className="mx-auto grid max-w-md grid-cols-5">
-          {navItems.map(({ id, href, Icon }) => {
+          {navItems.map(({ id, href, label, Icon }) => {
             const isAdd = id === 'add';
             const isActive = isAdd
               ? showSongOrPlaylistBox
@@ -67,8 +72,8 @@ export default function Navbar() {
               <Link
                 key={id}
                 href={href}
-                onClick={isAdd ? handleAddClick : undefined}
-                className="relative flex items-center justify-center py-5 transition-opacity duration-200"
+                onClick={(e) => handleNavClick(e, isAdd)}
+                className="relative flex flex-col items-center justify-center py-2 transition-opacity duration-200"
                 aria-current={isActive ? 'page' : undefined}
               >
                 <Icon
@@ -76,6 +81,15 @@ export default function Navbar() {
                     isActive ? 'opacity-100' : 'opacity-70'
                   } hover:opacity-100`}
                 />
+
+                <span
+                  className={`text-[10px] mt-1 transition-all ${
+                    isActive ? 'opacity-100' : 'opacity-70'
+                  }`}
+                >
+                  {label}
+                </span>
+
                 {/* Black text at full opacity if link is active */}
                 {isActive && (
                   <span className="absolute bottom-2 h-0.5 w-6 rounded-full bg-foreground" />
