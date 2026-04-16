@@ -150,6 +150,7 @@ export default function UserRoleManager() {
                             <Button
                               onClick={() => updateRole(user.user_id, 'admin')}
                               disabled={updatingUserId === user.user_id}
+                              className="cursor-pointer"
                             >
                               Gjør admin
                             </Button>
@@ -160,6 +161,7 @@ export default function UserRoleManager() {
                               variant="outline"
                               onClick={() => updateRole(user.user_id, 'regular')}
                               disabled={updatingUserId === user.user_id}
+                              className="cursor-pointer"
                             >
                               Fjern admin
                             </Button>
