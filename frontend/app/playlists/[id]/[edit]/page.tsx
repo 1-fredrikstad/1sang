@@ -118,7 +118,7 @@ export default function EditPlaylistPage() {
             toast.error('Du må oppgi passord først', {
               id: 'playlist-auth-required',
             });
-            router.push('/');
+            router.push('/playlists');
             return;
           }
 
@@ -141,7 +141,7 @@ export default function EditPlaylistPage() {
             toast.error('Du må oppgi gyldig passord først', {
               id: 'playlist-auth-invalid',
             });
-            router.push('/');
+            router.push('/playlists');
             return;
           }
         }
@@ -287,6 +287,7 @@ export default function EditPlaylistPage() {
 
         sessionStorage.setItem(`playlist-password-${newPlaylistId}`, passwordToUse);
         toast.success('Spilleliste gjort offentlig');
+        router.push('/playlists');
         return;
       }
 
@@ -296,7 +297,7 @@ export default function EditPlaylistPage() {
 
         if (!playlist) {
           toast.error('Fant ikke spilleliste');
-          router.push('/');
+          router.push('/playlists');
           return;
         }
 
@@ -315,6 +316,7 @@ export default function EditPlaylistPage() {
         await replaceLocalPlaylistItems(id, data.songsInPlaylist);
 
         toast.success('Spilleliste oppdatert');
+        router.push('/playlists');
         return;
       }
 
@@ -364,6 +366,7 @@ export default function EditPlaylistPage() {
 
         sessionStorage.removeItem(`playlist-password-${id}`);
         toast.success('Spilleliste gjort privat og lagret lokalt');
+        router.push('/playlists');
         return;
       }
 
@@ -436,7 +439,7 @@ export default function EditPlaylistPage() {
         if (errorText.includes('Invalid password')) {
           sessionStorage.removeItem(`playlist-password-${id}`);
           toast.error('Feil passord');
-          router.push('/');
+          router.push('/playlists');
           return;
         }
 
@@ -448,6 +451,7 @@ export default function EditPlaylistPage() {
       if (!isAdmin) {
         sessionStorage.removeItem(`playlist-password-${id}`);
       }
+      router.push('/playlists');
     } catch (err) {
       console.error('Update playlist error:', err);
       toast.error(err instanceof Error ? err.message : 'Kunne ikke oppdatere spilleliste');
