@@ -122,7 +122,16 @@ export default function UserRoleManager() {
                           <p className="text-sm text-muted-foreground truncate">
                             {user.email || 'Ingen e-post'}
                           </p>
-                          <p className="text-sm mt-1">Rolle: {user.role}</p>
+                          <p className="text-sm mt-1">
+                            Rolle:{' '}
+                            {user.role === 'regular'
+                              ? 'Vanlig bruker'
+                              : user.role === 'admin'
+                                ? 'Admin'
+                                : user.role === 'superuser'
+                                  ? 'Superbruker'
+                                  : user.role}
+                          </p>
                           {user.created_at && (
                             <p className="text-xs text-muted-foreground mt-1">
                               Opprettet:{' '}
