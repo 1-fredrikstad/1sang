@@ -41,11 +41,6 @@ jobs:
      working-directory: frontend
      run: pnpm run format:check
 
-   # Clean up cache
-   - name: Clean Vite cache
-     working-directory: frontend
-     run: rm -rf node_modules/.vite
-
    # Test all packages that have test scripts
    - name: Test
      run: pnpm -r test
