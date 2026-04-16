@@ -11,7 +11,7 @@ describe('GET /api/users/me', () => {
     vi.clearAllMocks();
   });
 
-  test('returns that admin is false if no token', async () => {
+  test('returns empty auth state if no token', async () => {
     const req = new Request('http://localhost/api/users/me');
 
     const res = await GET(req);
@@ -20,15 +20,19 @@ describe('GET /api/users/me', () => {
     expect(res.status).toBe(200);
     expect(body).toEqual({
       ok: true,
+      userId: null,
+      role: null,
       isAdmin: false,
+      isSuperuser: false,
     });
   });
 
   test('returns admin status when token is provided', async () => {
     vi.mocked(checkAdminAccess).mockResolvedValue({
-      isAdmin: true,
       userId: 'user-123',
       role: 'admin',
+      isAdmin: true,
+      isSuperuser: false,
     });
 
     const req = new Request('http://localhost/api/users/me', {
@@ -44,7 +48,10 @@ describe('GET /api/users/me', () => {
     expect(res.status).toBe(200);
     expect(body).toEqual({
       ok: true,
+      userId: 'user-123',
+      role: 'admin',
       isAdmin: true,
+      isSuperuser: false,
     });
   });
 
@@ -65,11 +72,12 @@ describe('GET /api/users/me', () => {
     expect(body.error).toBe('failed');
   });
 
-  test('returns isAdmin false for regular user', async () => {
+  test('returns regular user status', async () => {
     vi.mocked(checkAdminAccess).mockResolvedValue({
-      isAdmin: false,
       userId: 'user-123',
       role: 'regular',
+      isAdmin: false,
+      isSuperuser: false,
     });
 
     const req = new Request('http://localhost/api/users/me', {
@@ -85,15 +93,19 @@ describe('GET /api/users/me', () => {
     expect(res.status).toBe(200);
     expect(body).toEqual({
       ok: true,
+      userId: 'user-123',
+      role: 'regular',
       isAdmin: false,
+      isSuperuser: false,
     });
   });
 
-  test('returns isAdmin true for admin user', async () => {
+  test('returns admin user status', async () => {
     vi.mocked(checkAdminAccess).mockResolvedValue({
-      isAdmin: true,
       userId: 'user-123',
       role: 'admin',
+      isAdmin: true,
+      isSuperuser: false,
     });
 
     const req = new Request('http://localhost/api/users/me', {
@@ -109,15 +121,19 @@ describe('GET /api/users/me', () => {
     expect(res.status).toBe(200);
     expect(body).toEqual({
       ok: true,
+      userId: 'user-123',
+      role: 'admin',
       isAdmin: true,
+      isSuperuser: false,
     });
   });
 
-  test('returns isAdmin true for superuser', async () => {
+  test('returns superuser status', async () => {
     vi.mocked(checkAdminAccess).mockResolvedValue({
-      isAdmin: true,
       userId: 'user-123',
       role: 'superuser',
+      isAdmin: true,
+      isSuperuser: true,
     });
 
     const req = new Request('http://localhost/api/users/me', {
@@ -133,7 +149,10 @@ describe('GET /api/users/me', () => {
     expect(res.status).toBe(200);
     expect(body).toEqual({
       ok: true,
+      userId: 'user-123',
+      role: 'superuser',
       isAdmin: true,
+      isSuperuser: true,
     });
   });
 });

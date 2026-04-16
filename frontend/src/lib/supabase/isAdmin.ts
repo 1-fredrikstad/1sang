@@ -4,6 +4,7 @@ type CheckAdminAccessResult = {
   userId: string | null;
   role: string | null;
   isAdmin: boolean;
+  isSuperuser: boolean;
 };
 
 export async function checkAdminAccess(token: string): Promise<CheckAdminAccessResult> {
@@ -30,6 +31,7 @@ export async function checkAdminAccess(token: string): Promise<CheckAdminAccessR
       userId: null,
       role: null,
       isAdmin: false,
+      isSuperuser: false,
     };
   }
 
@@ -59,5 +61,6 @@ export async function checkAdminAccess(token: string): Promise<CheckAdminAccessR
     userId,
     role,
     isAdmin: role === 'admin' || role === 'superuser',
+    isSuperuser: role === 'superuser',
   };
 }
