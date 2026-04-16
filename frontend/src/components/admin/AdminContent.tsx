@@ -8,6 +8,7 @@ import UserRoleManager from './UserRoleManager';
 import ExportLatexModal from '../latex/ExportLatexModal';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { generateLatex } from '../latex/GenerateLatex';
 
 export default function AdminContent() {
   const { data: suggestions, isLoading: suggestionsLoading } = useSongSuggestions();
@@ -54,7 +55,12 @@ export default function AdminContent() {
         >
           Eksporter
         </Button>
-        <ExportLatexModal open={open} onOpenChange={setOpen} songs={songs || []} />
+        <ExportLatexModal
+          open={open}
+          onOpenChange={setOpen}
+          songs={songs || []}
+          generateLatex={generateLatex}
+        />
       </section>
 
       <article className="allow-animation mt-5">

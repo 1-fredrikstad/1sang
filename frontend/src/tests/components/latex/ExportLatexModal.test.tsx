@@ -10,7 +10,7 @@ const { mockGenerateLatex, mockUseSongPicker } = vi.hoisted(() => ({
 }));
 
 vi.mock('@/src/components/latex/GenerateLatex', () => ({
-  GenerateLatex: mockGenerateLatex,
+  generateLatex: mockGenerateLatex,
 }));
 
 vi.mock('@/src/hooks/useSongPicker', () => ({
@@ -44,13 +44,27 @@ describe('ExportLatexModal', () => {
   });
 
   it('renders when open is true', () => {
-    render(<ExportLatexModal open={true} onOpenChange={vi.fn()} songs={mockSongs} />);
+    render(
+      <ExportLatexModal
+        open={true}
+        onOpenChange={vi.fn()}
+        songs={mockSongs}
+        generateLatex={mockGenerateLatex}
+      />
+    );
 
     expect(screen.getByText(/eksporter til latex/i)).toBeInTheDocument();
   });
 
   it('does not render when closed', () => {
-    render(<ExportLatexModal open={false} onOpenChange={vi.fn()} songs={mockSongs} />);
+    render(
+      <ExportLatexModal
+        open={false}
+        onOpenChange={vi.fn()}
+        songs={mockSongs}
+        generateLatex={mockGenerateLatex}
+      />
+    );
 
     expect(screen.queryByText(/eksporter til latex/i)).not.toBeInTheDocument();
   });
@@ -58,7 +72,14 @@ describe('ExportLatexModal', () => {
   it('calls GenerateLatex when clicking export', async () => {
     const user = userEvent.setup();
 
-    render(<ExportLatexModal open={true} onOpenChange={vi.fn()} songs={mockSongs} />);
+    render(
+      <ExportLatexModal
+        open={true}
+        onOpenChange={vi.fn()}
+        songs={mockSongs}
+        generateLatex={mockGenerateLatex}
+      />
+    );
 
     await user.click(screen.getByRole('button', { name: /eksporter/i }));
 
@@ -79,7 +100,14 @@ describe('ExportLatexModal', () => {
       selectedCount: 0,
     });
 
-    render(<ExportLatexModal open={true} onOpenChange={vi.fn()} songs={mockSongs} />);
+    render(
+      <ExportLatexModal
+        open={true}
+        onOpenChange={vi.fn()}
+        songs={mockSongs}
+        generateLatex={mockGenerateLatex}
+      />
+    );
 
     expect(screen.getByRole('button', { name: /eksporter/i })).toBeDisabled();
   });

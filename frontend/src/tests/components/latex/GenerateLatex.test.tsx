@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { GenerateLatex } from '@/src/components/latex/GenerateLatex';
+import { generateLatex } from '@/src/components/latex/GenerateLatex';
 
 describe('GenerateLatex', () => {
   const mockSongs = [
@@ -24,7 +24,7 @@ describe('GenerateLatex', () => {
 
     vi.spyOn(document, 'createElement').mockReturnValue(anchor);
 
-    GenerateLatex(mockSongs);
+    generateLatex(mockSongs);
 
     expect(global.URL.createObjectURL).toHaveBeenCalled();
     expect(clickSpy).toHaveBeenCalled();
@@ -34,7 +34,7 @@ describe('GenerateLatex', () => {
     const anchor = document.createElement('a');
     vi.spyOn(document, 'createElement').mockReturnValue(anchor);
 
-    GenerateLatex(mockSongs, 10);
+    generateLatex(mockSongs, 10);
 
     expect(anchor.download).toBe('sanger_1.tex');
   });
@@ -43,7 +43,7 @@ describe('GenerateLatex', () => {
     const anchor = document.createElement('a');
     vi.spyOn(document, 'createElement').mockReturnValue(anchor);
 
-    GenerateLatex(mockSongs, 1);
+    generateLatex(mockSongs, 1);
 
     expect(anchor.download).toBe('sanger_alle.tex');
   });

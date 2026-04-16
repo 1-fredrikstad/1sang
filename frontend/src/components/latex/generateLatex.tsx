@@ -151,7 +151,7 @@ function songToLatex(song: Song): string {
 }
 
 // Main export function: generate a full latex document and triggers download
-export function GenerateLatex(songs: Song[], totalAvailableSongs?: number) {
+export function generateLatex(songs: Song[], totalAvailableSongs?: number) {
   const latex = [
     '\\documentclass{article}',
     '\\usepackage{leadsheets}',
