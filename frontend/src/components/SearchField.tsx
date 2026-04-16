@@ -10,9 +10,9 @@ export function SearchField({ value, onChange }: SearchFieldProps) {
     <div className="mb-6">
       <div
         className="
-            flex items-center rounded-xl 
+            flex items-center rounded-lg 
             border border-neutral-300 dark:border-neutral-700
-            bg-white dark:bg-neutral-900
+            bg-transparent dark:bg-input/30
             px-3 py-2 shadow-sm
             focus-within:border-neutral-400 dark:focus-within:border-neutral-500
             hover:border-neutral-400 dark:hover:border-neutral-500
@@ -39,7 +39,7 @@ export function SearchField({ value, onChange }: SearchFieldProps) {
           onChange={(e) => onChange(e.target.value)}
           placeholder="Søk etter sanger..."
           className="
-                w-full bg-transparent text-sm outline-none
+                w-full bg-transparent text-base outline-none
                 text-neutral-900 dark:text-neutral-100
                 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
         />

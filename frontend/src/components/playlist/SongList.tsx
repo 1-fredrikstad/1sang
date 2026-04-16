@@ -3,6 +3,7 @@ import { SongBox } from '../songs/SongBox';
 import { SongListProps } from '@/src/types/songList';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import { useMemo } from 'react';
 
 export type ExtendedSongListProps = SongListProps & {
   onToggleSong: (song: Song) => void;
@@ -16,11 +17,18 @@ export default function SongList({
   onToggleSong,
   isAdded,
 }: ExtendedSongListProps) {
+  // Sort using Norwegian locale (handles æ, ø, å correctly)
+  const sortedSongs = useMemo(() => {
+    return [...(songs ?? [])].sort((a, b) =>
+      (a.title ?? '').trim().localeCompare((b.title ?? '').trim(), 'no', { sensitivity: 'base' })
+    );
+  }, [songs]);
+
   if (error) return <div>Error: {error.message}</div>;
   if (!songs) return <div>Laster data...</div>;
 
   const addedSongs = songs.filter((song) => isAdded(song.id));
-  const availableSongs = songs.filter((song) => !isAdded(song.id));
+  const availableSongs = sortedSongs.filter((song) => !isAdded(song.id));
 
   // Function to show a list of songs
   const renderList = (songs: Song[]) =>

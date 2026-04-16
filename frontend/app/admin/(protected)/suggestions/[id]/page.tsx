@@ -10,10 +10,13 @@ import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import { Spinner } from '@/components/ui/spinner';
 import { SuggestionActions } from '@/src/components/suggestions/SuggestionActions';
 import Lyrics from '@/src/components/songs/Lyrics';
+import { Switch } from '@/components/ui/switch';
+import { useState } from 'react';
 
 export default function SuggestionPage() {
   const { id } = useParams<{ id: string }>();
   const mounted = useMounted();
+  const [showChords, setShowChords] = useState(false);
 
   const dexieSuggestion = useLiveQuery(() => {
     if (typeof window === 'undefined' || !mounted || !id) {
@@ -31,6 +34,9 @@ export default function SuggestionPage() {
   if (dexieSuggestion === null || !suggestion) {
     return <Spinner message="Oppdaterer data" />;
   }
+
+  const hasChords =
+    suggestion.verses?.some((v) => v.includes('[')) || suggestion.chorus?.includes('[');
 
   return (
     <main className="relative w-full text-center px-4">
@@ -54,8 +60,15 @@ export default function SuggestionPage() {
 
       {suggestion.melody && <p className="opacity-60 mt-1">Melodi: {suggestion.melody}</p>}
 
+      {hasChords && (
+        <div className="flex items-center justify-center gap-2 mt-3">
+          <Switch checked={showChords} onCheckedChange={setShowChords} />
+          <span className="text-sm opacity-60">Vis akkorder</span>
+        </div>
+      )}
+
       <pre className="mt-8 flex justify-center text-center whitespace-pre-wrap">
-        <Lyrics chorus={suggestion.chorus} verses={suggestion.verses} />
+        <Lyrics chorus={suggestion.chorus} verses={suggestion.verses} showChords={showChords} />
       </pre>
 
       {suggestion.author && <p className="opacity-60 mt-1">Skrevet av: {suggestion.author}</p>}
