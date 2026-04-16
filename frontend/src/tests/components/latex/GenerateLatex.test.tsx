@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { generateLatex } from '@/src/components/latex/GenerateLatex';
+import { generateLatex } from '../../../components/latex/GenerateLatex';
 
 describe('GenerateLatex', () => {
   const mockSongs = [
