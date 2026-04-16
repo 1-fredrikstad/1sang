@@ -14,8 +14,6 @@ describe('GenerateLatex', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-
-    // Mock URL for download
     global.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
     global.URL.revokeObjectURL = vi.fn();
   });
@@ -32,9 +30,8 @@ describe('GenerateLatex', () => {
     expect(clickSpy).toHaveBeenCalled();
   });
 
-  it('generates filename based on number of songs', () => {
+  it('uses correct filename when not all songs', () => {
     const anchor = document.createElement('a');
-
     vi.spyOn(document, 'createElement').mockReturnValue(anchor);
 
     GenerateLatex(mockSongs, 10);
@@ -44,7 +41,6 @@ describe('GenerateLatex', () => {
 
   it('uses "sanger_alle" when all songs are selected', () => {
     const anchor = document.createElement('a');
-
     vi.spyOn(document, 'createElement').mockReturnValue(anchor);
 
     GenerateLatex(mockSongs, 1);

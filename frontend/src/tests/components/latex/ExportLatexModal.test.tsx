@@ -9,8 +9,8 @@ const { mockGenerateLatex, mockUseSongPicker } = vi.hoisted(() => ({
   mockUseSongPicker: vi.fn(),
 }));
 
-vi.mock('@/src/components/latex/generateLatex', () => ({
-  generateLatex: mockGenerateLatex,
+vi.mock('@/src/components/latex/GenerateLatex', () => ({
+  GenerateLatex: mockGenerateLatex,
 }));
 
 vi.mock('@/src/hooks/useSongPicker', () => ({

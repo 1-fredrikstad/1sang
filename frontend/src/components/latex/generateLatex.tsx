@@ -2,135 +2,196 @@
 
 import { Song } from '../../lib/db';
 
-// AI has helped me write escapeLatex and formatLine as I was unsure about regex
+// Songs that should end with a verse instead of a final chorus
+// (based on customers earlier songs)
+const SPECIAL_LAST_VERSE_SONGS = new Set([
+  'Nelaug, 1990',
+  'Helt vilt, 2017 landsleir Bodø',
+  'Dotømmervise',
+  'Adieu',
+  'Country Roads',
+]);
 
+const CHORD_REGEX = /\[([^\]]+)\]/g;
+const STACKED_CHORD_SEPARATOR = '/_';
+
+// Escapes special LaTeX characters in regular song text
+function escapeLatexText(text: string): string {
+  if (!text) return '';
+
+  return text
+    .replace(/\\/g, '\\textbackslash{}')
+    .replace(/&/g, '\\&')
+    .replace(/%/g, '\\%')
+    .replace(/\$/g, '\\$')
+    .replace(/#/g, '\\#')
+    .replace(/_/g, '\\_')
+    .replace(/{/g, '\\{')
+    .replace(/}/g, '\\}')
+    .replace(/~/g, '\\textasciitilde{}')
+    .replace(/\^/g, '\\textasciicircum{}');
+}
+
+// Escapes special LaTeX characters inside chords
+function escapeLatexChord(chord: string): string {
+  if (!chord) return '';
+
+  return chord
+    .trim()
+    .replace(/\\/g, '\\textbackslash{}')
+    .replace(/&/g, '\\&')
+    .replace(/%/g, '\\%')
+    .replace(/\$/g, '\\$')
+    .replace(/#/g, '\\#')
+    .replace(/{/g, '\\{')
+    .replace(/}/g, '\\}');
+}
+
+// Formats chords. If multiple: ^{Bm/_D/_G7}
+function formatChordGroup(chords: string[]): string {
+  const cleaned = chords.map(escapeLatexChord).filter(Boolean);
+  if (cleaned.length === 0) return '';
+  if (cleaned.length === 1) return `^{${cleaned[0]}}`;
+  return `^{${cleaned.join(STACKED_CHORD_SEPARATOR)}}`;
+}
+
+// Converts line to chord latex
+function convertChordLine(line: string): string {
+  if (!line) return '';
+
+  let result = '';
+  let pendingChords: string[] = [];
+  let lastIndex = 0;
+
+  for (const match of line.matchAll(CHORD_REGEX)) {
+    const matchIndex = match.index!;
+    const textBetween = line.slice(lastIndex, matchIndex);
+
+    if (textBetween && textBetween.trim() !== '') {
+      result += `${formatChordGroup(pendingChords)}${escapeLatexText(textBetween)}`;
+      pendingChords = [];
+    } else if (textBetween) {
+      result += escapeLatexText(textBetween);
+    }
+
+    pendingChords.push(match[1]);
+    lastIndex = matchIndex + match[0].length;
+  }
+
+  const tail = line.slice(lastIndex);
+  result += `${formatChordGroup(pendingChords)}${escapeLatexText(tail)}`;
+
+  return result;
+}
+
+// Formats a verse or chorus to latex
+function formatSection(section: string | null | undefined): string {
+  if (!section) return '';
+
+  const normalized = section.replace(/\r\n/g, '\n').trimEnd();
+  const blocks = normalized.split(/\n\s*\n/);
+
+  return blocks
+    .map((block) => {
+      const lines = block.split('\n');
+      return lines.map((line) => convertChordLine(line.trimEnd())).join('\\\\\n');
+    })
+    .join('\\\\[0.7em]\n'); // fast ekstra spacing mellom avsnitt
+}
+
+// Convers a song to a latex song
+function songToLatex(song: Song): string {
+  const verses = song.verses ?? [];
+  const isSpecialSong = SPECIAL_LAST_VERSE_SONGS.has(song.title || '');
+  const title = escapeLatexText((song.title || '').toLocaleUpperCase('nb-NO'));
+  const melody = song.melody ? escapeLatexText(song.melody) : '';
+  const chorus = formatSection(song.chorus);
+  const credit = song.author || ''; // behold din endring
+
+  const parts: string[] = [];
+
+  parts.push(`\\begin{song}{title={${title}}}`);
+  parts.push('');
+
+  if (melody) {
+    parts.push(`{\\itshape Mel: ${melody}}`);
+    parts.push('\\vspace{0.5em}');
+    parts.push('');
+  }
+
+  verses.forEach((verse, index) => {
+    parts.push('\\begin{verse}');
+    parts.push(formatSection(verse));
+    parts.push('\\end{verse}');
+    parts.push('');
+
+    if (chorus && index < verses.length - 1) {
+      parts.push('\\begin{chorus}');
+      parts.push(chorus);
+      parts.push('\\end{chorus}');
+      parts.push('');
+    }
+  });
+
+  if (!isSpecialSong && chorus) {
+    parts.push('\\begin{chorus}');
+    parts.push(chorus);
+    parts.push('\\end{chorus}');
+    parts.push('');
+  }
+
+  if (credit) {
+    parts.push(`\\songcredit{${escapeLatexText(credit)}}`);
+    parts.push('');
+  }
+
+  parts.push('\\end{song}');
+
+  return parts.join('\n');
+}
+
+// Main export function: generate a full latex document and triggers download
 export function GenerateLatex(songs: Song[], totalAvailableSongs?: number) {
-  // List of songs that should have last verse and not last chorus (based on the json-file sent by the customer)
-  const specialLastVerseSongs = [
-    'Nelaug, 1990',
-    'Helt vilt, 2017 landsleir Bodø',
-    'Dotømmervise',
-    'Adieu',
-    'Country Roads',
-  ];
-
-  // Replace latex's special chars found in data
-  function escapeLatex(text: string): string {
-    if (!text) return '';
-
-    return text
-      .replace(/\\/g, '\\textbackslash{}')
-      .replace(/&/g, '\\&')
-      .replace(/%/g, '\\%')
-      .replace(/\$/g, '\\$')
-      .replace(/#/g, '\\#')
-      .replace(/_/g, '\\_')
-      .replace(/{/g, '\\{')
-      .replace(/}/g, '\\}')
-      .replace(/~/g, '\\textasciitilde{}')
-      .replace(/\^/g, '\\textasciicircum{}');
-  }
-
-  // Escape all special chars and convert chords from [Am] to /[Am]
-  function formatLine(line: string | null): string {
-    if (!line) return '';
-
-    let processed = escapeLatex(line);
-    processed = processed.replace(/\[([^\]]+)\]/g, '^{$1}');
-    processed = processed.replace(/\n/g, '\\\\');
-
-    return processed;
-  }
-
-  function songToLatex(song: Song): string {
-    const isSpecialSong = specialLastVerseSongs.includes(song.title || '');
-    const hasMultipleVerses = song.verses.length > 1;
-
-    const title = escapeLatex((song.title || '').toLocaleUpperCase());
-
-    let latex = `
-      \\begin{song}{title={${title}}}
-      `;
-
-    if (song.melody) {
-      latex += `
-      \\vspace{-0.6em}
-      {\\itshape Melodi: ${escapeLatex(song.melody)}}\\\\[-0.4em]
-      `;
-    }
-
-    song.verses.forEach((verse, index) => {
-      latex += `
-        \\begin{verse}
-        \\verseline{${hasMultipleVerses ? `${index + 1}. ` : ''}}{${formatLine(verse)}}
-        \\end{verse}
-        `;
-
-      // Chorus between verses
-      if (song.chorus && index < song.verses.length - 1) {
-        latex += `
-        \\begin{chorus}
-        ${formatLine(song.chorus)}
-        \\end{chorus}
-        `;
-      }
-    });
-
-    // Chorus at the end
-    if (!isSpecialSong && song.chorus) {
-      latex += `
-      \\begin{chorus}
-      ${formatLine(song.chorus)}
-      \\end{chorus}
-      `;
-    }
-
-    latex += `
-      \\end{song}
-      `;
-
-    return latex;
-  }
-
-  const latex = `\\documentclass{article}
-    \\usepackage[utf8]{inputenc}
-    \\usepackage[T1]{fontenc}
-    \\usepackage{leadsheets}
-
-    \\newlength{\\versenumberwidth}
-    \\setlength{\\versenumberwidth}{2em}
-
-    \\newcommand{\\verseline}[2]{%
-      \\noindent
-      \\makebox[0.7em][1]{#1}%
-      \\hspace{0.4em}%
-      \\parbox[t]{\\dimexpr\\linewidth-1.5em}{#2}%
-    }
-
-    % --- Innstillinger for leadsheets ---
-    \\setleadsheets{
-      chords/format = \\bfseries,
-      align-chords = l,
-      bar-shortcuts = false,
-      chorus/name = \\bfseries{Ref:},
-      verse/after-label = {},
-      chorus/after-label = {},
-    }
-
-    % --- Layout og innrykk ---
-    \\setlength{\\parindent}{0pt}
-    \\setlength{\\leftmargini}{0.4em}
-    \\setlength{\\leftmarginii}{0.4em}
-
-    \\begin{document}
-
-    ${songs.map((s) => songToLatex(s)).join('\n\n')}
-
-    \\end{document}
-    `;
+  const latex = [
+    '\\documentclass{article}',
+    '\\usepackage{leadsheets}',
+    '\\usepackage{fontspec}',
+    '',
+    '\\setmainfont{Times New Roman}',
+    '',
+    '% --- Innstillinger for leadsheets ---',
+    '\\setleadsheets{',
+    '  chords/format = \\bfseries\\fontsize{12}{12}\\selectfont,',
+    '  align-chords = c,',
+    '  smash-chords = true,',
+    '  smash-next-chord = true,',
+    '  text-format = {\\fontsize{14}{18}\\selectfont},',
+    '  bar-shortcuts = false,',
+    '  chorus/name = \\bfseries{Ref:},',
+    '  verse/after-label = {},',
+    '  chorus/after-label = {},',
+    '}',
+    '',
+    '% --- Layout ---',
+    '\\setlength{\\parindent}{0pt}',
+    '\\setlength{\\leftmargini}{0.4em}',
+    '\\setlength{\\leftmarginii}{0.4em}',
+    '',
+    '% --- Kommando for låtskriver ---',
+    '\\newcommand{\\songcredit}[1]{%',
+    '  \\vspace{1.8em}%',
+    '  {\\raggedleft \\itshape #1 \\par}%',
+    '  \\vspace{0.5em}%',
+    '}',
+    '',
+    '\\begin{document}',
+    '',
+    songs.map(songToLatex).join('\n\n'),
+    '',
+    '\\end{document}',
+  ].join('\n');
 
   let filename = 'sanger';
-
   if (totalAvailableSongs && songs.length === totalAvailableSongs) {
     filename = 'sanger_alle';
   } else {
@@ -139,7 +200,6 @@ export function GenerateLatex(songs: Song[], totalAvailableSongs?: number) {
 
   const blob = new Blob([latex], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
-
   const a = document.createElement('a');
   a.href = url;
   a.download = `${filename}.tex`;
