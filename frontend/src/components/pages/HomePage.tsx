@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Song } from '@/src/lib/db';
 import { db } from '@/src/lib/db';
 import { SongBox } from '../songs/SongBox';
@@ -18,11 +19,35 @@ type Tag = {
 };
 
 export function HomePage({ songs = [], isLoading, error }: SongListProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const searchQuery = searchParams.get('q')
+    ? decodeURIComponent(searchParams.get('q') as string)
+    : '';
+
   const debouncedQuery = useDebounce(searchQuery, 300);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [isOnline, setIsOnline] = useState(() => window.navigator.onLine);
 
+  // Remember search when navigating to another page
+  const handleSearchChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (value.trim()) {
+      // encode special characters (æ, ø, å)
+      params.set('q', encodeURIComponent(value));
+    } else {
+      params.delete('q');
+    }
+
+    const queryString = params.toString();
+
+    router.replace(queryString ? `${pathname}?${queryString}` : pathname);
+  };
+
+  // Track online/offline state for UX feedback
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -36,10 +61,12 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
     };
   }, []);
 
+  // Text search (debounced), for both title and lyrics
   const searchedSongs = useMemo(() => {
     return searchSongs(songs, debouncedQuery);
   }, [songs, debouncedQuery]);
 
+  // Get songs matching selected tags from IndexedDB (Dexie)
   const matchingSongIds =
     useLiveQuery(async () => {
       if (selectedTags.length === 0) return [];
@@ -50,10 +77,21 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
       return [...new Set(relations.map((relation) => relation.song_id))];
     }, [selectedTags]) ?? [];
 
-  const displayedSongs =
+  // Combine text search + tag filtering
+  const filteredSongs =
     selectedTags.length === 0
       ? searchedSongs
       : searchedSongs.filter((song: Song) => matchingSongIds.includes(song.id));
+
+  // Sort songs
+  const sortedSongs = useMemo(() => {
+    return [...filteredSongs].sort(
+      // 'no' - gives correct norwegian sorting (æ, ø, å)
+      // sensitivity 'base' - lowercase and uppercase doesn't affect sorting
+      (a, b) =>
+        (a.title ?? '').trim().localeCompare((b.title ?? '').trim(), 'no', { sensitivity: 'base' })
+    );
+  }, [filteredSongs]);
 
   if (error) return <div>Error: {error.message}</div>;
 
@@ -63,6 +101,7 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
 
       {isLoading ? (
         <div className="flex flex-col gap-4">
+          {/* Only show sync message when online */}
           {isOnline && <p className="text-sm text-neutral-500">Synkroniserer med Supabase...</p>}
 
           {/* Skeletons */}
@@ -77,7 +116,7 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
         </div>
       ) : (
         <>
-          <SearchField value={searchQuery} onChange={setSearchQuery} />
+          <SearchField value={searchQuery} onChange={handleSearchChange} />
 
           <div className="mb-10 w-fit">
             <TagSelect
@@ -87,11 +126,12 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
             />
           </div>
 
+          {/* Show result count only when searching */}
           {searchQuery.trim() && (
-            <p className="mb-3 text-sm text-neutral-500">{displayedSongs.length} treff</p>
+            <p className="mb-3 text-sm text-neutral-500">{filteredSongs.length} treff</p>
           )}
 
-          {displayedSongs.length === 0 ? (
+          {sortedSongs.length === 0 ? (
             <p className="text-sm text-neutral-500">
               {searchQuery.trim() && selectedTags.length > 0
                 ? 'Ingen sanger matcher søk og valgte tags.'
@@ -103,7 +143,7 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
             </p>
           ) : (
             <ul className="flex flex-col gap-2">
-              {displayedSongs.map((song: Song) => (
+              {sortedSongs.map((song: Song) => (
                 <li key={song.id}>
                   <SongBox song={song} />
                 </li>

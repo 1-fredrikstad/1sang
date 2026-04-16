@@ -7,37 +7,58 @@ import { usePublicPlaylists } from '@/src/hooks/usePublicPlaylists';
 import { useLiveQuery } from 'dexie-react-hooks';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useMemo } from 'react';
 
 export default function PlaylistsPage() {
+  // Retrieve data (playlists) from Supabase
   const {
     data: publicPlaylists,
     isLoading: loadingPublic,
     error: publicError,
   } = usePublicPlaylists();
 
+  // Retrieve data (playlists) from IndexedDB
   const playlistsFromDexie = useLiveQuery(() => db.playlists.toArray(), []);
 
   const loadingPrivate = playlistsFromDexie === undefined;
   const isLoading = loadingPrivate || loadingPublic;
 
+  // Sort public playlists
+  const sortedPublicPlaylists = useMemo(() => {
+    return [...(publicPlaylists ?? [])].sort((a, b) =>
+      (a.title ?? '').trim().localeCompare((b.title ?? '').trim(), 'no', { sensitivity: 'variant' })
+    );
+  }, [publicPlaylists]);
+
+  // Filter out private playlists and sort
+  const sortedPrivatePlaylists = useMemo(() => {
+    return [...(playlistsFromDexie ?? [])]
+      .filter((playlist) => !playlist.is_public) // Filter out private lists
+      .sort((a, b) =>
+        (a.title ?? '')
+          .trim()
+          .localeCompare((b.title ?? '').trim(), 'no', { sensitivity: 'variant' })
+      );
+  }, [playlistsFromDexie]);
+
+  // If public playlists couldn't load
   if (publicError) {
     toast.error('Feil i å laste spillelister');
     return;
   }
 
-  const privatePlaylists = playlistsFromDexie?.filter((playlist) => !playlist.is_public) ?? [];
-
+  // Tab between public and private playlists
   const tabs = [
     {
       key: 'public',
       label: 'Offentlige',
-      data: publicPlaylists,
+      data: sortedPublicPlaylists,
       emptyText: 'Ingen offentlige spillelister ennå',
     },
     {
       key: 'private',
       label: 'Private',
-      data: privatePlaylists,
+      data: sortedPrivatePlaylists,
       emptyText: 'Du har ingen private spillelister ennå',
     },
   ];
@@ -62,6 +83,7 @@ export default function PlaylistsPage() {
             </div>
           </div>
         ) : (
+          // Public or private tab
           <Tabs defaultValue="public">
             <TabsList className="mt-3">
               {tabs.map((tab) => (
@@ -76,6 +98,7 @@ export default function PlaylistsPage() {
               ))}
             </TabsList>
 
+            {/*  Display all playlists from chosen visibility (public/private) */}
             {tabs.map((tab) => (
               <TabsContent value={tab.key} key={tab.key}>
                 {tab.data.length === 0 ? (

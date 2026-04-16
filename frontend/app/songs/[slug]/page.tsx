@@ -12,6 +12,7 @@ import Lyrics from '@/src/components/songs/Lyrics';
 import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
+import { StarIcon } from '@/src/components/songs/StarIcon';
 
 export default function SongPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -70,7 +71,8 @@ export default function SongPage() {
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3 relative">
           <BackButton href="/" />
-          <div className="absolute right-0">
+          <div className="absolute right-0 flex items-center gap-2">
+            <StarIcon songId={song.id} />
             {isAdmin && (
               <div>
                 <Link href={`/songs/${slug}/edit`}>
