@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import ChevronDownIcon from '@heroicons/react/24/solid/ChevronDownIcon';
+import { useCallback } from 'react';
 
 type AdminUser = {
   user_id: string;
@@ -34,7 +35,7 @@ export default function UserRoleManager() {
     };
   };
 
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     try {
       setLoading(true);
       const authHeaders = await getAuthHeaders();
@@ -56,7 +57,7 @@ export default function UserRoleManager() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const updateRole = async (targetUserId: string, role: 'regular' | 'admin') => {
     try {
@@ -93,7 +94,7 @@ export default function UserRoleManager() {
 
   useEffect(() => {
     loadUsers();
-  }, []);
+  }, [loadUsers]);
 
   return (
     <div className="w-full">
