@@ -121,13 +121,13 @@ export default function EditSongPage() {
         }}
         onSubmit={handleSubmit}
       />
-      <div className="flex justify-start m-2 mt-5">
+      <section className="mx-auto max-w-2xl mt-5">
         <DeleteSongButton
           songId={song.id}
           className="danger"
           onDeletingChange={setIsDeletingSong}
         />
-      </div>
+      </section>
     </main>
   );
 }
