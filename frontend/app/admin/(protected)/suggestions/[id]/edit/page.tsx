@@ -46,6 +46,7 @@ export default function EditSuggestionPage() {
           author: suggestion.author ?? '',
           chorus: suggestion.chorus ?? '',
           verses: suggestion.verses ?? '',
+          spotify_youtube: suggestion.spotify_youtube ?? '',
         }}
         onSubmit={async (data) => {
           const old = suggestion;
@@ -57,6 +58,7 @@ export default function EditSuggestionPage() {
               author: data.author || undefined,
               chorus: data.chorus || undefined,
               verses: data.verses,
+              spotify_youtube: suggestion.spotify_youtube || undefined,
             });
 
             if (typeof window !== 'undefined' && db && old) {

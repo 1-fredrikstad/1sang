@@ -121,17 +121,18 @@ export default function EditSongPage() {
           author: song.author ?? '',
           chorus: song.chorus ?? '',
           verses: song.verses,
+          spotify_youtube: song.spotify_youtube ?? '',
           tags: songTags ?? [],
         }}
         onSubmit={handleSubmit}
       />
-      <div className="flex justify-start m-2 mt-5">
+      <section className="mx-auto max-w-2xl mt-5">
         <DeleteSongButton
           songId={song.id}
           className="danger"
           onDeletingChange={setIsDeletingSong}
         />
-      </div>
+      </section>
     </main>
   );
 }
