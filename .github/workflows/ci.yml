@@ -1,51 +1,51 @@
 name: CI Pipeline
 
 on:
-  push:
-    branches: [main, dev]
-  pull_request:
-    branches: [main, dev]
+ push:
+  branches: [main, dev]
+ pull_request:
+  branches: [main, dev]
 
 jobs:
-  ci:
-    runs-on: ubuntu-latest
-    steps:
-      # Checkout repo
-      - name: Checkout repository
-        uses: actions/checkout@v4
+ ci:
+  runs-on: ubuntu-latest
+  steps:
+   # Checkout repo
+   - name: Checkout repository
+     uses: actions/checkout@v4
 
-      # Install pnpm
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.7.0
+   # Install pnpm
+   - name: Install pnpm
+     uses: pnpm/action-setup@v4
+     with:
+      version: 10.7.0
 
-      # Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "pnpm"
+   # Setup Node.js
+   - name: Setup Node.js
+     uses: actions/setup-node@v4
+     with:
+      node-version: 20
+      cache: "pnpm"
 
-      # Install project dependencies
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+   # Install project dependencies
+   - name: Install dependencies
+     run: pnpm install --frozen-lockfile
 
-      # Lint all packages that have lint scripts
-      - name: Lint
-        working-directory: frontend
-        run: pnpm run lint # continues even if some packages have no lint script
+   # Lint all packages that have lint scripts
+   - name: Lint
+     working-directory: frontend
+     run: pnpm run lint # continues even if some packages have no lint script
 
-      # Run Prettier check
-      - name: Prettier
-        working-directory: frontend
-        run: pnpm run format:check
+   # Run Prettier check
+   - name: Prettier
+     working-directory: frontend
+     run: pnpm run format:check
 
-      # Test all packages that have test scripts
-      - name: Test
-        run: pnpm -r test
+   # Test all packages that have test scripts
+   - name: Test
+     run: pnpm -r test
 
-      # Build frontend
-      - name: Build frontend
-        working-directory: frontend
-        run: pnpm build
+   # Build frontend
+   - name: Build frontend
+     working-directory: frontend
+     run: pnpm build
