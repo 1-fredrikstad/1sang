@@ -96,7 +96,7 @@ function formatSection(section: string | null | undefined): string {
       const lines = block.split('\n');
       return lines.map((line) => convertChordLine(line.trimEnd())).join('\\\\\n');
     })
-    .join('\\\\[0.7em]\n'); // fast ekstra spacing mellom avsnitt
+    .join('\\\\[0.7em]\n');
 }
 
 // Convers a song to a latex song
@@ -106,7 +106,7 @@ function songToLatex(song: Song): string {
   const title = escapeLatexText((song.title || '').toLocaleUpperCase('nb-NO'));
   const melody = song.melody ? escapeLatexText(song.melody) : '';
   const chorus = formatSection(song.chorus);
-  const credit = song.author || ''; // behold din endring
+  const credit = song.author || '';
 
   const parts: string[] = [];
 
@@ -142,9 +142,11 @@ function songToLatex(song: Song): string {
 
   if (credit) {
     parts.push(`\\songcredit{${escapeLatexText(credit)}}`);
-    parts.push('');
+  } else {
+    parts.push('\\vspace{2.3em}');
   }
 
+  parts.push('');
   parts.push('\\end{song}');
 
   return parts.join('\n');

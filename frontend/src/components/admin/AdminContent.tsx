@@ -46,7 +46,7 @@ export default function AdminContent() {
         <LogoutButton />
       </div>
 
-      <section className="flex flex-row justify-between">
+      <section className="flex flex-row justify-between items-center">
         <p>Trykk på knappen for å eksportere sanger til LaTeX</p>
         <Button
           variant="secondary"
