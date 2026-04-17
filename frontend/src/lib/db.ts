@@ -13,6 +13,7 @@ export interface Song {
   updated_at?: string;
   deleted_at?: string | null;
   spotify_youtube?: string;
+  has_chords: boolean;
 }
 
 export interface Playlist {
@@ -59,11 +60,12 @@ export interface SongSuggestion {
   chorus?: string;
   verses: string[];
   chords?: string;
-  spotify_youtube?: string;
   status?: string;
   submitted_at?: string;
   reviewed_by?: string;
   reviewed_at?: string;
+  spotify_youtube: string;
+  has_chords: boolean;
 }
 
 export interface AdminUser {

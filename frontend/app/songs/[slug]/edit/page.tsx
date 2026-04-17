@@ -17,11 +17,13 @@ export default function EditSongPage() {
   const { isAdmin } = useAuth();
   const [isDeletingSong, setIsDeletingSong] = useState(false);
 
+  // Load song from Dexie cache
   const song = useLiveQuery<Song | undefined>(
     () => (slug ? db.songs.where('slug').equals(slug).first() : undefined),
     [slug]
   );
 
+  // Resolve related tags for this song
   const songTags = useLiveQuery(async () => {
     if (!song?.id) return [];
 
@@ -35,15 +37,20 @@ export default function EditSongPage() {
     return resolvedTags;
   }, [song?.id]);
 
+  // Guard admin-only page
   if (!isAdmin) {
     return <p className="text-center mt-10">Ingen tilgang.</p>;
   }
 
+  // Hide page while delete flow runs
   if (isDeletingSong) return null;
+
+  // Wait until both song + tags are loaded
   if (!song) {
     return <p className="text-center mt-10">Fant ikke sang.</p>;
   }
 
+  // Wait until both song + tags are loaded
   if (!song || songTags === undefined) return <Spinner message="Laster inn redigeringsside" />;
 
   const handleSubmit = async (data: {
@@ -53,9 +60,11 @@ export default function EditSongPage() {
     chorus?: string;
     verses: string[];
     tags?: string[];
+    has_chords: boolean;
   }) => {
     const supabase = createClient();
 
+    // Get access token for protected API route
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -84,6 +93,7 @@ export default function EditSongPage() {
 
     const updatedSong = body?.data;
 
+    // Update tag relations locally
     await db.songs.update(song.id, {
       title: data.title,
       melody: data.melody || undefined,
@@ -92,6 +102,7 @@ export default function EditSongPage() {
       verses: data.verses,
     });
 
+    // Replace tag relations
     await db.song_tags.where('song_id').equals(song?.id).delete();
 
     if (data.tags && data.tags.length > 0) {
@@ -123,6 +134,7 @@ export default function EditSongPage() {
           verses: song.verses,
           spotify_youtube: song.spotify_youtube ?? '',
           tags: songTags ?? [],
+          has_chords: song.has_chords,
         }}
         onSubmit={handleSubmit}
       />

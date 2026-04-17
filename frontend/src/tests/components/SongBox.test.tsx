@@ -54,7 +54,8 @@ describe('SongBox', () => {
     id: 'abc-123',
     slug: 'test-song',
     title: 'Test Song',
-    lyrics: 'Some lyrics',
+    verses: ['Some lyrics'],
+    has_chords: false,
   };
 
   test('renders song title and link', () => {
