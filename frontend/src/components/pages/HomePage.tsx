@@ -23,29 +23,24 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const searchQuery = searchParams.get('q')
-    ? decodeURIComponent(searchParams.get('q') as string)
-    : '';
+  const [value, setValue] = useState(searchParams.get('q') ?? '');
+  const debouncedQuery = useDebounce(value, 300);
 
-  const debouncedQuery = useDebounce(searchQuery, 300);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [isOnline, setIsOnline] = useState(() => window.navigator.onLine);
 
-  // Remember search when navigating to another page
-  const handleSearchChange = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+  useEffect(() => {
+    const params = new URLSearchParams();
 
-    if (value.trim()) {
-      // encode special characters (æ, ø, å)
-      params.set('q', encodeURIComponent(value));
+    if (debouncedQuery.trim()) {
+      params.set('q', debouncedQuery.trim());
     } else {
       params.delete('q');
     }
 
-    const queryString = params.toString();
-
-    router.replace(queryString ? `${pathname}?${queryString}` : pathname);
-  };
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname);
+  }, [debouncedQuery, pathname, router]);
 
   // Track online/offline state for UX feedback
   useEffect(() => {
@@ -116,7 +111,7 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
         </div>
       ) : (
         <>
-          <SearchField value={searchQuery} onChange={handleSearchChange} />
+          <SearchField value={value} onChange={setValue} />
 
           <div className="mb-10 w-fit">
             <TagSelect
@@ -126,16 +121,15 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
             />
           </div>
 
-          {/* Show result count only when searching */}
-          {searchQuery.trim() && (
+          {value.trim() && (
             <p className="mb-3 text-sm text-neutral-500">{filteredSongs.length} treff</p>
           )}
 
           {sortedSongs.length === 0 ? (
             <p className="text-sm text-neutral-500">
-              {searchQuery.trim() && selectedTags.length > 0
+              {value.trim() && selectedTags.length > 0
                 ? 'Ingen sanger matcher søk og valgte tags.'
-                : searchQuery.trim()
+                : value.trim()
                   ? 'Ingen sanger matcher søket.'
                   : selectedTags.length > 0
                     ? 'Ingen sanger matcher valgte tags.'

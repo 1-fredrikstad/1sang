@@ -4,10 +4,11 @@ import { Spinner } from '@/components/ui/spinner';
 import { useSongSuggestions } from '@/src/hooks/useData';
 import { SuggestionsCollapsible } from '../suggestions/SuggestionsCollapsible';
 import { useAuth } from '@/src/context/AuthContext';
+import UserRoleManager from './UserRoleManager';
 
 export default function AdminContent() {
   const { data: suggestions, isLoading: suggestionsLoading } = useSongSuggestions();
-  const { user } = useAuth();
+  const { user, isSuperuser } = useAuth();
 
   if (suggestionsLoading) {
     return <Spinner message="Laster inn admin" />;
@@ -34,7 +35,9 @@ export default function AdminContent() {
         <SuggestionsCollapsible suggestions={suggestions || []} />
       </article>
 
-      <section className="flex flex-col items-center mt-5"></section>
+      <section className="flex flex-col items-center mt-5">
+        {isSuperuser && <UserRoleManager />}
+      </section>
     </main>
   );
 }
