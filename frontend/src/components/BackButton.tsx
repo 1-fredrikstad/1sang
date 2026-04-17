@@ -3,14 +3,12 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { ArrowLongLeftIcon } from '@heroicons/react/24/solid';
 
-export default function BackButton({ href }: { href?: string }) {
+export default function BackButton() {
   const router = useRouter();
   const pathname = usePathname();
 
   const handleBack = () => {
-    if (href) {
-      router.push(href);
-    } else if (pathname === '/admin') {
+    if (pathname === '/admin') {
       router.push('/');
     } else {
       router.back();

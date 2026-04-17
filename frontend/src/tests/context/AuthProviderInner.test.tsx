@@ -22,15 +22,13 @@ vi.mock('@/src/lib/supabase/client', () => ({
 }));
 
 function TestConsumer() {
-  const { user, isAdmin, isSuperuser, logout } = useAuth();
+  const { user, isAdmin, logout } = useAuth();
 
   return (
     <div>
       <div data-testid="name">{user?.name ?? 'null'}</div>
       <div data-testid="email">{user?.email ?? 'null'}</div>
-      <div data-testid="role">{user?.role ?? 'null'}</div>
       <div data-testid="isAdmin">{String(isAdmin)}</div>
-      <div data-testid="isSuperuser">{String(isSuperuser)}</div>
       <button onClick={() => void logout()}>Logout</button>
     </div>
   );
@@ -71,13 +69,11 @@ describe('AuthProviderInner', () => {
     await waitFor(() => {
       expect(screen.getByTestId('name').textContent).toBe('null');
       expect(screen.getByTestId('email').textContent).toBe('null');
-      expect(screen.getByTestId('role').textContent).toBe('null');
       expect(screen.getByTestId('isAdmin').textContent).toBe('false');
-      expect(screen.getByTestId('isSuperuser').textContent).toBe('false');
     });
   });
 
-  test('shows logged in user and superuser state', async () => {
+  test('shows logged in user and admin state', async () => {
     mockGetSession.mockResolvedValue({
       data: {
         session: {
@@ -93,11 +89,7 @@ describe('AuthProviderInner', () => {
     });
 
     vi.mocked(global.fetch).mockResolvedValue({
-      json: async () => ({
-        isAdmin: true,
-        isSuperuser: true,
-        role: 'superuser',
-      }),
+      json: async () => ({ isAdmin: true }),
     } as Response);
 
     renderProvider();
@@ -105,43 +97,7 @@ describe('AuthProviderInner', () => {
     await waitFor(() => {
       expect(screen.getByTestId('name').textContent).toBe('Jane Doe');
       expect(screen.getByTestId('email').textContent).toBe('user@example.com');
-      expect(screen.getByTestId('role').textContent).toBe('superuser');
       expect(screen.getByTestId('isAdmin').textContent).toBe('true');
-      expect(screen.getByTestId('isSuperuser').textContent).toBe('true');
-    });
-  });
-
-  test('shows logged in regular user state', async () => {
-    mockGetSession.mockResolvedValue({
-      data: {
-        session: {
-          access_token: 'token-123',
-          user: {
-            email: 'user@example.com',
-            user_metadata: {
-              full_name: 'Jane Doe',
-            },
-          },
-        },
-      },
-    });
-
-    vi.mocked(global.fetch).mockResolvedValue({
-      json: async () => ({
-        isAdmin: false,
-        isSuperuser: false,
-        role: 'regular',
-      }),
-    } as Response);
-
-    renderProvider();
-
-    await waitFor(() => {
-      expect(screen.getByTestId('name').textContent).toBe('Jane Doe');
-      expect(screen.getByTestId('email').textContent).toBe('user@example.com');
-      expect(screen.getByTestId('role').textContent).toBe('regular');
-      expect(screen.getByTestId('isAdmin').textContent).toBe('false');
-      expect(screen.getByTestId('isSuperuser').textContent).toBe('false');
     });
   });
 
@@ -165,18 +121,13 @@ describe('AuthProviderInner', () => {
     mockSignOut.mockResolvedValue(undefined);
 
     vi.mocked(global.fetch).mockResolvedValue({
-      json: async () => ({
-        isAdmin: true,
-        isSuperuser: true,
-        role: 'superuser',
-      }),
+      json: async () => ({ isAdmin: true }),
     } as Response);
 
     renderProvider();
 
     await waitFor(() => {
       expect(screen.getByTestId('name').textContent).toBe('Jane Doe');
-      expect(screen.getByTestId('role').textContent).toBe('superuser');
     });
 
     await user.click(screen.getByRole('button', { name: 'Logout' }));
@@ -185,9 +136,7 @@ describe('AuthProviderInner', () => {
       expect(mockSignOut).toHaveBeenCalled();
       expect(screen.getByTestId('name').textContent).toBe('null');
       expect(screen.getByTestId('email').textContent).toBe('null');
-      expect(screen.getByTestId('role').textContent).toBe('null');
       expect(screen.getByTestId('isAdmin').textContent).toBe('false');
-      expect(screen.getByTestId('isSuperuser').textContent).toBe('false');
     });
   });
 });

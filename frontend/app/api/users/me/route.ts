@@ -7,30 +7,12 @@ export async function GET(req: Request) {
     const token = authHeader?.replace(/^Bearer\s+/i, '');
 
     if (!token) {
-      return NextResponse.json(
-        {
-          ok: true,
-          userId: null,
-          role: null,
-          isAdmin: false,
-          isSuperuser: false,
-        },
-        { status: 200 }
-      );
+      return NextResponse.json({ ok: true, isAdmin: false }, { status: 200 });
     }
 
-    const { userId, role, isAdmin, isSuperuser } = await checkAdminAccess(token);
+    const { isAdmin } = await checkAdminAccess(token);
 
-    return NextResponse.json(
-      {
-        ok: true,
-        userId,
-        role,
-        isAdmin,
-        isSuperuser,
-      },
-      { status: 200 }
-    );
+    return NextResponse.json({ ok: true, isAdmin }, { status: 200 });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
 

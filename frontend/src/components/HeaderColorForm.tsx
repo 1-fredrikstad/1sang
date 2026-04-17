@@ -8,7 +8,6 @@ import { useMounted } from '../hooks/useMounted';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import ChevronDownIcon from '@heroicons/react/24/solid/ChevronDownIcon';
 import { useState } from 'react';
-import React from 'react';
 
 type FormValues = {
   headerColor: HeaderColor;
@@ -55,7 +54,7 @@ export default function HeaderColorForm() {
               const isSelected = selectedColor === value;
 
               return (
-                <React.Fragment key={`header-color-${value}`}>
+                <>
                   <label
                     key={`header-color-${value}`}
                     className="p-1 pl-0 cursor-pointer rounded-xs flex justify-start gap-2 transition-colors"
@@ -84,7 +83,7 @@ export default function HeaderColorForm() {
                       />
                     </span>
                   </label>
-                </React.Fragment>
+                </>
               );
             })}
           </form>

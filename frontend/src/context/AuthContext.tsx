@@ -3,13 +3,8 @@ import { createContext, useContext, ReactNode } from 'react';
 import { AuthProviderInner } from './AuthProviderInner';
 
 type AuthContextType = {
-  user: {
-    name: string;
-    email: string;
-    role: 'user' | 'admin' | 'superuser' | null;
-  } | null;
+  user: { name: string; email: string } | null;
   isAdmin: boolean | null;
-  isSuperuser: boolean | null;
   logout: () => Promise<void>;
 };
 

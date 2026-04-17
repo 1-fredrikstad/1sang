@@ -43,9 +43,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden h-screen flex flex-col`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
         <AuthProvider>
           <GlobalSync />
           <TooltipProvider>
@@ -53,10 +51,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <HeaderColorProvider initialColor={headerColor}>
                 <ConditionalHeader />
 
-                <main className="flex-1 overflow-y-auto">
-                  <section className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20 m-5 max-w-4xl mx-auto px-5">
-                    {children}
-                  </section>
+                <main className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20 m-5 max-w-4xl mx-auto px-5">
+                  {children}
                 </main>
 
                 <ConditionalNavbar />

@@ -60,7 +60,6 @@ export interface SongSuggestion {
   chorus?: string;
   verses: string[];
   chords?: string;
-  spotify_youtube?: string;
   status?: string;
   submitted_at?: string;
   reviewed_by?: string;

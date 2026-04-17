@@ -34,7 +34,7 @@ describe('checkAdminAccess', () => {
       } as Response);
   }
 
-  test('returns isAdmin false and isSuperuser false for regular user', async () => {
+  test('returns isAdmin false for regular user', async () => {
     mockUserAndRole('regular');
 
     const result = await checkAdminAccess('test-token');
@@ -43,11 +43,10 @@ describe('checkAdminAccess', () => {
       userId: 'user-1',
       role: 'regular',
       isAdmin: false,
-      isSuperuser: false,
     });
   });
 
-  test('returns isAdmin true and isSuperuser false for admin user', async () => {
+  test('returns isAdmin true for admin user', async () => {
     mockUserAndRole('admin');
 
     const result = await checkAdminAccess('test-token');
@@ -56,11 +55,10 @@ describe('checkAdminAccess', () => {
       userId: 'user-1',
       role: 'admin',
       isAdmin: true,
-      isSuperuser: false,
     });
   });
 
-  test('returns isAdmin true and isSuperuser true for superuser', async () => {
+  test('returns isAdmin true for superuser', async () => {
     mockUserAndRole('superuser');
 
     const result = await checkAdminAccess('test-token');
@@ -69,11 +67,10 @@ describe('checkAdminAccess', () => {
       userId: 'user-1',
       role: 'superuser',
       isAdmin: true,
-      isSuperuser: true,
     });
   });
 
-  test('returns no admin access when user has no role row', async () => {
+  test('returns isAdmin false when user has no role row', async () => {
     mockUserAndRole(null);
 
     const result = await checkAdminAccess('test-token');
@@ -82,7 +79,6 @@ describe('checkAdminAccess', () => {
       userId: 'user-1',
       role: null,
       isAdmin: false,
-      isSuperuser: false,
     });
   });
 
@@ -98,7 +94,6 @@ describe('checkAdminAccess', () => {
       userId: null,
       role: null,
       isAdmin: false,
-      isSuperuser: false,
     });
   });
 

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import EditSongPage from '../../../app/songs/[slug]/edit/page';
+import EditSongPage from '../../../app/songs/[id]/edit/page';
 
 // samling av mock funksjoner
 const {
@@ -51,7 +51,7 @@ type SongFormProps = {
 };
 
 vi.mock('next/navigation', () => ({
-  useParams: () => ({ slug: 'min-sang' }),
+  useParams: () => ({ id: '123' }),
   useRouter: () => ({ push: mockPush }),
 }));
 
@@ -75,11 +75,7 @@ vi.mock('@/src/lib/supabase/client', () => ({
 vi.mock('@/src/lib/db', () => ({
   db: {
     songs: {
-      where: vi.fn(() => ({
-        equals: vi.fn(() => ({
-          first: vi.fn(),
-        })),
-      })),
+      get: vi.fn(),
       update: mockUpdate,
     },
     song_tags: {
@@ -154,12 +150,7 @@ describe('EditSongPage', () => {
       'fetch',
       vi.fn().mockResolvedValue({
         ok: true,
-        json: async () => ({
-          data: {
-            id: '123',
-            slug: 'ny-tittel',
-          },
-        }),
+        json: async () => ({}),
       })
     );
   });
@@ -184,7 +175,6 @@ describe('EditSongPage', () => {
     const song = {
       id: '123',
       title: 'Min sang',
-      slug: 'min-sang',
       melody: 'Melodi',
       author: 'Forfatter',
       chorus: '',
@@ -222,7 +212,6 @@ describe('EditSongPage', () => {
     const song = {
       id: '123',
       title: 'Min sang',
-      slug: 'min-sang',
       melody: 'Melodi',
       author: 'Forfatter',
       chorus: '',
@@ -281,6 +270,6 @@ describe('EditSongPage', () => {
       { song_id: '123', tag_id: 'tag3' },
     ]);
 
-    expect(mockPush).toHaveBeenCalledWith('/songs/ny-tittel');
+    expect(mockPush).toHaveBeenCalledWith('/songs/123');
   });
 });
