@@ -11,9 +11,14 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import SectionInput from '../SectionInput';
 import ChordPreview from '../chords/ChordPreview';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 
+/**
+ * Form data structure used both for:
+ * - React Hook Form state
+ * - API payload Supabase
+ */
 type Inputs = {
   title: string;
   melody: string;
@@ -22,8 +27,13 @@ type Inputs = {
   verses: string[];
   tags?: Tag[];
   spotify_youtube: string;
+  has_chords: boolean;
 };
 
+/**
+ * Props for SongForm component
+ * Supports both create and edit modes via `initialValues`
+ */
 type SongFormProps = {
   heading: string;
   submitLabel: string;
@@ -38,6 +48,7 @@ type Tag = {
   name: string;
 };
 
+// Max length of verses and chorus
 const MAX_VERSE_LENGTH = 1000;
 const MAX_CHORUS_LENGTH = 500;
 
@@ -49,6 +60,11 @@ export default function SongForm({
   onSubmit,
   toastSuccessMessage = 'Lagret',
 }: SongFormProps) {
+  /**
+   * React Hook Form setup:
+   * - central state manager for all form fields
+   * - avoids local state duplication
+   */
   const {
     register,
     handleSubmit,
@@ -66,21 +82,65 @@ export default function SongForm({
       verses: initialValues?.verses?.length ? initialValues.verses : [''],
       spotify_youtube: '',
       tags: [],
+      has_chords: initialValues?.has_chords ?? false,
       ...initialValues,
     },
   });
 
   const router = useRouter();
 
+  /**
+   * Hydrate form when editing existing song.
+   * React Hook Form does NOT update defaultValues after mount,
+   * so reset() is required when initialValues arrives async.
+   */
+  useEffect(() => {
+    if (!initialValues) return;
+
+    reset({
+      title: initialValues.title ?? '',
+      melody: initialValues.melody ?? '',
+      author: initialValues.author ?? '',
+      chorus: initialValues.chorus ?? '',
+      verses: initialValues.verses?.length ? initialValues.verses : [''],
+      spotify_youtube: initialValues.spotify_youtube ?? '',
+      tags: initialValues.tags ?? [],
+      has_chords: initialValues.has_chords ?? false,
+    });
+  }, [initialValues, reset]);
+
+  /**
+   * Reactive field subscriptions (UI-only derived values)
+   * useWatch ensures component re-renders when values change.
+   */
   const chorusValue = useWatch({ control, name: 'chorus' }) || '';
   const chorusCharCount = chorusValue.length;
 
   const watchVerses = useWatch({ control, name: 'verses' }) || [];
+
+  /**
+   * Chorus UI toggle (local UI state, not persisted field)
+   * Controls whether chorus input exists in the form.
+   */
   const [hasChorus, sethasChorus] = useState(false);
-  const [chordMode, setChordMode] = useState(false);
+
+  /**
+   * Chords toggle stored in form state (boolean)
+   */
+  const hasChords = useWatch({
+    control,
+    name: 'has_chords',
+    defaultValue: false,
+  });
 
   const selectedTags = useWatch({ control, name: 'tags' }) ?? [];
 
+  /**
+   * Submit handler:
+   * - merges form data + derived tag IDs
+   * - sends to API
+   * - handles success/error UI feedback
+   */
   const handleFormSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       const payload = {
@@ -98,6 +158,10 @@ export default function SongForm({
     }
   };
 
+  /**
+   * Data structure used by ChordPreview.
+   * Combines verses + optional chorus section.
+   */
   const chordSections = [
     ...watchVerses.map((verse, i) => ({
       label: `Vers ${i + 1}`,
@@ -119,7 +183,7 @@ export default function SongForm({
     <form
       id="form-add-song"
       onSubmit={handleSubmit(handleFormSubmit)}
-      className="flex flex-col m-2 gap-1 max-w-2xl"
+      className="flex flex-col m-2 mx-auto gap-1 max-w-2xl"
     >
       <h1>{heading}</h1>
 
@@ -252,13 +316,15 @@ export default function SongForm({
 
       {/* Chord-toggle */}
       <div className="flex items-center gap-3 mt-2">
-        <Switch checked={chordMode} onCheckedChange={setChordMode} />
-        <label className="text-sm cursor-pointer" onClick={() => setChordMode((v) => !v)}>
-          Legg til akkorder
-        </label>
+        <Switch
+          checked={hasChords}
+          onCheckedChange={(val) => setValue('has_chords', val)}
+          className="cursor-pointer"
+        />
+        <label className="text-sm">Legg til akkorder</label>
       </div>
 
-      {chordMode && <ChordPreview sections={chordSections} />}
+      {hasChords && <ChordPreview sections={chordSections} />}
 
       {/* Submit and reset */}
       <div className="mt-4 flex flex-row gap-4">

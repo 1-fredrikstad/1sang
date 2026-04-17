@@ -7,11 +7,12 @@ import { MoonIcon } from '@heroicons/react/24/outline';
 import { useMounted } from '../hooks/useMounted';
 
 export default function ThemeToggleButton() {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const mounted = useMounted();
-  const isDark = theme === 'dark';
 
   if (!mounted) return null;
+
+  const isDark = resolvedTheme === 'dark';
 
   return (
     <section className="flex flex-row justify-between">

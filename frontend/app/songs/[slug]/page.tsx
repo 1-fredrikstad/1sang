@@ -109,7 +109,11 @@ export default function SongPage() {
         {/* Lyrics and chord toggle */}
         {hasChords && (
           <div className="flex items-center gap-2 mt-3">
-            <Switch checked={showChords} onCheckedChange={setShowChords} />
+            <Switch
+              checked={showChords}
+              onCheckedChange={setShowChords}
+              className="cursor-pointer"
+            />
             <span className="text-sm opacity-60">Vis akkorder</span>
           </div>
         )}

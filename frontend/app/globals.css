@@ -193,8 +193,8 @@ html.theme-ready header span {
 
 html,
 body {
-  overflow-x: hidden;
-  width: 100%;
+  overflow: hidden;
+  height: 100%;
 }
 
 a.no-underline,

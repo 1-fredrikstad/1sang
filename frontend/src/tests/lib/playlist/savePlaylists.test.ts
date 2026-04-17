@@ -3,7 +3,7 @@ import { savePlaylist } from '@/src/lib/playlists/savePlaylists';
 import { vi, describe, expect, test, beforeEach } from 'vitest';
 
 describe('savePlaylists', () => {
-  const song: Song = { id: '1', title: 'Test song', lyrics: 'Lyrics' };
+  const song: Song = { id: '1', title: 'Test song', verses: ['lyrics'], has_chords: false };
 
   beforeEach(() => {
     // Mock IndexedDB / Dexie methods

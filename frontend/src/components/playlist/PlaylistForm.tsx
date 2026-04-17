@@ -95,7 +95,7 @@ export default function PlaylistForm({
     <form
       id="form-add-playlist"
       onSubmit={handleSubmit(handleFormSubmit)}
-      className="flex flex-col m-4 gap-1 max-w-2xl"
+      className="flex flex-col m-4 mx-auto gap-1 max-w-2xl"
     >
       <h1 className="text-xl mb-2">
         {mode === 'edit' ? 'Rediger spilleliste' : 'Lag ny spilleliste'}
@@ -147,11 +147,12 @@ export default function PlaylistForm({
             checked={isPublic}
             onCheckedChange={(val) => setValue('isPublic', val)}
             disabled={isSubmitting}
+            className="cursor-pointer"
           />
         </Field>
 
         {/* Duration */}
-        {mode === 'create' && isPublic && (
+        {isPublic && (
           <Field>
             <FieldLabel>
               <span className="flex items-center gap-2">
