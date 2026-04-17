@@ -15,19 +15,26 @@ import { Switch } from '@/components/ui/switch';
 import { StarIcon } from '@/src/components/songs/StarIcon';
 
 export default function SongPage() {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const { isAdmin } = useAuth();
   const [showChords, setShowChords] = useState(false);
 
+  const song = useLiveQuery<Song | undefined>(
+    () => (slug ? db.songs.where('slug').equals(slug).first() : undefined),
+    [slug]
+  );
+
   const tags = useLiveQuery(async () => {
-    if (!id) return [];
-    const relations = await db.song_tags.where('song_id').equals(id).toArray();
+    if (!song?.id) return [];
+
+    const relations = await db.song_tags.where('song_id').equals(song.id).toArray();
+
     const tagIds = relations.map((relation) => relation.tag_id);
 
-    return await db.tags.where('id').anyOf(tagIds).toArray();
-  });
+    if (tagIds.length === 0) return [];
 
-  const song = useLiveQuery<Song | undefined>(() => (id ? db.songs.get(id) : undefined), [id]);
+    return await db.tags.where('id').anyOf(tagIds).toArray();
+  }, [song?.id]);
 
   if (!song) {
     return (
@@ -63,12 +70,12 @@ export default function SongPage() {
       {/* Header */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3 relative">
-          <BackButton />
+          <BackButton href="/" />
           <div className="absolute right-0 flex items-center gap-2">
             <StarIcon songId={song.id} />
             {isAdmin && (
               <div>
-                <Link href={`/songs/${id}/edit`}>
+                <Link href={`/songs/${slug}/edit`}>
                   <PencilSquareIcon className="size-6 cursor-pointer" />
                 </Link>
               </div>

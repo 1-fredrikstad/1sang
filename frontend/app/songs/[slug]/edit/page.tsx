@@ -12,19 +12,21 @@ import { useState } from 'react';
 import { Spinner } from '@/components/ui/spinner';
 
 export default function EditSongPage() {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
   const { isAdmin } = useAuth();
   const [isDeletingSong, setIsDeletingSong] = useState(false);
 
-  // Load song from Dexie cache
-  const song = useLiveQuery<Song | undefined>(() => (id ? db.songs.get(id) : undefined), [id]);
+  const song = useLiveQuery<Song | undefined>(
+    () => (slug ? db.songs.where('slug').equals(slug).first() : undefined),
+    [slug]
+  );
 
   // Resolve related tags for this song
   const songTags = useLiveQuery(async () => {
-    if (!id) return [];
+    if (!song?.id) return [];
 
-    const relations = await db.song_tags.where('song_id').equals(id).toArray();
+    const relations = await db.song_tags.where('song_id').equals(song?.id).toArray();
     const tagIds = relations.map((r) => r.tag_id);
 
     if (tagIds.length === 0) return [];
@@ -32,7 +34,7 @@ export default function EditSongPage() {
     const resolvedTags = await db.tags.where('id').anyOf(tagIds).toArray();
 
     return resolvedTags;
-  }, [id]);
+  }, [song?.id]);
 
   // Guard admin-only page
   if (!isAdmin) {
@@ -72,7 +74,7 @@ export default function EditSongPage() {
       throw new Error('Ikke logget inn');
     }
 
-    const res = await fetch(`/api/songs/${id}`, {
+    const res = await fetch(`/api/songs/${song.id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -88,8 +90,10 @@ export default function EditSongPage() {
       throw new Error(typeof body?.error === 'string' ? body.error : 'Kunne ikke oppdatere sang');
     }
 
+    const updatedSong = body?.data;
+
     // Update tag relations locally
-    await db.songs.update(id, {
+    await db.songs.update(song.id, {
       title: data.title,
       melody: data.melody || undefined,
       author: data.author || undefined,
@@ -98,18 +102,18 @@ export default function EditSongPage() {
     });
 
     // Replace tag relations
-    await db.song_tags.where('song_id').equals(id).delete();
+    await db.song_tags.where('song_id').equals(song?.id).delete();
 
     if (data.tags && data.tags.length > 0) {
       await db.song_tags.bulkAdd(
         data.tags.map((tagId) => ({
-          song_id: id,
+          song_id: song?.id,
           tag_id: tagId,
         }))
       );
     }
 
-    router.push(`/songs/${id}`);
+    router.push(`/songs/${updatedSong?.slug ?? song.slug}`);
   };
 
   return (
@@ -127,18 +131,19 @@ export default function EditSongPage() {
           author: song.author ?? '',
           chorus: song.chorus ?? '',
           verses: song.verses,
+          spotify_youtube: song.spotify_youtube ?? '',
           tags: songTags ?? [],
           has_chords: song.has_chords,
         }}
         onSubmit={handleSubmit}
       />
-      <div className="flex justify-start m-2 mt-5">
+      <section className="mx-auto max-w-2xl mt-5">
         <DeleteSongButton
           songId={song.id}
           className="danger"
           onDeletingChange={setIsDeletingSong}
         />
-      </div>
+      </section>
     </main>
   );
 }

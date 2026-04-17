@@ -183,7 +183,7 @@ export default function SongForm({
     <form
       id="form-add-song"
       onSubmit={handleSubmit(handleFormSubmit)}
-      className="flex flex-col m-2 gap-1 max-w-2xl"
+      className="flex flex-col m-2 mx-auto gap-1 max-w-2xl"
     >
       <h1>{heading}</h1>
 

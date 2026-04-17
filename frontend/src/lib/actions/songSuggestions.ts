@@ -14,6 +14,7 @@ type SongInput = {
   has_chords: boolean;
 };
 
+// Update suggestion
 export async function updateSuggestion(id: string, data: SongInput) {
   // Restrict to admins
   await requireAdmin();
@@ -47,6 +48,7 @@ export async function updateSuggestion(id: string, data: SongInput) {
   return { success: true };
 }
 
+// Delete suggestion
 export async function deleteSuggestion(id: string) {
   // Restrict action to admins
   await requireAdmin();
