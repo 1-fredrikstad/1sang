@@ -16,6 +16,7 @@ export default function EditSuggestionPage() {
   const mounted = useMounted();
 
   const dexieSuggestion = useLiveQuery(() => {
+    // Prevent Dexie query before client mount / SSR
     if (typeof window === 'undefined' || !mounted || !id) {
       return undefined;
     }
@@ -24,10 +25,12 @@ export default function EditSuggestionPage() {
 
   const suggestion = dexieSuggestion ?? null;
 
+  // Loading state while mounted/query resolves
   if (!mounted || dexieSuggestion === undefined) {
     return <Spinner message="Laster inn" />;
   }
 
+  // Not found state
   if (!suggestion) {
     return <p className="text-center mt-12">Fant ikke forslaget</p>;
   }
@@ -46,6 +49,8 @@ export default function EditSuggestionPage() {
           author: suggestion.author ?? '',
           chorus: suggestion.chorus ?? '',
           verses: suggestion.verses ?? '',
+          spotify_youtube: suggestion.spotify_youtube ?? '',
+          has_chords: suggestion.has_chords,
         }}
         onSubmit={async (data) => {
           const old = suggestion;
@@ -57,8 +62,11 @@ export default function EditSuggestionPage() {
               author: data.author || undefined,
               chorus: data.chorus || undefined,
               verses: data.verses,
+              spotify_youtube: suggestion.spotify_youtube || undefined,
+              has_chords: suggestion.has_chords,
             });
 
+            // Keep Dexie cache in sync immdiately after update
             if (typeof window !== 'undefined' && db && old) {
               const updatedRow = { ...old, ...data };
               await db.song_suggestions.put(updatedRow);

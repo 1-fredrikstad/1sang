@@ -53,7 +53,8 @@ describe('SongBox', () => {
   const song: Song = {
     id: 'abc-123',
     title: 'Test Song',
-    lyrics: 'Some lyrics',
+    verses: ['Some lyrics'],
+    has_chords: false,
   };
 
   test('renders song title and link', () => {

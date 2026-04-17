@@ -10,13 +10,17 @@ type SongInput = {
   author?: string | null;
   chorus?: string | null;
   verses: string[];
+  spotify_youtube?: string;
+  has_chords: boolean;
 };
 
 export async function updateSuggestion(id: string, data: SongInput) {
+  // Restrict to admins
   await requireAdmin();
 
   const supabase = await createClient();
 
+  // Update existing suggestion
   const { error } = await supabase
     .from('song_suggestions')
     .update({
@@ -25,6 +29,8 @@ export async function updateSuggestion(id: string, data: SongInput) {
       author: data.author?.trim() || null,
       chorus: data.chorus?.trim() || null,
       verses: data.verses,
+      spotify_youtube: data.spotify_youtube,
+      has_chords: data.has_chords,
     })
     .eq('id', id);
 
@@ -33,6 +39,7 @@ export async function updateSuggestion(id: string, data: SongInput) {
     throw new Error(error.message || 'Kunne ikke oppdatere forslag');
   }
 
+  // Refresh affected pages
   revalidatePath('/admin');
   revalidatePath(`/admin/suggestions/${id}`);
   revalidatePath(`/admin/suggestions/${id}/edit`);
@@ -41,12 +48,14 @@ export async function updateSuggestion(id: string, data: SongInput) {
 }
 
 export async function deleteSuggestion(id: string) {
+  // Restrict action to admins
   await requireAdmin();
 
   const supabase = await createClient();
 
   const { error } = await supabase.from('song_suggestions').delete().eq('id', id);
 
+  // Delete suggestion by id
   if (error) {
     console.error(error);
     throw new Error(error.message || 'Kunne ikke slette forslag');
@@ -58,6 +67,7 @@ export async function deleteSuggestion(id: string) {
 }
 
 export async function approveSuggestion(id: string) {
+  // Restrict action to admin
   await requireAdmin();
 
   const supabase = await createClient();
@@ -74,13 +84,15 @@ export async function approveSuggestion(id: string) {
     throw new Error('Fant ikke forslag');
   }
 
-  // 2. Insert to songs
+  // 2. Insert approved suggestion to songs
   const { error: insertErr } = await supabase.from('songs').insert({
     title: suggestion.title,
     melody: suggestion.melody,
     author: suggestion.author,
     chorus: suggestion.chorus,
     verses: suggestion.verses,
+    spotify_youtube: suggestion.spotify_youtube,
+    has_chords: suggestion.has_chords,
   });
 
   if (insertErr) {
@@ -88,7 +100,7 @@ export async function approveSuggestion(id: string) {
     throw new Error('Kunne ikke legge til sang');
   }
 
-  // 3. Delete suggestion
+  // 3. Remove original suggestion
   const { error: delErr } = await supabase.from('song_suggestions').delete().eq('id', id);
 
   if (delErr) {
@@ -96,6 +108,7 @@ export async function approveSuggestion(id: string) {
     throw new Error('Kunne ikke fjerne forslag etter godkjenning');
   }
 
+  // Refresh admin + public pages
   revalidatePath('/admin');
   revalidatePath('/'); // if homepage shows songs
 
