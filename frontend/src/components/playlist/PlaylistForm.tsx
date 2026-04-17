@@ -147,11 +147,12 @@ export default function PlaylistForm({
             checked={isPublic}
             onCheckedChange={(val) => setValue('isPublic', val)}
             disabled={isSubmitting}
+            className="cursor-pointer"
           />
         </Field>
 
         {/* Duration */}
-        {mode === 'create' && isPublic && (
+        {isPublic && (
           <Field>
             <FieldLabel>
               <span className="flex items-center gap-2">
