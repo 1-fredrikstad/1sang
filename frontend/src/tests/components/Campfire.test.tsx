@@ -3,7 +3,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import Campfire from '@/src/components/Campfire';
 
 const playMock = vi.fn(() => Promise.resolve());
-
 class AudioMock {
   src: string;
   volume = 1;
@@ -31,7 +30,7 @@ afterEach(() => {
 
 describe('Campfire', () => {
   it('plays sound and adds boost class on click', async () => {
-    render(<Campfire />);
+    render(<Campfire message="" />);
 
     const fireImage = screen.getByAltText('Fire');
     const container = fireImage.closest('section') as HTMLElement;
@@ -43,7 +42,7 @@ describe('Campfire', () => {
   });
 
   it('resets after 7.5 seconds', async () => {
-    render(<Campfire />);
+    render(<Campfire message="" />);
 
     const fireImage = screen.getByAltText('Fire');
     const container = fireImage.closest('section') as HTMLElement;

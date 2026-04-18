@@ -256,6 +256,7 @@ export default function PlaylistForm({
         )}
       </FieldGroup>
 
+      {/* Submit and reset */}
       <div className="flex gap-4 mt-4">
         <SubmitButton
           submitLabel={mode === 'edit' ? 'Lagre endringer' : 'Opprett spilleliste'}
