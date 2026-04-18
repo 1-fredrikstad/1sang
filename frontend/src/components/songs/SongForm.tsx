@@ -10,7 +10,7 @@ import SubmitButton from '../SubmitButton';
 import { Button } from '@/components/ui/button';
 import SectionInput from '../SectionInput';
 import ChordPreview from '../chords/ChordPreview';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
 
 /**
@@ -87,6 +87,33 @@ export default function SongForm({
   });
 
   /**
+   * Reactive field subscriptions (UI-only derived values)
+   * useWatch ensures component re-renders when values change.
+   */
+  const chorusValue = useWatch({ control, name: 'chorus' }) || '';
+  const chorusCharCount = chorusValue.length;
+
+  const watchVerses = useWatch({ control, name: 'verses' }) || [];
+
+  /**
+   * Chorus UI toggle (local UI state, not persisted field)
+   * Controls whether chorus input exists in the form.
+   */
+  // const [hasChorus, sethasChorus] = useState(false);
+  const hasChorus = !!chorusValue.trim();
+
+  /**
+   * Chords toggle stored in form state (boolean)
+   */
+  const hasChords = useWatch({
+    control,
+    name: 'has_chords',
+    defaultValue: false,
+  });
+
+  const selectedTags = useWatch({ control, name: 'tags' }) ?? [];
+
+  /**
    * Hydrate form when editing existing song.
    * React Hook Form does NOT update defaultValues after mount,
    * so reset() is required when initialValues arrives async.
@@ -105,32 +132,6 @@ export default function SongForm({
       has_chords: initialValues.has_chords ?? false,
     });
   }, [initialValues, reset]);
-
-  /**
-   * Reactive field subscriptions (UI-only derived values)
-   * useWatch ensures component re-renders when values change.
-   */
-  const chorusValue = useWatch({ control, name: 'chorus' }) || '';
-  const chorusCharCount = chorusValue.length;
-
-  const watchVerses = useWatch({ control, name: 'verses' }) || [];
-
-  /**
-   * Chorus UI toggle (local UI state, not persisted field)
-   * Controls whether chorus input exists in the form.
-   */
-  const [hasChorus, sethasChorus] = useState(false);
-
-  /**
-   * Chords toggle stored in form state (boolean)
-   */
-  const hasChords = useWatch({
-    control,
-    name: 'has_chords',
-    defaultValue: false,
-  });
-
-  const selectedTags = useWatch({ control, name: 'tags' }) ?? [];
 
   /**
    * Submit handler:
@@ -287,7 +288,6 @@ export default function SongForm({
             error={errors.chorus?.message}
             removable
             onRemove={() => {
-              sethasChorus(false);
               setValue('chorus', '');
               clearErrors('chorus');
             }}
@@ -300,7 +300,7 @@ export default function SongForm({
             <Button
               type="button"
               onClick={() => {
-                sethasChorus(true);
+                setValue('chorus', '');
               }}
               className="cursor-pointer hover:bg-btn-hover"
             >
