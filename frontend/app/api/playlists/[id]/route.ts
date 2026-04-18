@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
+import { capitalizeFirst } from '@/src/lib/utils/capitalizeFormat';
 
 function getEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -78,7 +79,7 @@ export async function PATCH(req: Request, { params }: RouteContext) {
       ? {
           p_playlist_id: id,
           p_new_password: payload.newPassword ?? '',
-          p_title: payload.title,
+          p_title: capitalizeFirst(payload.title),
           p_is_public: payload.is_public,
           p_expires_at: payload.expires_at,
         }

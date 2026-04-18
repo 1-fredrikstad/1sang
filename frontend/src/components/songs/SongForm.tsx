@@ -13,6 +13,7 @@ import SectionInput from '../SectionInput';
 import ChordPreview from '../chords/ChordPreview';
 import { useEffect, useState } from 'react';
 import { Switch } from '@/components/ui/switch';
+import { capitalizeFirst } from '@/src/lib/utils/capitalizeFormat';
 
 /**
  * Form data structure used both for:
@@ -195,6 +196,7 @@ export default function SongForm({
             id="form-add-song-title"
             aria-invalid={!!errors.title}
             {...register('title', getFieldValidation('title'))}
+            onBlur={(e) => setValue('title', capitalizeFirst(e.target.value))}
             className="focus-visible:ring-1 text-sm"
           />
           {errors.title && <FieldError errors={[errors.title]} />}
@@ -207,6 +209,7 @@ export default function SongForm({
             id="form-add-song-author"
             aria-invalid={!!errors.author}
             {...register('author', getFieldValidation('author'))}
+            onBlur={(e) => setValue('author', capitalizeFirst(e.target.value))}
             className="focus-visible:ring-1 text-sm"
           />
           {errors.author && <FieldError errors={[errors.author]} />}
@@ -219,6 +222,7 @@ export default function SongForm({
             id="form-add-song-melody"
             aria-invalid={!!errors.melody}
             {...register('melody', getFieldValidation('melody'))}
+            onBlur={(e) => setValue('melody', capitalizeFirst(e.target.value))}
             className="focus-visible:ring-1 text-sm"
           />
           {errors.melody && <FieldError errors={[errors.melody]} />}

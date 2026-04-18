@@ -22,6 +22,7 @@ import {
 import PlaylistSongPickerModal from './PlaylistSongPickerModal';
 import { SongBox } from '../songs/SongBox';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { capitalizeFirst } from '@/src/lib/utils/capitalizeFormat';
 
 type PlaylistFormProps = {
   onSubmit: SubmitHandler<PlaylistInputs>;
@@ -69,7 +70,12 @@ export default function PlaylistForm({
   });
 
   const handleFormSubmit: SubmitHandler<PlaylistInputs> = async (data) => {
-    await onSubmit(data);
+    const normalized = {
+      ...data,
+      title: capitalizeFirst(data.title),
+    };
+
+    await onSubmit(normalized);
   };
 
   return (
@@ -86,7 +92,11 @@ export default function PlaylistForm({
         {/* Title */}
         <Field data-invalid={!!errors.title}>
           <FieldLabel htmlFor="playlist-title">Tittel*</FieldLabel>
-          <Input id="playlist-title" {...register('title', getPlaylistFieldValidation('title'))} />
+          <Input
+            id="playlist-title"
+            {...register('title', getPlaylistFieldValidation('title'))}
+            onBlur={(e) => setValue('title', capitalizeFirst(e.target.value))}
+          />
           {errors.title && <FieldError errors={[errors.title]} />}
         </Field>
 

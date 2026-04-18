@@ -1,3 +1,5 @@
+import { capitalizeFirst } from '../utils/capitalizeFormat';
+
 export const TEXT_PATTERN = /^[a-zA-ZæøåÆØÅ0-9\s.\-/:;,'’*!?()"…–]+$/;
 export const LYRICS_PATTERN = /^[\s\S]+$/;
 
@@ -124,9 +126,9 @@ export type SongValidationErrors = Partial<Record<keyof SongInput | `verses.${nu
 
 export function normalizeSongInput(input: Partial<SongInput>): SongInput {
   return {
-    title: typeof input.title === 'string' ? input.title.trim() : '',
-    melody: typeof input.melody === 'string' ? input.melody.trim() : '',
-    author: typeof input.author === 'string' ? input.author.trim() : '',
+    title: typeof input.title === 'string' ? capitalizeFirst(input.title.trim()) : '',
+    melody: typeof input.melody === 'string' ? capitalizeFirst(input.melody.trim()) : '',
+    author: typeof input.author === 'string' ? capitalizeFirst(input.author.trim()) : '',
     chorus: typeof input.chorus === 'string' ? input.chorus.trim() : '',
     verses: Array.isArray(input.verses)
       ? input.verses.map((v) => (typeof v === 'string' ? v.trim() : ''))
