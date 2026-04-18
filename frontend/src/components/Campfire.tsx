@@ -3,14 +3,18 @@
 import Image from 'next/image';
 import { useCampfire } from '../hooks/useCampfire';
 
-export default function Campfire() {
+interface Props {
+  message: string;
+}
+
+export default function Campfire({ message }: Props) {
   const { boost, trigger } = useCampfire();
 
   return (
-    <main className="flex flex-col mx-auto items-center justify-center gap-5 text-center min-h-[60vh]">
+    <main className="flex flex-col mx-auto items-center justify-center gap-5 text-center min-h-[50vh]">
       <section>
         <h1 className="mb-0!">Du har gått deg vill i skogen</h1>
-        <h2 className="mt-0 text-lg text-muted-foreground">Denne siden finnes ikke</h2>
+        <h2 className="mt-0 text-lg text-muted-foreground">{message}</h2>
       </section>
       <section
         className="flex flex-col items-center leading-none cursor-pointer mt-7"
