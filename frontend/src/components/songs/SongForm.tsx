@@ -330,7 +330,7 @@ export default function SongForm({
       <div className="mt-4 flex flex-row gap-4">
         <SubmitButton submitLabel={submitLabel} disabled={isSubmitting} />
         <Button type="button" variant="outline" onClick={() => reset()} className="cursor-pointer">
-          Reset
+          Nullstill
         </Button>
       </div>
     </form>

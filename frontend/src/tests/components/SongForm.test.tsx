@@ -92,7 +92,7 @@ describe('SongForm', () => {
 
   test('resets form when reset button is clicked', async () => {
     render(<SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />);
-    const resetButton = screen.getByText('Reset');
+    const resetButton = screen.getByText('Nullstill');
     await user.click(resetButton);
     expect(screen.getByLabelText(/Tittel\*/i)).toHaveValue('');
   });

@@ -186,7 +186,7 @@ export default function PlaylistForm({
           disabled={isSubmitting}
         />
         <Button type="button" variant="outline" onClick={() => reset()} disabled={isSubmitting}>
-          Reset
+          Nullstill
         </Button>
       </div>
     </form>
