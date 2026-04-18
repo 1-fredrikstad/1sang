@@ -1,7 +1,6 @@
 'use client';
 
 import { Song } from '@/src/lib/db';
-import { toast } from 'sonner';
 import { useMemo, useState } from 'react';
 import { searchSongs } from '@/src/lib/search/searchSongs';
 
@@ -27,10 +26,8 @@ export function useSongPicker(
 
     if (exists) {
       setSongsInPlaylist(songsInPlaylist.filter((s) => s.id !== song.id));
-      toast.error('Sang fjernet');
     } else {
       setSongsInPlaylist([...songsInPlaylist, song]);
-      toast.success('Sang lagt til');
     }
   }
 
