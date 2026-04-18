@@ -16,21 +16,23 @@ import SongList from '../playlist/SongList';
 import { useSongPicker } from '@/src/hooks/useSongPicker';
 import { SearchField } from '../SearchField';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
-export default function ExportLatexModal({
+export default function PlaylistSongPickerModal({
   songs,
   open,
   onOpenChange,
-  generateLatex,
+  songsInPlaylist,
+  setSongsInPlaylist,
 }: {
   songs: Song[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  generateLatex: (songs: Song[], total?: number) => void;
+  songsInPlaylist: Song[];
+  setSongsInPlaylist: (songs: Song[]) => void;
 }) {
-  const [selectedSongs, setSelectedSongs] = useState<Song[]>([]);
-  const songPicker = useSongPicker(songs, selectedSongs, setSelectedSongs, open);
+  const [localSongs, setLocalSongs] = useState<Song[]>([]);
+
+  const songPicker = useSongPicker(songs, localSongs, setLocalSongs, open);
 
   const {
     search,
@@ -45,13 +47,25 @@ export default function ExportLatexModal({
     selectedCount,
   } = songPicker;
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen) {
+      setLocalSongs(songsInPlaylist);
+    }
+    onOpenChange(nextOpen);
+  };
+
+  const handleSave = () => {
+    setSongsInPlaylist(localSongs);
+    onOpenChange(false);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-xl flex flex-col gap-3 h-[90vh]">
         {/* Header */}
         <DialogHeader>
-          <DialogTitle>Eksporter til LaTeX</DialogTitle>
-          <DialogDescription>Velg hvilke sanger du vil eksportere:</DialogDescription>
+          <DialogTitle>Velg sanger</DialogTitle>
+          <DialogDescription>Legg til i spillelisten:</DialogDescription>
         </DialogHeader>
 
         {/* Toolbar */}
@@ -102,21 +116,10 @@ export default function ExportLatexModal({
             </Button>
           </DialogClose>
 
-          <Button
-            onClick={() => {
-              generateLatex(selectedSongs, songs.length);
-              onOpenChange(false);
-              toast.success(
-                selectedCount === 1
-                  ? 'Eksporterte 1 sang'
-                  : selectedCount === songs.length
-                    ? 'Eksporterte alle sanger'
-                    : `Eksporterte ${selectedCount} sanger`
-              );
-            }}
-            disabled={selectedCount === 0}
-          >
-            Eksporter ({selectedCount})
+          <Button onClick={handleSave} disabled={selectedCount === 0}>
+            {songsInPlaylist.length === 0
+              ? `Legg til sanger (${selectedCount})`
+              : `Lagre endringer (${selectedCount})`}
           </Button>
         </DialogFooter>
       </DialogContent>
