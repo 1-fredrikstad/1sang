@@ -3,11 +3,8 @@
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { getPlaylistFieldValidation } from '@/src/lib/validation/playlistSchema';
 import { PlaylistInputs } from '@/src/types/playlistInputs';
-import SongList from './SongList';
 import { useSongs } from '@/src/hooks/useData';
-import { Song } from '@/src/lib/db';
-import { useCallback } from 'react';
-import { toast } from 'sonner';
+import { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import MobileTooltip from '../MobileTooltip';
@@ -22,6 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import PlaylistSongPickerModal from './PlaylistSongPickerModal';
+import { SongBox } from '../songs/SongBox';
 
 type PlaylistFormProps = {
   onSubmit: SubmitHandler<PlaylistInputs>;
@@ -52,40 +51,20 @@ export default function PlaylistForm({
     },
   });
 
-  const songsInPlaylist = useWatch({ name: 'songsInPlaylist', control });
   const isPublic = useWatch({ name: 'isPublic', control });
+  const [open, setOpen] = useState(false);
 
-  const {
-    data: songs,
-    isLoading,
-    error,
-  } = useSongs({
+  const songsInPlaylist = useWatch({
+    name: 'songsInPlaylist',
+    control,
+  });
+
+  const hasSongs = songsInPlaylist.length > 0;
+
+  const { data: songs } = useSongs({
     maxAgeMins: 5,
     syncOnMount: true,
   });
-
-  const isSongAdded = useCallback(
-    (id: string) => songsInPlaylist.some((s) => s.id === id),
-    [songsInPlaylist]
-  );
-
-  const toggleSong = useCallback(
-    (song: Song) => {
-      const exists = songsInPlaylist.some((s) => s.id === song.id);
-
-      if (exists) {
-        setValue(
-          'songsInPlaylist',
-          songsInPlaylist.filter((s) => s.id !== song.id)
-        );
-        toast.error('Sang fjernet');
-      } else {
-        setValue('songsInPlaylist', [...songsInPlaylist, song]);
-        toast.success('Sang lagt til');
-      }
-    },
-    [songsInPlaylist, setValue]
-  );
 
   const handleFormSubmit: SubmitHandler<PlaylistInputs> = async (data) => {
     await onSubmit(data);
@@ -130,13 +109,32 @@ export default function PlaylistForm({
 
         {/* Songlist */}
         <Field>
-          <FieldLabel>Legg til sanger</FieldLabel>
-          <SongList
-            songs={songs}
-            isLoading={isLoading}
-            error={error}
-            onToggleSong={toggleSong}
-            isAdded={isSongAdded}
+          <FieldLabel>
+            {hasSongs ? `Sanger (${songsInPlaylist.length})` : 'Legg til sanger'}
+          </FieldLabel>
+
+          {songsInPlaylist.length > 0 && (
+            <ul className="flex flex-col gap-2 mt-2">
+              {songsInPlaylist.map((song) => (
+                <li key={song.id}>
+                  <SongBox song={song} mode="select" hoverVariant="none" />
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <div className="mt-2">
+            <Button type="button" onClick={() => setOpen(true)}>
+              {hasSongs ? 'Endre sanger' : 'Velg sanger'}
+            </Button>
+          </div>
+
+          <PlaylistSongPickerModal
+            songs={songs ?? []}
+            open={open}
+            onOpenChange={setOpen}
+            songsInPlaylist={songsInPlaylist}
+            setSongsInPlaylist={(songs) => setValue('songsInPlaylist', songs)}
           />
         </Field>
 

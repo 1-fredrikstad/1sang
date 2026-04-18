@@ -1,9 +1,9 @@
 import { Song } from '@/src/lib/db';
 import { SongBox } from '../songs/SongBox';
 import { SongListProps } from '@/src/types/songList';
-import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { useMemo } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export type ExtendedSongListProps = SongListProps & {
   onToggleSong: (song: Song) => void;
@@ -34,40 +34,59 @@ export default function SongList({
   const renderList = (songs: Song[]) =>
     songs.map((song: Song) => (
       <li key={song.id} className="flex items-center gap-2">
-        <Button
-          type="button"
+        <span
           onClick={() => onToggleSong(song)}
-          className={`w-10 h-10 flex items-center justify-center text-2xl shrink-0 rounded-md outline-1 
-                outline-[#0000001a] dark:shadow-xs dark:shadow-black hover:shadow-sm active:scale-[0.99] 
-                transition cursor-pointer text-white ${isAdded(song.id) ? 'bg-red-400' : 'bg-[#58B030]'}`}
+          className="flex-1 hover:shadow-sm active:scale-[0.99] w-full transition cursor-pointer"
         >
-          {isAdded(song.id) ? '-' : '+'}
-        </Button>
-        <span className="flex-1">
-          <SongBox song={song} />
+          <SongBox song={song} mode="select" hoverVariant={isAdded(song.id) ? 'red' : 'green'} />
         </span>
       </li>
     ));
 
   return (
-    <main className="mb-6">
+    <main>
       {isLoading && <Spinner message="Synkroniserer med databasen" />}
 
-      {/* Added songs */}
-      <section>
-        <h2 className="text-sm mb-1">Valgte sanger:</h2>
-        <ul className="flex flex-col gap-2 max-h-64 overflow-y-auto p-2 mb-4">
-          {addedSongs.length > 0 ? renderList(addedSongs) : <li>Ingen valgte sanger</li>}
-        </ul>
-      </section>
+      <Tabs defaultValue="all">
+        {/* Tabs header */}
+        <div className="sticky top-0 z-10 bg-popover isolate">
+          <TabsList className="mb-2">
+            <TabsTrigger
+              value="all"
+              className="data-[state=active]:bg-list-bg data-[state=active]:border-0"
+            >
+              Alle sanger ({availableSongs.length})
+            </TabsTrigger>
 
-      {/* Available songs */}
-      <section>
-        <h2 className="text-sm mb-1">Alle sanger:</h2>
-        <ul className="flex flex-col gap-2 max-h-64 overflow-y-auto p-2">
-          {renderList(availableSongs)}
-        </ul>
-      </section>
+            <TabsTrigger
+              value="selected"
+              className="data-[state=active]:bg-list-bg data-[state=active]:border-0"
+            >
+              Valgte sanger ({addedSongs.length})
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <TabsContent value="all">
+          <ul className="flex flex-col gap-2 p-2">
+            {availableSongs.length > 0 ? (
+              renderList(availableSongs)
+            ) : (
+              <li className="text-sm opacity-60">Ingen sanger tilgjengelig</li>
+            )}
+          </ul>
+        </TabsContent>
+
+        <TabsContent value="selected">
+          <ul className="flex flex-col gap-2 p-2">
+            {addedSongs.length > 0 ? (
+              renderList(addedSongs)
+            ) : (
+              <li className="text-sm opacity-60">Ingen valgte sanger</li>
+            )}
+          </ul>
+        </TabsContent>
+      </Tabs>
     </main>
   );
 }
