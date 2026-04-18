@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import TagSelect from '../TagSelect';
 import SubmitButton from '../SubmitButton';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import SectionInput from '../SectionInput';
 import ChordPreview from '../chords/ChordPreview';
@@ -87,8 +86,6 @@ export default function SongForm({
     },
   });
 
-  const router = useRouter();
-
   /**
    * Hydrate form when editing existing song.
    * React Hook Form does NOT update defaultValues after mount,
@@ -151,7 +148,6 @@ export default function SongForm({
       await onSubmit(payload);
 
       toast.success(toastSuccessMessage);
-      router.push('/');
     } catch (error) {
       console.error(error);
       toast.error(error instanceof Error ? error.message : 'Noe gikk galt');
