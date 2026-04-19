@@ -142,6 +142,7 @@ export default function PlaylistForm({
         <Field className="flex flex-row">
           <FieldLabel>Offentlig spilleliste</FieldLabel>
           <Switch
+            size="lg"
             checked={isPublic}
             onCheckedChange={(val) => setValue('isPublic', val)}
             disabled={isSubmitting}

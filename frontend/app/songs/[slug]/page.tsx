@@ -110,6 +110,7 @@ export default function SongPage() {
         {hasChords && (
           <div className="flex items-center gap-2 mt-3">
             <Switch
+              size="lg"
               checked={showChords}
               onCheckedChange={setShowChords}
               className="cursor-pointer"

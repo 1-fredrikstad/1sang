@@ -99,7 +99,7 @@ export default function SuggestionPage() {
       {/* Chords */}
       {hasChords && (
         <div className="flex items-center justify-center gap-2 mt-3">
-          <Switch checked={showChords} onCheckedChange={setShowChords} />
+          <Switch size="lg" checked={showChords} onCheckedChange={setShowChords} />
           <span className="text-sm opacity-60">Vis akkorder</span>
         </div>
       )}

@@ -317,6 +317,7 @@ export default function SongForm({
       {/* Chord-toggle */}
       <div className="flex items-center gap-3 mt-2">
         <Switch
+          size="lg"
           checked={hasChords}
           onCheckedChange={(val) => setValue('has_chords', val)}
           className="cursor-pointer"
