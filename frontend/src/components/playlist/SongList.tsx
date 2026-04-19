@@ -34,12 +34,12 @@ export default function SongList({
   const renderList = (songs: Song[]) =>
     songs.map((song: Song) => (
       <li key={song.id} className="flex items-center gap-2">
-        <span
+        <button
           onClick={() => onToggleSong(song)}
           className="flex-1 hover:shadow-sm active:scale-[0.99] w-full transition cursor-pointer"
         >
           <SongBox song={song} mode="select" hoverVariant={isAdded(song.id) ? 'red' : 'green'} />
-        </span>
+        </button>
       </li>
     ));
 
