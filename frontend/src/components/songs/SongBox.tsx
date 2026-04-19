@@ -8,6 +8,7 @@ type SongBoxProps = {
   song: Song;
   mode?: 'link' | 'select';
   hoverVariant?: 'default' | 'none' | 'green' | 'red';
+  playlistId?: string;
 };
 
 const modeStyles = {
@@ -19,7 +20,12 @@ const modeStyles = {
   },
 } as const;
 
-export function SongBox({ song, mode = 'link', hoverVariant = 'default' }: SongBoxProps) {
+export function SongBox({
+  song,
+  mode = 'link',
+  hoverVariant = 'default',
+  playlistId,
+}: SongBoxProps) {
   const config = modeStyles[mode];
 
   const hoverClasses =
@@ -49,7 +55,10 @@ export function SongBox({ song, mode = 'link', hoverVariant = 'default' }: SongB
   }
 
   return (
-    <Link href={`/songs/${song.slug}`} className="block">
+    <Link
+      href={playlistId ? `/songs/${song.slug}?playlistId=${playlistId}` : `/songs/${song.slug}`}
+      className="block"
+    >
       {content}
     </Link>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type Song } from '@/src/lib/db';
 import BackButton from '@/src/components/BackButton';
@@ -13,10 +13,18 @@ import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { StarIcon } from '@/src/components/songs/StarIcon';
+import { useSearchParams } from 'next/navigation';
+import { usePlaylistDetails } from '@/src/hooks/usePlaylistDetails';
+import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
+import { useSwipeable } from 'react-swipeable';
 
 export default function SongPage() {
   const { slug } = useParams<{ slug: string }>();
   const { isAdmin } = useAuth();
+  const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const playlistId = searchParams.get('playlistId');
   const [showChords, setShowChords] = useState(false);
 
   const song = useLiveQuery<Song | undefined>(
@@ -35,6 +43,36 @@ export default function SongPage() {
 
     return await db.tags.where('id').anyOf(tagIds).toArray();
   }, [song?.id]);
+
+  // Navigation between songs in playlist
+  const { songs: playlistSongs } = usePlaylistDetails(playlistId || '');
+  const safePlaylistSongs = playlistSongs ?? [];
+
+  const currentIndex = safePlaylistSongs.findIndex((s) => s.slug === song?.slug);
+
+  const prevSong = currentIndex > 0 ? safePlaylistSongs[currentIndex - 1] : null;
+
+  const nextSong =
+    currentIndex >= 0 && currentIndex < safePlaylistSongs.length - 1
+      ? safePlaylistSongs[currentIndex + 1]
+      : null;
+
+  // Enable swipe actions for next and prev navigation
+  const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      if (nextSong) {
+        router.push(`/songs/${nextSong.slug}?playlistId=${playlistId}`);
+      }
+    },
+    onSwipedRight: () => {
+      if (prevSong) {
+        router.push(`/songs/${prevSong.slug}?playlistId=${playlistId}`);
+      }
+    },
+    trackTouch: true,
+    trackMouse: true,
+    delta: 50,
+  });
 
   if (!song) {
     return (
@@ -66,7 +104,7 @@ export default function SongPage() {
   const hasChords = song.verses?.some((v) => v.includes('[')) || song.chorus?.includes('[');
 
   return (
-    <main className="flex flex-col justify-center gap-4">
+    <main {...handlers} className="flex flex-col justify-center gap-4 touch-pan-y">
       {/* Header */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3 relative">
@@ -85,14 +123,14 @@ export default function SongPage() {
       </div>
 
       <section className="flex flex-col items-center justify-center">
-        <h1 className="title-headline capitalize-first">{song.title}</h1>
+        <h1 className="title-headline capitalize-first text-center flex-1">{song.title}</h1>
 
         {/* Song content */}
 
         {/* Melody & link */}
         {song.melody && <p className="opacity-60 mt-4">Melodi: {song.melody}</p>}
         {song.spotify_youtube && (
-          <p className="opacity-60 mt-1 flex flex-col items-center">
+          <p className="opacity-60 mt-1 flex items-center gap-2">
             <span>Link:</span>
             <a
               href={song.spotify_youtube}
@@ -140,6 +178,41 @@ export default function SongPage() {
             </>
           )}
         </div>
+
+        {/* Next and prev buttons */}
+        {playlistId && (
+          <div className="flex justify-center gap-10 mt-10">
+            <button
+              onClick={() => {
+                if (prevSong) {
+                  router.push(`/songs/${prevSong.slug}?playlistId=${playlistId}`);
+                }
+              }}
+              disabled={!prevSong}
+              className="group flex flex-col items-center cursor-pointer text-sm opacity-70 hover:opacity-100 transition-all duration-200 disabled:opacity-30 disabled:cursor-default"
+            >
+              <ArrowLeftIcon className="h-5" />
+              <span className="text-[12px] mt-1 opacity-0 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0">
+                Forrige
+              </span>
+            </button>
+
+            <button
+              onClick={() => {
+                if (nextSong) {
+                  router.push(`/songs/${nextSong.slug}?playlistId=${playlistId}`);
+                }
+              }}
+              disabled={!nextSong}
+              className="group flex flex-col items-center cursor-pointer text-sm opacity-70 hover:opacity-100 transition-all duration-200 disabled:opacity-30 disabled:cursor-default"
+            >
+              <ArrowRightIcon className="h-5" />
+              <span className="text-[12px] mt-1 opacity-0 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0">
+                Neste
+              </span>
+            </button>
+          </div>
+        )}
       </section>
     </main>
   );
