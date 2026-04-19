@@ -70,7 +70,7 @@ export default function SongPage() {
       }
     },
     trackTouch: true,
-    trackMouse: true,
+    trackMouse: false,
     delta: 50,
   });
 
