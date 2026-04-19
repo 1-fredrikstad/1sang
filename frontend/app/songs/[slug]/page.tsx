@@ -9,10 +9,10 @@ import { useAuth } from '@/src/context/AuthContext';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import { FaSpotify, FaYoutube } from 'react-icons/fa';
 import Lyrics from '@/src/components/songs/Lyrics';
-import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { StarIcon } from '@/src/components/songs/StarIcon';
+import TagComponent from '@/src/components/TagComponent';
 
 export default function SongPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -110,7 +110,6 @@ export default function SongPage() {
         {hasChords && (
           <div className="flex items-center gap-2 mt-3">
             <Switch
-              size="lg"
               checked={showChords}
               onCheckedChange={setShowChords}
               className="cursor-pointer"
@@ -133,9 +132,7 @@ export default function SongPage() {
               <div className="flex flex-wrap justify-center gap-1 mt-5">
                 <span className="opacity-60 leading-tight">Tags: </span>
                 {tags.map((tag) => (
-                  <Badge key={tag.id || tag.name} variant="secondary" className="p-2.5 mr-1">
-                    {tag.name}
-                  </Badge>
+                  <TagComponent key={tag.id || tag.name} tag={tag} />
                 ))}
               </div>
             </>
