@@ -464,9 +464,9 @@ export default function EditPlaylistPage() {
   return (
     <main className="relative w-full max-w-300 mx-auto px-4">
       <PlaylistForm onSubmit={handleSubmit} initialValues={initialValues} mode="edit" />
-      <div className="flex justify-center">
+      <section className="mx-auto max-w-2xl mt-4">
         <DeletePlaylistButton playlistId={id} isPublic={isPublicPlaylist} />
-      </div>
+      </section>
     </main>
   );
 }
