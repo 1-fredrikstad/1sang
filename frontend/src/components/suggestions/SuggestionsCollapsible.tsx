@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import ChevronDownIcon from '@heroicons/react/24/solid/ChevronDownIcon';
+import { Badge } from '@/components/ui/badge';
 import { type SongSuggestion } from '@/src/lib/db';
 
 interface SuggestionsCollapsibleProps {
@@ -12,12 +13,20 @@ interface SuggestionsCollapsibleProps {
 
 export function SuggestionsCollapsible({ suggestions }: SuggestionsCollapsibleProps) {
   const [open, setOpen] = useState(suggestions.length > 0);
+  const noOfSuggestions = suggestions.length;
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger asChild>
         <div className="group w-full flex items-center justify-between cursor-pointer">
-          <span>Inkomne sangforslag</span>
+          <span>
+            Inkomne sangforslag
+            {noOfSuggestions > 0 && (
+              <Badge variant="destructive" className="font-bold ml-2">
+                {noOfSuggestions}
+              </Badge>
+            )}
+          </span>
           <ChevronDownIcon className="h-5 w-5 allow-animation transition-transform duration-500 group-data-[state=open]:rotate-180" />
         </div>
       </CollapsibleTrigger>

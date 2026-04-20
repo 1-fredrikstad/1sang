@@ -33,7 +33,7 @@ export default function LogoutButton() {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          variant="outline"
+          variant="destructive"
           size="lg"
           className="p-3 text-md cursor-pointer"
           aria-label="Logg ut"

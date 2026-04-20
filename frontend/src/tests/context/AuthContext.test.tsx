@@ -43,8 +43,9 @@ describe('AuthContext', () => {
     render(
       <AuthContext.Provider
         value={{
-          user: { name: 'Test User', email: 'test@example.com' },
+          user: { name: 'Test User', email: 'test@example.com', role: 'superuser' },
           isAdmin: true,
+          isSuperuser: true,
           logout: vi.fn(),
         }}
       >
