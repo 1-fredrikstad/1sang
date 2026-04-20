@@ -58,7 +58,7 @@ if (normalizedSongs.length === 0) {
 const chunkSize = 200;
 for (let i = 0; i < normalizedSongs.length; i += chunkSize) {
   const chunk = normalizedSongs.slice(i, i + chunkSize);
-  const { error } = await supabase.from('songs').insert(chunk);
+  const { error } = await supabase.from('songs').upsert(chunk, { onConflict: 'title' }); // Prevents duplicates if seeding multiple times
   if (error) throw error;
   console.log(`Inserted ${i + chunk.length}/${normalizedSongs.length}`);
 }
