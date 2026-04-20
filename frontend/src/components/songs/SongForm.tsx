@@ -10,7 +10,7 @@ import SubmitButton from '../SubmitButton';
 import { Button } from '@/components/ui/button';
 import SectionInput from '../SectionInput';
 import ChordPreview from '../chords/ChordPreview';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 
 /**
@@ -99,8 +99,7 @@ export default function SongForm({
    * Chorus UI toggle (local UI state, not persisted field)
    * Controls whether chorus input exists in the form.
    */
-  // const [hasChorus, sethasChorus] = useState(false);
-  const hasChorus = !!chorusValue.trim();
+  const [hasChorus, setHasChorus] = useState(!!initialValues?.chorus);
 
   /**
    * Chords toggle stored in form state (boolean)
@@ -290,6 +289,7 @@ export default function SongForm({
             onRemove={() => {
               setValue('chorus', '');
               clearErrors('chorus');
+              setHasChorus(false);
             }}
             removeText="refreng"
             charCount={chorusCharCount}
@@ -300,7 +300,7 @@ export default function SongForm({
             <Button
               type="button"
               onClick={() => {
-                setValue('chorus', '');
+                setHasChorus(true);
               }}
               className="cursor-pointer hover:bg-btn-hover"
             >
