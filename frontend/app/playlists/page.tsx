@@ -28,7 +28,9 @@ export default function PlaylistsPage() {
   // Sort public playlists
   const sortedPublicPlaylists = useMemo(() => {
     return [...(publicPlaylists ?? [])].sort((a, b) =>
-      (a.title ?? '').trim().localeCompare((b.title ?? '').trim(), 'no', { sensitivity: 'variant' })
+      (a.title ?? '')
+        .trim()
+        .localeCompare((b.title ?? '').trim(), 'no', { sensitivity: 'variant', numeric: true })
     );
   }, [publicPlaylists]);
 
@@ -39,7 +41,7 @@ export default function PlaylistsPage() {
       .sort((a, b) =>
         (a.title ?? '')
           .trim()
-          .localeCompare((b.title ?? '').trim(), 'no', { sensitivity: 'variant' })
+          .localeCompare((b.title ?? '').trim(), 'no', { sensitivity: 'variant', numeric: true })
       );
   }, [playlistsFromDexie]);
 

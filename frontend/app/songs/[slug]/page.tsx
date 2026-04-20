@@ -19,19 +19,24 @@ import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
 import { useSwipeable } from 'react-swipeable';
 
 export default function SongPage() {
+  // Read dynamic route param: /songs/[slug]
   const { slug } = useParams<{ slug: string }>();
+  // Check whether current user is admin
   const { isAdmin } = useAuth();
   const router = useRouter();
 
   const searchParams = useSearchParams();
   const playlistId = searchParams.get('playlistId');
+  // Toggle for showing/hiding chords in lyrics
   const [showChords, setShowChords] = useState(false);
 
+  // Load song by slug from IndexedDB
   const song = useLiveQuery<Song | undefined>(
     () => (slug ? db.songs.where('slug').equals(slug).first() : undefined),
     [slug]
   );
 
+  // Load tags connected to the song through relation table
   const tags = useLiveQuery(async () => {
     if (!song?.id) return [];
 
@@ -74,6 +79,7 @@ export default function SongPage() {
     delta: 50,
   });
 
+  // Loading state while song is fetched
   if (!song) {
     return (
       <div className="flex justify-center items-center min-h-screen text-center">
@@ -82,6 +88,7 @@ export default function SongPage() {
     );
   }
 
+  // Detect platform from external song link
   const getLinkPlatform = (url: string) => {
     try {
       const hostname = new URL(url).hostname;
@@ -93,14 +100,17 @@ export default function SongPage() {
         return { name: 'YouTube', icon: FaYoutube, color: 'text-red-500' };
       }
     } catch {
+      // Invalid URL fallback
       return { name: 'Link' };
     }
-
+    // Default fallback
     return { name: 'Link' };
   };
 
+  // Platform display info for current song link
   const { name, icon: Icon, color } = getLinkPlatform(song.spotify_youtube || '');
 
+  // Check whether song contains chord markers like [G], [Am], etc.
   const hasChords = song.verses?.some((v) => v.includes('[')) || song.chorus?.includes('[');
 
   return (
@@ -156,8 +166,9 @@ export default function SongPage() {
           </div>
         )}
 
+        {/* Lyrics */}
         <pre className="mt-5 flex justify-center text-center whitespace-pre-wrap">
-          <Lyrics chorus={song.chorus} verses={song.verses} showChords={showChords} />{' '}
+          <Lyrics song={song} showChords={showChords} />{' '}
         </pre>
 
         {/* Author */}
