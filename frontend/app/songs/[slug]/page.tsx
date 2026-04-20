@@ -80,12 +80,12 @@ export default function SongPage() {
       {/* Header */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3 relative">
-          <BackButton href="/" />
+          <BackButton />
           <div className="absolute right-0 flex items-center gap-2">
             <StarIcon songId={song.id} />
             {isAdmin && (
               <div>
-                <Link href={`/songs/${slug}/edit`}>
+                <Link href={`/songs/${slug}/edit`} replace>
                   <PencilSquareIcon className="size-6 cursor-pointer" />
                 </Link>
               </div>

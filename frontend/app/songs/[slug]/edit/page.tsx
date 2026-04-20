@@ -114,12 +114,12 @@ export default function EditSongPage() {
       );
     }
 
-    router.push(`/songs/${updatedSong?.slug ?? song.slug}`);
+    router.replace(`/songs/${updatedSong?.slug ?? song.slug}`);
   };
 
   return (
     <main>
-      <BackButton />
+      <BackButton fallback={`/songs/${slug}`} />
 
       <SongForm
         heading="Rediger sang"
