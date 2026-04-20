@@ -7,6 +7,17 @@ vi.mock('dexie-react-hooks', () => ({
   useLiveQuery: vi.fn(),
 }));
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    replace: vi.fn(),
+  }),
+  usePathname: () => '/',
+  useSearchParams: () => ({
+    get: () => null,
+    toString: () => '',
+  }),
+}));
+
 vi.mock('@/src/components/SongBox', () => ({
   SongBox: ({ song }: { song: { id: string; title: string } }) => <div>{song.title}</div>,
 }));

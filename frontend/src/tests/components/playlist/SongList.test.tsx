@@ -31,21 +31,7 @@ describe('SongList', () => {
     expect(screen.getByText(/error/i)).toBeInTheDocument();
   });
 
-  test('renders error state', () => {
-    render(
-      <SongList
-        songs={[]}
-        isLoading={false}
-        error={new Error('fail')}
-        onToggleSong={vi.fn()}
-        isAdded={() => false}
-      />
-    );
-
-    expect(screen.getByText(/error/i)).toBeInTheDocument();
-  });
-
-  test('calls onToggleSong when button clicked', async () => {
+  test('calls onToggleSong when song is clicked', async () => {
     const user = userEvent.setup();
     const song = { id: '1', title: 'A' } as Song;
     const onToggleSong = vi.fn();
@@ -60,8 +46,9 @@ describe('SongList', () => {
       />
     );
 
-    await user.click(screen.getByText('+'));
+    await user.click(screen.getByText('A'));
 
+    expect(onToggleSong).toHaveBeenCalledTimes(1);
     expect(onToggleSong).toHaveBeenCalledWith(song);
   });
 });

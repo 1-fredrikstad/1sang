@@ -9,6 +9,7 @@ type Song = {
   verses: string[];
   position?: number;
   [key: string]: unknown;
+  has_chords: boolean;
 };
 
 type State = {

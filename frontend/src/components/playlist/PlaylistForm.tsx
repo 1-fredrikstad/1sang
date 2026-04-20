@@ -3,15 +3,12 @@
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { getPlaylistFieldValidation } from '@/src/lib/validation/playlistSchema';
 import { PlaylistInputs } from '@/src/types/playlistInputs';
-import SongList from './SongList';
 import { useSongs } from '@/src/hooks/useData';
-import { Song } from '@/src/lib/db';
-import { useCallback } from 'react';
-import { toast } from 'sonner';
+import { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import MobileTooltip from '../MobileTooltip';
-import { useRouter } from 'next/navigation';
+import SubmitButton from '../SubmitButton';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldDescription } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -22,6 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import PlaylistSongPickerModal from './PlaylistSongPickerModal';
+import { SongBox } from '../songs/SongBox';
 
 type PlaylistFormProps = {
   onSubmit: SubmitHandler<PlaylistInputs>;
@@ -34,14 +33,12 @@ export default function PlaylistForm({
   initialValues,
   mode = 'create',
 }: PlaylistFormProps) {
-  const router = useRouter();
-
   const {
     register,
     handleSubmit,
     setValue,
     control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
   } = useForm<PlaylistInputs>({
     defaultValues: initialValues ?? {
@@ -54,51 +51,30 @@ export default function PlaylistForm({
     },
   });
 
-  const songsInPlaylist = useWatch({ name: 'songsInPlaylist', control });
   const isPublic = useWatch({ name: 'isPublic', control });
+  const [open, setOpen] = useState(false);
 
-  const {
-    data: songs,
-    isLoading,
-    error,
-  } = useSongs({
+  const songsInPlaylist = useWatch({
+    name: 'songsInPlaylist',
+    control,
+  });
+
+  const hasSongs = songsInPlaylist.length > 0;
+
+  const { data: songs } = useSongs({
     maxAgeMins: 5,
     syncOnMount: true,
   });
 
-  const isSongAdded = useCallback(
-    (id: string) => songsInPlaylist.some((s) => s.id === id),
-    [songsInPlaylist]
-  );
-
-  const toggleSong = useCallback(
-    (song: Song) => {
-      const exists = songsInPlaylist.some((s) => s.id === song.id);
-
-      if (exists) {
-        setValue(
-          'songsInPlaylist',
-          songsInPlaylist.filter((s) => s.id !== song.id)
-        );
-        toast.error('Sang fjernet');
-      } else {
-        setValue('songsInPlaylist', [...songsInPlaylist, song]);
-        toast.success('Sang lagt til');
-      }
-    },
-    [songsInPlaylist, setValue]
-  );
-
   const handleFormSubmit: SubmitHandler<PlaylistInputs> = async (data) => {
     await onSubmit(data);
-    router.push('/');
   };
 
   return (
     <form
       id="form-add-playlist"
       onSubmit={handleSubmit(handleFormSubmit)}
-      className="flex flex-col m-4 gap-1 max-w-2xl"
+      className="flex flex-col m-4 mx-auto gap-1 max-w-2xl"
     >
       <h1 className="text-xl mb-2">
         {mode === 'edit' ? 'Rediger spilleliste' : 'Lag ny spilleliste'}
@@ -133,24 +109,48 @@ export default function PlaylistForm({
 
         {/* Songlist */}
         <Field>
-          <FieldLabel>Legg til sanger</FieldLabel>
-          <SongList
-            songs={songs}
-            isLoading={isLoading}
-            error={error}
-            onToggleSong={toggleSong}
-            isAdded={isSongAdded}
+          <FieldLabel>
+            {hasSongs ? `Sanger (${songsInPlaylist.length})` : 'Legg til sanger'}
+          </FieldLabel>
+
+          {songsInPlaylist.length > 0 && (
+            <ul className="flex flex-col gap-2 mt-2">
+              {songsInPlaylist.map((song) => (
+                <li key={song.id}>
+                  <SongBox song={song} mode="select" hoverVariant="none" />
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <div className="mt-2">
+            <Button type="button" onClick={() => setOpen(true)}>
+              {hasSongs ? 'Endre sanger' : 'Velg sanger'}
+            </Button>
+          </div>
+
+          <PlaylistSongPickerModal
+            songs={songs ?? []}
+            open={open}
+            onOpenChange={setOpen}
+            songsInPlaylist={songsInPlaylist}
+            setSongsInPlaylist={(songs) => setValue('songsInPlaylist', songs)}
           />
         </Field>
 
         {/* Public switch */}
         <Field className="flex flex-row">
           <FieldLabel>Offentlig spilleliste</FieldLabel>
-          <Switch checked={isPublic} onCheckedChange={(val) => setValue('isPublic', val)} />
+          <Switch
+            checked={isPublic}
+            onCheckedChange={(val) => setValue('isPublic', val)}
+            disabled={isSubmitting}
+            className="cursor-pointer"
+          />
         </Field>
 
         {/* Duration */}
-        {mode === 'create' && isPublic && (
+        {isPublic && (
           <Field>
             <FieldLabel>
               <span className="flex items-center gap-2">
@@ -165,6 +165,7 @@ export default function PlaylistForm({
             <Select
               defaultValue="604800"
               onValueChange={(value) => setValue('duration', Number(value))}
+              disabled={isSubmitting}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Velg varighet" />
@@ -180,8 +181,11 @@ export default function PlaylistForm({
       </FieldGroup>
 
       <div className="flex gap-4 mt-4">
-        <Button type="submit">{mode === 'edit' ? 'Lagre endringer' : 'Opprett spilleliste'}</Button>
-        <Button type="button" variant="outline" onClick={() => reset()}>
+        <SubmitButton
+          submitLabel={mode === 'edit' ? 'Lagre endringer' : 'Opprett spilleliste'}
+          disabled={isSubmitting}
+        />
+        <Button type="button" variant="outline" onClick={() => reset()} disabled={isSubmitting}>
           Reset
         </Button>
       </div>

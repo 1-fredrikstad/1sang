@@ -21,7 +21,9 @@ describe('ChordPreview', () => {
     );
 
     await user.click(screen.getByText('hello'));
-    await user.click(screen.getByRole('button', { name: 'C' }));
+    const chordButton = await screen.findByRole('button', { name: 'C' });
+
+    await user.click(chordButton);
 
     expect(onChange).toHaveBeenCalledWith(expect.stringContaining('[C]'));
   });

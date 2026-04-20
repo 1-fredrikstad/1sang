@@ -114,6 +114,7 @@ export function ChordPopover({ isOpen, token, onClose, onChordSelect }: ChordPop
           type="text"
           value={customChord}
           placeholder="Egen akkord"
+          maxLength={10}
           onChange={(e) => setCustomChord(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
