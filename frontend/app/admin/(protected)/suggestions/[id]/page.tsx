@@ -106,7 +106,7 @@ export default function SuggestionPage() {
 
       {/* Lyrics */}
       <pre className="mt-8 flex justify-center text-center whitespace-pre-wrap">
-        <Lyrics chorus={suggestion.chorus} verses={suggestion.verses} showChords={showChords} />
+        <Lyrics song={suggestion} showChords={showChords} />
       </pre>
 
       {/* Author */}

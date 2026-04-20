@@ -62,8 +62,8 @@ export default function EditSuggestionPage() {
               author: data.author || undefined,
               chorus: data.chorus || undefined,
               verses: data.verses,
-              spotify_youtube: suggestion.spotify_youtube || undefined,
-              has_chords: suggestion.has_chords,
+              spotify_youtube: data.spotify_youtube || undefined,
+              has_chords: data.has_chords,
             });
 
             // Keep Dexie cache in sync immdiately after update
@@ -73,9 +73,8 @@ export default function EditSuggestionPage() {
               console.log('Dexie updated manually:', updatedRow.title);
             }
 
-            toast('Forslag oppdatert!');
             router.push(`/admin/suggestions/${id}`);
-            router.refresh();
+            // router.refresh();
           } catch (err: unknown) {
             console.error(err);
             const message = err instanceof Error ? err.message : 'Ukjent feil';
