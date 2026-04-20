@@ -10,7 +10,8 @@ if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
   throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
 }
 
-// Seeds songs from the sanger.json file into supabase database
+// Seeds songs from the json file into supabase database
+// In this case, the json file (sanger.json) is not included in the repo for copyright purposes
 const inputArg = process.argv[2] || './sanger.json';
 const inputPath = path.resolve(process.cwd(), inputArg);
 
