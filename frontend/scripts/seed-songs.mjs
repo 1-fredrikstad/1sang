@@ -19,6 +19,7 @@ const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { persistSession: false },
 });
 
+// Normalizes a song object by trimming strings and ensuring the verses are an array of non-empty strings
 function normalizeSong(song) {
   const verses = Array.isArray(song?.verses)
     ? song.verses.map((v) => String(v).trim()).filter(Boolean)
@@ -37,6 +38,7 @@ function normalizeSong(song) {
 const raw = await fs.readFile(inputPath, 'utf8');
 const parsed = JSON.parse(raw);
 
+// Ensures that the json file is either an array of songs or an object with a "songs" array
 const sourceSongs = Array.isArray(parsed)
   ? parsed
   : Array.isArray(parsed?.songs)
