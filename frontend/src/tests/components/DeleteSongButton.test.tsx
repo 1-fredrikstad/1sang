@@ -1,3 +1,4 @@
+import type { ComponentProps, PropsWithChildren } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi, beforeEach, describe, test, expect } from 'vitest';
@@ -44,6 +45,22 @@ vi.mock('sonner', () => ({
   },
 }));
 
+vi.mock('@/components/ui/button', () => ({
+  Button: (props: ComponentProps<'button'>) => <button {...props} />,
+}));
+
+vi.mock('@/components/ui/alert-dialog', () => ({
+  AlertDialog: ({ children }: PropsWithChildren) => <div>{children}</div>,
+  AlertDialogTrigger: ({ children }: PropsWithChildren) => <div>{children}</div>,
+  AlertDialogPortal: ({ children }: PropsWithChildren) => <div>{children}</div>,
+  AlertDialogContent: ({ children }: PropsWithChildren) => <div>{children}</div>,
+  AlertDialogHeader: ({ children }: PropsWithChildren) => <div>{children}</div>,
+  AlertDialogTitle: ({ children }: PropsWithChildren) => <div>{children}</div>,
+  AlertDialogFooter: ({ children }: PropsWithChildren) => <div>{children}</div>,
+  AlertDialogCancel: (props: ComponentProps<'button'>) => <button {...props} />,
+  AlertDialogAction: (props: ComponentProps<'button'>) => <button {...props} />,
+}));
+
 import { DeleteSongButton } from '@/src/components/DeleteSongButton';
 import { db } from '@/src/lib/db';
 
@@ -61,7 +78,6 @@ beforeEach(() => {
   });
 
   global.fetch = vi.fn();
-  global.confirm = vi.fn();
 });
 
 describe('DeleteSongButton', () => {
@@ -70,11 +86,24 @@ describe('DeleteSongButton', () => {
     expect(screen.getByRole('button', { name: /slett sang/i })).toBeInTheDocument();
   });
 
+  test('shows confirmation dialog when clicking delete', async () => {
+    const user = userEvent.setup();
+
+    render(<DeleteSongButton songId="abc-123" />);
+    await user.click(screen.getByRole('button', { name: /slett sang/i }));
+
+    expect(screen.getByText(/er du sikker på at du vil slette sangen\?/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /avbryt/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /bekreft sletting av sang/i })).toBeInTheDocument();
+  });
+
   test('shows error toast and does not delete when offline', async () => {
+    const user = userEvent.setup();
     mockUseOnlineStatus.mockReturnValue(false);
 
     render(<DeleteSongButton songId="abc-123" />);
-    await userEvent.click(screen.getByRole('button', { name: /slett sang/i }));
+    await user.click(screen.getByRole('button', { name: /slett sang/i }));
+    await user.click(screen.getByRole('button', { name: /bekreft sletting av sang/i }));
 
     expect(mockToastError).toHaveBeenCalledWith('Du er offline. Gå online for å slette sangen.');
     expect(global.fetch).not.toHaveBeenCalled();
@@ -83,8 +112,11 @@ describe('DeleteSongButton', () => {
   });
 
   test('shows error toast and does not delete when song id is missing', async () => {
+    const user = userEvent.setup();
+
     render(<DeleteSongButton songId="" />);
-    await userEvent.click(screen.getByRole('button', { name: /slett sang/i }));
+    await user.click(screen.getByRole('button', { name: /slett sang/i }));
+    await user.click(screen.getByRole('button', { name: /bekreft sletting av sang/i }));
 
     expect(mockToastError).toHaveBeenCalledWith('Mangler sang-ID');
     expect(global.fetch).not.toHaveBeenCalled();
@@ -92,27 +124,29 @@ describe('DeleteSongButton', () => {
     expect(mockReplace).not.toHaveBeenCalled();
   });
 
-  test('does nothing when user cancels confirm dialog', async () => {
-    vi.mocked(global.confirm).mockReturnValue(false);
+  test('does nothing when user clicks cancel', async () => {
+    const user = userEvent.setup();
 
     render(<DeleteSongButton songId="abc-123" />);
-    await userEvent.click(screen.getByRole('button', { name: /slett sang/i }));
+    await user.click(screen.getByRole('button', { name: /slett sang/i }));
+    await user.click(screen.getByRole('button', { name: /avbryt/i }));
 
-    expect(global.confirm).toHaveBeenCalledWith('Er du sikker på at du vil slette sangen?');
     expect(global.fetch).not.toHaveBeenCalled();
     expect(db.songs.delete).not.toHaveBeenCalled();
     expect(mockReplace).not.toHaveBeenCalled();
   });
 
   test('deletes song, removes from db, and redirects on success', async () => {
-    vi.mocked(global.confirm).mockReturnValue(true);
+    const user = userEvent.setup();
+
     vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: vi.fn().mockResolvedValue({ ok: true }),
     } as unknown as Response);
 
     render(<DeleteSongButton songId="abc-123" />);
-    await userEvent.click(screen.getByRole('button', { name: /slett sang/i }));
+    await user.click(screen.getByRole('button', { name: /slett sang/i }));
+    await user.click(screen.getByRole('button', { name: /bekreft sletting av sang/i }));
 
     expect(global.fetch).toHaveBeenCalledWith('/api/songs/abc-123', {
       method: 'DELETE',
@@ -129,15 +163,17 @@ describe('DeleteSongButton', () => {
   });
 
   test('handles failed delete response and shows error toast', async () => {
+    const user = userEvent.setup();
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.mocked(global.confirm).mockReturnValue(true);
+
     vi.mocked(global.fetch).mockResolvedValue({
       ok: false,
       json: vi.fn().mockResolvedValue({ error: 'Sletting feilet' }),
     } as unknown as Response);
 
     render(<DeleteSongButton songId="abc-123" />);
-    await userEvent.click(screen.getByRole('button', { name: /slett sang/i }));
+    await user.click(screen.getByRole('button', { name: /slett sang/i }));
+    await user.click(screen.getByRole('button', { name: /bekreft sletting av sang/i }));
 
     await waitFor(() => {
       expect(mockToastError).toHaveBeenCalledWith('Sletting feilet');
