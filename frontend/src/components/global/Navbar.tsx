@@ -21,6 +21,7 @@ import {
 
 import { useAuth } from '@/src/context/AuthContext';
 import SongOrPlaylistBox from '../SongOrPlaylistBox';
+import { useSongSuggestions } from '@/src/hooks/useData';
 
 type NavItem = {
   id: string;
@@ -30,6 +31,7 @@ type NavItem = {
   IconSolid: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 };
 
+// Bottom navigation configuration
 const navItems: NavItem[] = [
   { id: 'home', href: '/', label: 'Hjem', IconOutline: HomeOutline, IconSolid: HomeSolid },
   {
@@ -61,9 +63,20 @@ export default function Navbar() {
   const pathname = usePathname();
   const { isAdmin } = useAuth();
 
+  // Fetch all song suggestions
+  const { data: suggestions } = useSongSuggestions();
+  // Determine whether there are pending suggestions
+  const hasSuggestions = (suggestions?.length ?? 0) > 0;
+  // If admin + suggestions -> show a dot on settings
+  const showSuggestionDot = isAdmin && hasSuggestions;
+
+  // Visibility of "add song/playlist" modal
   const [showSongOrPlaylistBox, setShowSongOrPlaylistBox] = useState(false);
+
+  // Label changes depending on user role
   const songChoice = isAdmin ? 'Publiser sang' : 'Send inn sangforslag';
 
+  // Handle navigation clicks
   const handleNavClick = (e: React.MouseEvent, isAdd: boolean) => {
     if (isAdd) {
       e.preventDefault();
@@ -88,11 +101,15 @@ export default function Navbar() {
         <div className="mx-auto grid max-w-md grid-cols-5">
           {navItems.map(({ id, href, label, IconOutline, IconSolid }) => {
             const isAdd = id === 'add';
+
+            // Determine active tab state
             const isActive = isAdd
               ? showSongOrPlaylistBox
               : href === '/'
                 ? pathname === '/'
                 : pathname.startsWith(href);
+
+            // Switch icon style based on active state
             const Icon = isActive ? IconSolid : IconOutline;
 
             return (
@@ -104,12 +121,20 @@ export default function Navbar() {
                 className="group relative flex flex-col items-center justify-center py-2 transition-opacity duration-200"
                 aria-current={isActive ? 'page' : undefined}
               >
-                <Icon
-                  className={`h-7 w-7 text-foreground transition-all duration-200 ${
-                    isActive ? 'opacity-100' : 'opacity-70'
-                  } group-hover:opacity-100`}
-                />
+                {/* Icon wrapper used for positioning notification dot */}
+                <div className="relative">
+                  <Icon
+                    className={`h-7 w-7 text-foreground transition-all duration-200 ${
+                      isActive ? 'opacity-100' : 'opacity-70'
+                    } group-hover:opacity-100`}
+                  />
+                  {/* If suggestions and admin -> show red dot on settings (cog) */}
+                  {id === 'settings' && showSuggestionDot && (
+                    <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500 ring-2 ring-background translate-x-1/3 -translate-y-1/3" />
+                  )}
+                </div>
 
+                {/* Label under icon */}
                 <span
                   className={`text-[10px] mt-1 transition-all ${
                     isActive ? 'opacity-100' : 'opacity-70'
@@ -117,11 +142,6 @@ export default function Navbar() {
                 >
                   {label}
                 </span>
-
-                {/* Black text at full opacity if link is active */}
-                {/* {isActive && (
-                  <span className="absolute bottom-2 h-0.5 w-6 rounded-full bg-foreground" />
-                )} */}
               </Link>
             );
           })}
