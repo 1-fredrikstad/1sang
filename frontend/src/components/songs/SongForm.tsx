@@ -90,32 +90,6 @@ export default function SongForm({
   });
 
   /**
-   * Reactive field subscriptions (UI-only derived values)
-   * useWatch ensures component re-renders when values change.
-   */
-  const chorusValue = useWatch({ control, name: 'chorus' }) || '';
-  const chorusCharCount = chorusValue.length;
-
-  const watchVerses = useWatch({ control, name: 'verses' }) || [];
-
-  /**
-   * Chorus UI toggle (local UI state, not persisted field)
-   * Controls whether chorus input exists in the form.
-   */
-  const [hasChorus, setHasChorus] = useState(!!initialValues?.chorus);
-
-  /**
-   * Chords toggle stored in form state (boolean)
-   */
-  const hasChords = useWatch({
-    control,
-    name: 'has_chords',
-    defaultValue: false,
-  });
-
-  const selectedTags = useWatch({ control, name: 'tags' }) ?? [];
-
-  /**
    * Hydrate form when editing existing song.
    * React Hook Form does NOT update defaultValues after mount,
    * so reset() is required when initialValues arrives async.
@@ -151,7 +125,9 @@ export default function SongForm({
    * Chorus UI toggle (local UI state, not persisted field)
    * Controls whether chorus input exists in the form.
    */
-  const [hasChorus, sethasChorus] = useState(false);
+  const [hasChorus, setHasChorus] = useState(!!initialValues?.chorus);
+
+  const selectedTags = useWatch({ control, name: 'tags' }) ?? [];
 
   /**
    * Chords toggle stored in form state (boolean)
@@ -170,8 +146,6 @@ export default function SongForm({
       setValue('has_chords', false);
     }
   }, [hasAnyVerseContent, hasChords, setValue]);
-
-  const selectedTags = useWatch({ control, name: 'tags' }) ?? [];
 
   /**
    * Submit handler:
@@ -231,7 +205,10 @@ export default function SongForm({
           <Input
             id="form-add-song-title"
             aria-invalid={!!errors.title}
-            {...register('title', { ...getFieldValidation('title'), setValueAs: (v) => v.trim() })}
+            {...register('title', {
+              ...getFieldValidation('title'),
+              setValueAs: (v) => (typeof v === 'string' ? v.trim() : v),
+            })}
             placeholder="Når dagen begynnner en knute jeg gjør"
             onBlur={(e) => setValue('title', capitalizeFirst(e.target.value))}
             className="focus-visible:ring-1 text-sm"
@@ -247,7 +224,7 @@ export default function SongForm({
             aria-invalid={!!errors.author}
             {...register('author', {
               ...getFieldValidation('author'),
-              setValueAs: (v) => v.trim(),
+              setValueAs: (v) => (typeof v === 'string' ? v.trim() : v),
             })}
             placeholder="Hans Møller Gasmann"
             onBlur={(e) => setValue('author', capitalizeFirst(e.target.value))}
@@ -264,7 +241,7 @@ export default function SongForm({
             aria-invalid={!!errors.melody}
             {...register('melody', {
               ...getFieldValidation('melody'),
-              setValueAs: (v) => v.trim(),
+              setValueAs: (v) => (typeof v === 'string' ? v.trim() : v),
             })}
             placeholder="Turallerei"
             onBlur={(e) => setValue('melody', capitalizeFirst(e.target.value))}
@@ -325,7 +302,7 @@ export default function SongForm({
               label={`Vers ${i + 1}`}
               register={register(`verses.${i}`, {
                 ...getFieldValidation('verses'),
-                setValueAs: (v) => v.trim(),
+                setValueAs: (v) => (typeof v === 'string' ? v.trim() : v),
               })}
               error={errors.verses && errors.verses[i]?.message}
               removable={i > 0}
@@ -362,7 +339,7 @@ export default function SongForm({
           <SectionInput
             register={register('chorus', {
               ...getFieldValidation('chorus'),
-              setValueAs: (v) => v.trim(),
+              setValueAs: (v) => (typeof v === 'string' ? v.trim() : v),
             })}
             error={errors.chorus?.message}
             removable
