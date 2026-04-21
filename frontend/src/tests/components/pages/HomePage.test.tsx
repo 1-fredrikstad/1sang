@@ -1,8 +1,11 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect } from 'vitest';
 import { HomePage } from '@/src/components/pages/HomePage';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { TagFilterProvider } from '@/src/context/TagFilterContext';
 
+// Mock dependencies
 vi.mock('dexie-react-hooks', () => ({
   useLiveQuery: vi.fn(),
 }));
@@ -41,14 +44,19 @@ describe('HomePage', () => {
   it('viser alle sanger når ingen tag er valgt', () => {
     vi.mocked(useLiveQuery).mockReturnValue([]);
 
-    render(<HomePage songs={songs as never[]} isLoading={false} error={null} />);
-
+    render(
+      <TagFilterProvider>
+        <HomePage songs={songs as never[]} isLoading={false} error={null} />
+      </TagFilterProvider>
+    );
     expect(screen.getByText('Song A')).toBeInTheDocument();
     expect(screen.getByText('Song B')).toBeInTheDocument();
     expect(screen.getByText('Song C')).toBeInTheDocument();
   });
 
-  it('viser bare sanger som matcher valgt tag', () => {
+  it('viser bare sanger som matcher valgt tag', async () => {
+    const user = userEvent.setup();
+
     vi.mocked(useLiveQuery).mockImplementation((_, deps) => {
       const selectedTags = deps?.[0] as { id: string; name: string }[];
 
@@ -56,15 +64,36 @@ describe('HomePage', () => {
         return [];
       }
 
+      // Simulate that tag 'tag1' matches song 1 and 3
       return ['1', '3'];
     });
 
-    render(<HomePage songs={songs as never[]} isLoading={false} error={null} />);
+    render(
+      <TagFilterProvider>
+        <HomePage songs={songs as never[]} isLoading={false} error={null} />
+      </TagFilterProvider>
+    );
 
-    fireEvent.click(screen.getByText('Velg tag'));
+    await user.click(screen.getByText('Velg tag'));
 
     expect(screen.getByText('Song A')).toBeInTheDocument();
     expect(screen.queryByText('Song B')).not.toBeInTheDocument();
     expect(screen.getByText('Song C')).toBeInTheDocument();
+  });
+
+  it('viser melding når ingen sanger matcher filteret', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(useLiveQuery).mockReturnValue(['999']); // Non-existing song id
+
+    render(
+      <TagFilterProvider>
+        <HomePage songs={songs as never[]} isLoading={false} error={null} />
+      </TagFilterProvider>
+    );
+
+    await user.click(screen.getByText('Velg tag'));
+
+    expect(screen.getByText(/ingen sanger matcher valgte tags/i)).toBeInTheDocument();
   });
 });

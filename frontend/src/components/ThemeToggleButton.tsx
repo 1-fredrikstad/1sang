@@ -20,6 +20,7 @@ export default function ThemeToggleButton() {
         {isDark ? 'Bytt til lys modus' : 'Bytt til mørk modus'}
       </label>
       <Switch
+        size="lg"
         checked={isDark}
         onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
         thumbContent={
