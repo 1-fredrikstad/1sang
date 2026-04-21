@@ -56,6 +56,7 @@ export function SuggestionActions({ id }: Props) {
       if (typeof window !== 'undefined' && db) {
         await db.song_suggestions.delete(id);
       }
+      toast.success('Sangforslag avvist og slettet');
       setTimeout(() => router.push('/admin'), 300);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Ukjent feil';

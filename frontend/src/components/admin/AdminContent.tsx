@@ -4,22 +4,69 @@ import { Spinner } from '@/components/ui/spinner';
 import { useSongs, useSongSuggestions } from '@/src/hooks/useData';
 import { SuggestionsCollapsible } from '../suggestions/SuggestionsCollapsible';
 import { useAuth } from '@/src/context/AuthContext';
-import UserRoleManager from './UserRoleManager';
+import UserRoleManager, { type AdminUser } from './UserRoleManager';
 import ExportLatexModal from '../latex/ExportLatexModal';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { generateLatex } from '../latex/GenerateLatex';
 import TagManager from './TagManager';
+import { createClient } from '@/src/lib/supabase/client';
+import { toast } from 'sonner';
 
 export default function AdminContent() {
   const { data: suggestions, isLoading: suggestionsLoading } = useSongSuggestions();
-  const { user, isSuperuser } = useAuth();
+  const { user, isAdmin, isSuperuser } = useAuth();
 
   const [open, setOpen] = useState(false);
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
 
   const { data: songs, isLoading: songsLoading } = useSongs({
     maxAgeMins: 5,
   });
+
+  const getAuthHeaders = async (): Promise<Record<string, string>> => {
+    const supabase = createClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.access_token) return {};
+
+    return {
+      Authorization: `Bearer ${session.access_token}`,
+    };
+  };
+
+  const loadUsers = useCallback(async () => {
+    try {
+      setUsersLoading(true);
+      const authHeaders = await getAuthHeaders();
+
+      const res = await fetch('/api/admin/users', {
+        headers: authHeaders,
+      });
+
+      const json = await res.json().catch(() => null);
+
+      if (!res.ok || !json?.ok) {
+        throw new Error(json?.error || 'Kunne ikke hente brukere');
+      }
+
+      setUsers(json.data ?? []);
+    } catch (error) {
+      console.error(error);
+      toast.error(error instanceof Error ? error.message : 'Noe gikk galt');
+    } finally {
+      setUsersLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isSuperuser) {
+      loadUsers();
+    }
+  }, [isSuperuser, loadUsers]);
 
   if (suggestionsLoading) {
     return <Spinner message="Laster inn admin" />;
@@ -65,11 +112,13 @@ export default function AdminContent() {
       </section>
 
       <article className="allow-animation mt-5">
-        <SuggestionsCollapsible suggestions={suggestions || []} />
+        {isAdmin && <SuggestionsCollapsible suggestions={suggestions || []} />}
       </article>
 
       <section className="flex flex-col items-center mt-5">
-        {isSuperuser && <UserRoleManager />}
+        {isSuperuser && (
+          <UserRoleManager users={users} loading={usersLoading} onReload={loadUsers} />
+        )}
       </section>
 
       <article className="allow-animation mt-5">

@@ -141,7 +141,7 @@ export default function EditSongPage() {
         }}
         onSubmit={handleSubmit}
       />
-      <section className="mx-auto max-w-2xl mt-5">
+      <section className="mx-auto max-w-2xl mt-4">
         <DeleteSongButton
           songId={song.id}
           className="danger"
