@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { db } from '@/src/lib/db';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -27,11 +28,17 @@ export default function TagSelect({ value, onChange, triggerClassName }: TagSele
 
   useEffect(() => {
     const fetchTags = async () => {
-      const res = await fetch('/api/tags');
-      const body = await res.json();
-
-      if (body.ok) {
-        setTags(body.data);
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        // if offline: get tags from IndexedDB
+        const localTags = await db.tags.toArray();
+        setTags(localTags);
+      } else {
+        // if online: get tags from API
+        const res = await fetch('/api/tags');
+        const body = await res.json();
+        if (body.ok) {
+          setTags(body.data);
+        }
       }
     };
 
