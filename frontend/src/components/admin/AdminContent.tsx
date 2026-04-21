@@ -9,6 +9,7 @@ import ExportLatexModal from '../latex/ExportLatexModal';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { generateLatex } from '../latex/GenerateLatex';
+import TagManager from './TagManager';
 
 export default function AdminContent() {
   const { data: suggestions, isLoading: suggestionsLoading } = useSongSuggestions();
@@ -70,6 +71,10 @@ export default function AdminContent() {
       <section className="flex flex-col items-center mt-5">
         {isSuperuser && <UserRoleManager />}
       </section>
+
+      <article className="allow-animation mt-5">
+        <TagManager />
+      </article>
     </main>
   );
 }
