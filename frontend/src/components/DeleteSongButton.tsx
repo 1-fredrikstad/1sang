@@ -1,12 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { db } from '@/src/lib/db';
 import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
 import { toast } from 'sonner';
 import { createClient } from '@/src/lib/supabase/client';
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogPortal,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 
 type Props = {
   songId: string;
@@ -29,7 +40,7 @@ export function DeleteSongButton({
   const isOnline = useOnlineStatus();
   const supabase = createClient();
 
-  const onDelete = async () => {
+  const performDelete = async () => {
     if (!isOnline) {
       toast.error('Du er offline. Gå online for å slette sangen.');
       return;
@@ -39,8 +50,6 @@ export function DeleteSongButton({
       toast.error('Mangler sang-ID');
       return;
     }
-
-    if (!confirm(confirmText)) return;
 
     try {
       setIsDeleting(true);
@@ -80,13 +89,39 @@ export function DeleteSongButton({
   };
 
   return (
-    <button
-      onClick={onDelete}
-      disabled={isDeleting}
-      aria-label="Slett sang"
-      className={`p-3 bg-danger hover:cursor-pointer hover:bg-danger-hover rounded-sm ${className ?? ''}`}
-    >
-      <Image src="/trash.png" alt="" width={18} height={18} />
-    </button>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button
+          disabled={isDeleting}
+          aria-label="Slett sang"
+          variant={'destructive'}
+          className={`hover:cursor-pointer text-red-500 ${className ?? ''}`}
+        >
+          Slett sang
+        </Button>
+      </AlertDialogTrigger>
+
+      <AlertDialogPortal>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{confirmText}</AlertDialogTitle>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel variant="outline" aria-label="Avbryt" disabled={isDeleting}>
+              Avbryt
+            </AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={performDelete}
+              aria-label="Bekreft sletting av sang"
+              disabled={isDeleting}
+            >
+              Slett
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialogPortal>
+    </AlertDialog>
   );
 }

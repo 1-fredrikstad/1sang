@@ -8,6 +8,7 @@ import { Song, db } from '@/src/lib/db';
 import { toast } from 'sonner';
 import { createClient } from '@/src/lib/supabase/client';
 import { DeletePlaylistButton } from '@/src/components/playlist/DeletePlaylistButton';
+import BackButton from '@/src/components/BackButton';
 
 type PlaylistResponse = {
   id: string;
@@ -463,10 +464,11 @@ export default function EditPlaylistPage() {
 
   return (
     <main className="relative w-full max-w-300 mx-auto px-4">
+      <BackButton />
       <PlaylistForm onSubmit={handleSubmit} initialValues={initialValues} mode="edit" />
-      <div className="flex justify-center">
+      <section className="mx-auto max-w-2xl mt-4">
         <DeletePlaylistButton playlistId={id} isPublic={isPublicPlaylist} />
-      </div>
+      </section>
     </main>
   );
 }
