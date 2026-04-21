@@ -183,13 +183,17 @@ export function validateSongInput(input: Partial<SongInput>): SongValidationErro
   }
 
   data.verses.forEach((verse, i) => {
-    if (verse.length < songSuggestionSchema.verses.minLength) {
+    const trimmed = verse.trim();
+
+    if (trimmed.length === 0) return;
+
+    if (trimmed.length < songSuggestionSchema.verses.minLength) {
       errors[`verses.${i}` as keyof SongValidationErrors] =
         songSuggestionSchema.verses.messages.minLength;
-    } else if (verse.length > songSuggestionSchema.verses.maxLength) {
+    } else if (trimmed.length > songSuggestionSchema.verses.maxLength) {
       errors[`verses.${i}` as keyof SongValidationErrors] =
         songSuggestionSchema.verses.messages.maxLength;
-    } else if (!LYRICS_PATTERN.test(verse)) {
+    } else if (!LYRICS_PATTERN.test(trimmed)) {
       errors[`verses.${i}` as keyof SongValidationErrors] =
         songSuggestionSchema.verses.messages.pattern;
     }

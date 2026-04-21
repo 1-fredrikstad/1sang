@@ -209,7 +209,7 @@ export default function SongForm({
           <Input
             id="form-add-song-title"
             aria-invalid={!!errors.title}
-            {...register('title', getFieldValidation('title'))}
+            {...register('title', { ...getFieldValidation('title'), setValueAs: (v) => v.trim() })}
             placeholder="Når dagen begynnner en knute jeg gjør"
             onBlur={(e) => setValue('title', capitalizeFirst(e.target.value))}
             className="focus-visible:ring-1 text-sm"
@@ -223,7 +223,10 @@ export default function SongForm({
           <Input
             id="form-add-song-author"
             aria-invalid={!!errors.author}
-            {...register('author', getFieldValidation('author'))}
+            {...register('author', {
+              ...getFieldValidation('author'),
+              setValueAs: (v) => v.trim(),
+            })}
             placeholder="Hans Møller Gasmann"
             onBlur={(e) => setValue('author', capitalizeFirst(e.target.value))}
             className="focus-visible:ring-1 text-sm"
@@ -237,7 +240,10 @@ export default function SongForm({
           <Input
             id="form-add-song-melody"
             aria-invalid={!!errors.melody}
-            {...register('melody', getFieldValidation('melody'))}
+            {...register('melody', {
+              ...getFieldValidation('melody'),
+              setValueAs: (v) => v.trim(),
+            })}
             placeholder="Turallerei"
             onBlur={(e) => setValue('melody', capitalizeFirst(e.target.value))}
             className="focus-visible:ring-1 text-sm"
@@ -286,7 +292,7 @@ export default function SongForm({
       </FieldGroup>
 
       {/* Verses */}
-      <Field data-invalid={!!errors.verses}>
+      <Field data-invalid={typeof errors.verses === 'string'}>
         <FieldLabel>Vers*</FieldLabel>
         {watchVerses.map((verse, i) => {
           const charCount = verse?.length || 0;
@@ -295,7 +301,10 @@ export default function SongForm({
             <SectionInput
               key={i}
               label={`Vers ${i + 1}`}
-              register={register(`verses.${i}`, getFieldValidation('verses'))}
+              register={register(`verses.${i}`, {
+                ...getFieldValidation('verses'),
+                setValueAs: (v) => v.trim(),
+              })}
               error={errors.verses && errors.verses[i]?.message}
               removable={i > 0}
               onRemove={() => {
@@ -329,7 +338,10 @@ export default function SongForm({
         <FieldLabel>Refreng</FieldLabel>
         {hasChorus ? (
           <SectionInput
-            register={register('chorus', getFieldValidation('chorus'))}
+            register={register('chorus', {
+              ...getFieldValidation('chorus'),
+              setValueAs: (v) => v.trim(),
+            })}
             error={errors.chorus?.message}
             removable
             onRemove={() => {
