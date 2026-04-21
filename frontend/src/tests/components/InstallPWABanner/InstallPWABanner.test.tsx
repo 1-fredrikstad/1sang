@@ -17,6 +17,7 @@ describe('InstallPWABanner', () => {
     mockUsePWAInstall.mockReturnValue({
       install: vi.fn(),
       dismiss: vi.fn(),
+      close: vi.fn(),
       showInstallButton: false,
     });
 
@@ -28,12 +29,13 @@ describe('InstallPWABanner', () => {
     mockUsePWAInstall.mockReturnValue({
       install: vi.fn(),
       dismiss: vi.fn(),
+      close: vi.fn(),
       showInstallButton: true,
     });
 
     render(<InstallPWABanner />);
 
-    expect(screen.getByText('Installer Sanger under Liljen som app')).toBeInTheDocument();
+    expect(screen.getByText('Installer 1sang som app')).toBeInTheDocument();
 
     expect(screen.getByText('Installer')).toBeInTheDocument();
     expect(screen.getByText('Ikke vis igjen')).toBeInTheDocument();
@@ -46,6 +48,7 @@ describe('InstallPWABanner', () => {
     mockUsePWAInstall.mockReturnValue({
       install: installMock,
       dismiss: vi.fn(),
+      close: vi.fn(),
       showInstallButton: true,
     });
 
@@ -63,6 +66,7 @@ describe('InstallPWABanner', () => {
     mockUsePWAInstall.mockReturnValue({
       install: vi.fn(),
       dismiss: dismissMock,
+      close: vi.fn(),
       showInstallButton: true,
     });
 
@@ -71,5 +75,23 @@ describe('InstallPWABanner', () => {
     await user.click(screen.getByText('Ikke vis igjen'));
 
     expect(dismissMock).toHaveBeenCalled();
+  });
+
+  test('calls close when clicking close button', async () => {
+    const user = userEvent.setup();
+    const closeMock = vi.fn();
+
+    mockUsePWAInstall.mockReturnValue({
+      install: vi.fn(),
+      dismiss: vi.fn(),
+      close: closeMock,
+      showInstallButton: true,
+    });
+
+    render(<InstallPWABanner />);
+
+    await user.click(screen.getByLabelText('Lukk'));
+
+    expect(closeMock).toHaveBeenCalled();
   });
 });

@@ -1,14 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { createClient } from '@/src/lib/supabase/client';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import ChevronDownIcon from '@heroicons/react/24/solid/ChevronDownIcon';
-import { useCallback } from 'react';
+import { createClient } from '@/src/lib/supabase/client';
 
-type AdminUser = {
+export type AdminUser = {
   user_id: string;
   name: string | null;
   email: string | null;
@@ -16,11 +15,15 @@ type AdminUser = {
   created_at?: string | null;
 };
 
-export default function UserRoleManager() {
-  const [users, setUsers] = useState<AdminUser[]>([]);
-  const [loading, setLoading] = useState(true);
+type UserRoleManagerProps = {
+  users: AdminUser[];
+  loading: boolean;
+  onReload: () => Promise<void>;
+};
+
+export default function UserRoleManager({ users, loading, onReload }: UserRoleManagerProps) {
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const getAuthHeaders = async (): Promise<Record<string, string>> => {
     const supabase = createClient();
@@ -34,30 +37,6 @@ export default function UserRoleManager() {
       Authorization: `Bearer ${session.access_token}`,
     };
   };
-
-  const loadUsers = useCallback(async () => {
-    try {
-      setLoading(true);
-      const authHeaders = await getAuthHeaders();
-
-      const res = await fetch('/api/admin/users', {
-        headers: authHeaders,
-      });
-
-      const json = await res.json().catch(() => null);
-
-      if (!res.ok || !json?.ok) {
-        throw new Error(json?.error || 'Kunne ikke hente brukere');
-      }
-
-      setUsers(json.data ?? []);
-    } catch (error) {
-      console.error(error);
-      toast.error(error instanceof Error ? error.message : 'Noe gikk galt');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   const updateRole = async (targetUserId: string, role: 'regular' | 'admin') => {
     try {
@@ -83,7 +62,7 @@ export default function UserRoleManager() {
       }
 
       toast.success(role === 'admin' ? 'Bruker gjort til admin' : 'Admin fjernet');
-      await loadUsers();
+      await onReload();
     } catch (error) {
       console.error(error);
       toast.error(error instanceof Error ? error.message : 'Noe gikk galt');
@@ -91,10 +70,6 @@ export default function UserRoleManager() {
       setUpdatingUserId(null);
     }
   };
-
-  useEffect(() => {
-    loadUsers();
-  }, [loadUsers]);
 
   return (
     <div className="w-full">
@@ -129,9 +104,7 @@ export default function UserRoleManager() {
                               ? 'Vanlig bruker'
                               : user.role === 'admin'
                                 ? 'Admin'
-                                : user.role === 'superuser'
-                                  ? 'Superbruker'
-                                  : user.role}
+                                : 'Superbruker'}
                           </p>
                           {user.created_at && (
                             <p className="text-xs text-muted-foreground mt-1">

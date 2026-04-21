@@ -80,7 +80,9 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
       // 'no' - gives correct norwegian sorting (æ, ø, å)
       // sensitivity 'base' - lowercase and uppercase doesn't affect sorting
       (a, b) =>
-        (a.title ?? '').trim().localeCompare((b.title ?? '').trim(), 'no', { sensitivity: 'base' })
+        (a.title ?? '')
+          .trim()
+          .localeCompare((b.title ?? '').trim(), 'no', { sensitivity: 'base', numeric: true })
     );
   }, [filteredSongs]);
 

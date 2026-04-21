@@ -95,7 +95,7 @@ export default function PlaylistDetailPage() {
       ) : (
         <div className="space-y-2">
           {songs.map((song, i) => (
-            <PlaylistSongItem key={song.id} song={song} index={i} />
+            <PlaylistSongItem key={song.id} song={song} index={i} playlistId={playlist.id} />
           ))}
         </div>
       )}

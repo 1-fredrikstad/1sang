@@ -82,7 +82,7 @@ export default function SuggestionPage() {
       {suggestion.melody && <p className="opacity-60 mt-1">Melodi: {suggestion.melody}</p>}
       {/* Spotify/Youtube */}
       {suggestion.spotify_youtube && (
-        <p className="opacity-60 mt-1 flex flex-col items-center">
+        <p className="opacity-60 mt-1 flex items-center gap-2">
           <span>Link:</span>
           <a
             href={suggestion.spotify_youtube}
@@ -106,7 +106,7 @@ export default function SuggestionPage() {
 
       {/* Lyrics */}
       <pre className="mt-8 flex justify-center text-center whitespace-pre-wrap">
-        <Lyrics chorus={suggestion.chorus} verses={suggestion.verses} showChords={showChords} />
+        <Lyrics song={suggestion} showChords={showChords} />
       </pre>
 
       {/* Author */}
