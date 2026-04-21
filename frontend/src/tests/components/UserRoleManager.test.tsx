@@ -2,7 +2,7 @@ import type { ComponentProps, PropsWithChildren } from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import UserRoleManager from '@/src/components/admin/UserRoleManager';
+import UserRoleManager, { type AdminUser } from '@/src/components/admin/UserRoleManager';
 
 const { mockGetSession, mockToastSuccess, mockToastError } = vi.hoisted(() => ({
   mockGetSession: vi.fn(),
@@ -35,14 +35,9 @@ vi.mock('@/components/ui/collapsible', () => ({
   CollapsibleContent: ({ children }: PropsWithChildren) => <div>{children}</div>,
 }));
 
-function mockUsersResponse(users: unknown[]) {
-  vi.mocked(global.fetch).mockResolvedValueOnce({
-    ok: true,
-    json: async () => ({ ok: true, data: users }),
-  } as Response);
-}
-
 describe('UserRoleManager', () => {
+  const mockOnReload = vi.fn();
+
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -57,72 +52,71 @@ describe('UserRoleManager', () => {
     global.fetch = vi.fn();
   });
 
-  it('shows loading initially', () => {
-    render(<UserRoleManager />);
+  function renderComponent({
+    users = [],
+    loading = false,
+  }: {
+    users?: AdminUser[];
+    loading?: boolean;
+  } = {}) {
+    return render(<UserRoleManager users={users} loading={loading} onReload={mockOnReload} />);
+  }
+
+  it('shows loading state', () => {
+    renderComponent({ loading: true });
+
     expect(screen.getByText(/laster brukere/i)).toBeInTheDocument();
   });
 
-  it('renders users from API', async () => {
-    mockUsersResponse([
-      {
-        user_id: '1',
-        name: 'Test User',
-        email: 'test@example.com',
-        role: 'regular',
-      },
-    ]);
-
-    render(<UserRoleManager />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Test User')).toBeInTheDocument();
-      expect(screen.getByText('test@example.com')).toBeInTheDocument();
-      expect(screen.getByText(/rolle: vanlig bruker/i)).toBeInTheDocument();
+  it('renders users from props', async () => {
+    renderComponent({
+      users: [
+        {
+          user_id: '1',
+          name: 'Test User',
+          email: 'test@example.com',
+          role: 'regular',
+        },
+      ],
     });
+
+    expect(screen.getByText('Test User')).toBeInTheDocument();
+    expect(screen.getByText('test@example.com')).toBeInTheDocument();
+    expect(screen.getByText(/rolle: vanlig bruker/i)).toBeInTheDocument();
   });
 
-  it('shows empty state when no users', async () => {
-    mockUsersResponse([]);
+  it('shows empty state when no users', () => {
+    renderComponent({ users: [] });
 
-    render(<UserRoleManager />);
-
-    await waitFor(() => {
-      expect(screen.getByText(/ingen brukere funnet/i)).toBeInTheDocument();
-    });
+    expect(screen.getByText(/ingen brukere funnet/i)).toBeInTheDocument();
   });
 
-  it('shows correct actions for each role', async () => {
-    mockUsersResponse([
-      { user_id: '1', name: 'A', email: '', role: 'regular' },
-      { user_id: '2', name: 'B', email: '', role: 'admin' },
-      { user_id: '3', name: 'C', email: '', role: 'superuser' },
-    ]);
-
-    render(<UserRoleManager />);
-
-    await waitFor(() => {
-      expect(screen.getByText(/gjør admin/i)).toBeInTheDocument();
-      expect(screen.getByText(/fjern admin/i)).toBeInTheDocument();
-      expect(screen.getByText(/rolle: superbruker/i)).toBeInTheDocument();
+  it('shows correct actions for each role', () => {
+    renderComponent({
+      users: [
+        { user_id: '1', name: 'A', email: '', role: 'regular' },
+        { user_id: '2', name: 'B', email: '', role: 'admin' },
+        { user_id: '3', name: 'C', email: '', role: 'superuser' },
+      ],
     });
+
+    expect(screen.getByText(/gjør admin/i)).toBeInTheDocument();
+    expect(screen.getByText(/fjern admin/i)).toBeInTheDocument();
+    expect(screen.getByText(/rolle: superbruker/i)).toBeInTheDocument();
   });
 
   it('promotes a user to admin', async () => {
     const user = userEvent.setup();
-
-    mockUsersResponse([{ user_id: '1', name: 'User', email: '', role: 'regular' }]);
 
     vi.mocked(global.fetch).mockResolvedValueOnce({
       ok: true,
       json: async () => ({ ok: true }),
     } as Response);
 
-    mockUsersResponse([]);
+    mockOnReload.mockResolvedValue(undefined);
 
-    render(<UserRoleManager />);
-
-    await waitFor(() => {
-      expect(screen.getByText(/gjør admin/i)).toBeInTheDocument();
+    renderComponent({
+      users: [{ user_id: '1', name: 'User', email: '', role: 'regular' }],
     });
 
     await user.click(screen.getByText(/gjør admin/i));
@@ -132,64 +126,59 @@ describe('UserRoleManager', () => {
         '/api/admin/users/role',
         expect.objectContaining({
           method: 'PATCH',
+          body: JSON.stringify({
+            targetUserId: '1',
+            role: 'admin',
+          }),
         })
       );
       expect(mockToastSuccess).toHaveBeenCalledWith('Bruker gjort til admin');
+      expect(mockOnReload).toHaveBeenCalled();
     });
   });
 
   it('demotes an admin to regular', async () => {
     const user = userEvent.setup();
 
-    mockUsersResponse([{ user_id: '1', name: 'Admin', email: '', role: 'admin' }]);
-
     vi.mocked(global.fetch).mockResolvedValueOnce({
       ok: true,
       json: async () => ({ ok: true }),
     } as Response);
 
-    mockUsersResponse([]);
+    mockOnReload.mockResolvedValue(undefined);
 
-    render(<UserRoleManager />);
-
-    await waitFor(() => {
-      expect(screen.getByText(/fjern admin/i)).toBeInTheDocument();
+    renderComponent({
+      users: [{ user_id: '1', name: 'Admin', email: '', role: 'admin' }],
     });
 
     await user.click(screen.getByText(/fjern admin/i));
 
     await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/admin/users/role',
+        expect.objectContaining({
+          method: 'PATCH',
+          body: JSON.stringify({
+            targetUserId: '1',
+            role: 'regular',
+          }),
+        })
+      );
       expect(mockToastSuccess).toHaveBeenCalledWith('Admin fjernet');
-    });
-  });
-
-  it('shows error when loading users fails', async () => {
-    vi.mocked(global.fetch).mockResolvedValueOnce({
-      ok: false,
-      json: async () => ({ error: 'Feil' }),
-    } as Response);
-
-    render(<UserRoleManager />);
-
-    await waitFor(() => {
-      expect(mockToastError).toHaveBeenCalled();
+      expect(mockOnReload).toHaveBeenCalled();
     });
   });
 
   it('shows error when updating role fails', async () => {
     const user = userEvent.setup();
 
-    mockUsersResponse([{ user_id: '1', name: 'User', email: '', role: 'regular' }]);
-
     vi.mocked(global.fetch).mockResolvedValueOnce({
       ok: false,
       json: async () => ({ error: 'Oppdatering feilet' }),
     } as Response);
 
-    render(<UserRoleManager />);
-
-    await waitFor(() => {
-      expect(screen.getByText(/gjør admin/i)).toBeInTheDocument();
+    renderComponent({
+      users: [{ user_id: '1', name: 'User', email: '', role: 'regular' }],
     });
 
     await user.click(screen.getByText(/gjør admin/i));

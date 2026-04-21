@@ -5,10 +5,12 @@ import { Suspense } from 'react';
 import { useAuth } from '@/src/context/AuthContext';
 import { createClient } from '@/src/lib/supabase/client';
 import { syncService } from '@/src/lib/syncService';
+import { useRouter } from 'next/navigation';
 
 export default function AddSongPage() {
   const { isAdmin } = useAuth();
   const supabase = createClient();
+  const router = useRouter();
 
   if (isAdmin === null) {
     return <div>Henter skjema...</div>;
@@ -56,6 +58,8 @@ export default function AddSongPage() {
           if (!res.ok || body?.error) {
             throw new Error('Kunne ikke legge til sang');
           }
+
+          router.push('/');
         }}
       />
     </Suspense>

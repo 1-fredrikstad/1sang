@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import TagSelect from '../TagSelect';
 import SubmitButton from '../SubmitButton';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import SectionInput from '../SectionInput';
 import ChordPreview from '../chords/ChordPreview';
@@ -90,7 +89,31 @@ export default function SongForm({
     },
   });
 
-  const router = useRouter();
+  /**
+   * Reactive field subscriptions (UI-only derived values)
+   * useWatch ensures component re-renders when values change.
+   */
+  const chorusValue = useWatch({ control, name: 'chorus' }) || '';
+  const chorusCharCount = chorusValue.length;
+
+  const watchVerses = useWatch({ control, name: 'verses' }) || [];
+
+  /**
+   * Chorus UI toggle (local UI state, not persisted field)
+   * Controls whether chorus input exists in the form.
+   */
+  const [hasChorus, setHasChorus] = useState(!!initialValues?.chorus);
+
+  /**
+   * Chords toggle stored in form state (boolean)
+   */
+  const hasChords = useWatch({
+    control,
+    name: 'has_chords',
+    defaultValue: false,
+  });
+
+  const selectedTags = useWatch({ control, name: 'tags' }) ?? [];
 
   /**
    * Hydrate form when editing existing song.
@@ -166,7 +189,6 @@ export default function SongForm({
       await onSubmit(payload);
 
       toast.success(toastSuccessMessage);
-      router.push('/');
     } catch (error) {
       console.error(error);
       toast.error(error instanceof Error ? error.message : 'Noe gikk galt');
@@ -345,9 +367,9 @@ export default function SongForm({
             error={errors.chorus?.message}
             removable
             onRemove={() => {
-              sethasChorus(false);
               setValue('chorus', '');
               clearErrors('chorus');
+              setHasChorus(false);
             }}
             removeText="refreng"
             charCount={chorusCharCount}
@@ -358,7 +380,7 @@ export default function SongForm({
             <Button
               type="button"
               onClick={() => {
-                sethasChorus(true);
+                setHasChorus(true);
               }}
               className="cursor-pointer hover:bg-btn-hover"
             >

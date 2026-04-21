@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type Song } from '@/src/lib/db';
 import BackButton from '@/src/components/BackButton';
@@ -13,17 +13,30 @@ import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { StarIcon } from '@/src/components/songs/StarIcon';
+import { useSearchParams } from 'next/navigation';
+import { usePlaylistDetails } from '@/src/hooks/usePlaylistDetails';
+import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
+import { useSwipeable } from 'react-swipeable';
 
 export default function SongPage() {
+  // Read dynamic route param: /songs/[slug]
   const { slug } = useParams<{ slug: string }>();
+  // Check whether current user is admin
   const { isAdmin } = useAuth();
+  const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const playlistId = searchParams.get('playlistId');
+  // Toggle for showing/hiding chords in lyrics
   const [showChords, setShowChords] = useState(false);
 
+  // Load song by slug from IndexedDB
   const song = useLiveQuery<Song | undefined>(
     () => (slug ? db.songs.where('slug').equals(slug).first() : undefined),
     [slug]
   );
 
+  // Load tags connected to the song through relation table
   const tags = useLiveQuery(async () => {
     if (!song?.id) return [];
 
@@ -36,6 +49,37 @@ export default function SongPage() {
     return await db.tags.where('id').anyOf(tagIds).toArray();
   }, [song?.id]);
 
+  // Navigation between songs in playlist
+  const { songs: playlistSongs } = usePlaylistDetails(playlistId || '');
+  const safePlaylistSongs = playlistSongs ?? [];
+
+  const currentIndex = safePlaylistSongs.findIndex((s) => s.slug === song?.slug);
+
+  const prevSong = currentIndex > 0 ? safePlaylistSongs[currentIndex - 1] : null;
+
+  const nextSong =
+    currentIndex >= 0 && currentIndex < safePlaylistSongs.length - 1
+      ? safePlaylistSongs[currentIndex + 1]
+      : null;
+
+  // Enable swipe actions for next and prev navigation
+  const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      if (nextSong) {
+        router.push(`/songs/${nextSong.slug}?playlistId=${playlistId}`);
+      }
+    },
+    onSwipedRight: () => {
+      if (prevSong) {
+        router.push(`/songs/${prevSong.slug}?playlistId=${playlistId}`);
+      }
+    },
+    trackTouch: true,
+    trackMouse: false,
+    delta: 50,
+  });
+
+  // Loading state while song is fetched
   if (!song) {
     return (
       <div className="flex justify-center items-center min-h-screen text-center">
@@ -44,6 +88,7 @@ export default function SongPage() {
     );
   }
 
+  // Detect platform from external song link
   const getLinkPlatform = (url: string) => {
     try {
       const hostname = new URL(url).hostname;
@@ -55,18 +100,21 @@ export default function SongPage() {
         return { name: 'YouTube', icon: FaYoutube, color: 'text-red-500' };
       }
     } catch {
+      // Invalid URL fallback
       return { name: 'Link' };
     }
-
+    // Default fallback
     return { name: 'Link' };
   };
 
+  // Platform display info for current song link
   const { name, icon: Icon, color } = getLinkPlatform(song.spotify_youtube || '');
 
+  // Check whether song contains chord markers like [G], [Am], etc.
   const hasChords = song.verses?.some((v) => v.includes('[')) || song.chorus?.includes('[');
 
   return (
-    <main className="flex flex-col justify-center gap-4">
+    <main {...handlers} className="flex flex-col justify-center gap-4 touch-pan-y">
       {/* Header */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3 relative">
@@ -85,14 +133,14 @@ export default function SongPage() {
       </div>
 
       <section className="flex flex-col items-center justify-center">
-        <h1 className="title-headline capitalize-first">{song.title}</h1>
+        <h1 className="title-headline capitalize-first text-center flex-1">{song.title}</h1>
 
         {/* Song content */}
 
         {/* Melody & link */}
         {song.melody && <p className="opacity-60 mt-4">Melodi: {song.melody}</p>}
         {song.spotify_youtube && (
-          <p className="opacity-60 mt-1 flex flex-col items-center">
+          <p className="opacity-60 mt-1 flex items-center gap-2">
             <span>Link:</span>
             <a
               href={song.spotify_youtube}
@@ -118,8 +166,9 @@ export default function SongPage() {
           </div>
         )}
 
+        {/* Lyrics */}
         <pre className="mt-5 flex justify-center text-center whitespace-pre-wrap">
-          <Lyrics chorus={song.chorus} verses={song.verses} showChords={showChords} />{' '}
+          <Lyrics song={song} showChords={showChords} />{' '}
         </pre>
 
         {/* Author */}
@@ -140,6 +189,41 @@ export default function SongPage() {
             </>
           )}
         </div>
+
+        {/* Next and prev buttons */}
+        {playlistId && (
+          <div className="flex justify-center gap-10 mt-10">
+            <button
+              onClick={() => {
+                if (prevSong) {
+                  router.push(`/songs/${prevSong.slug}?playlistId=${playlistId}`);
+                }
+              }}
+              disabled={!prevSong}
+              className="group flex flex-col items-center cursor-pointer text-sm opacity-70 hover:opacity-100 transition-all duration-200 disabled:opacity-30 disabled:cursor-default"
+            >
+              <ArrowLeftIcon className="h-5" />
+              <span className="text-[12px] mt-1 opacity-0 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0">
+                Forrige
+              </span>
+            </button>
+
+            <button
+              onClick={() => {
+                if (nextSong) {
+                  router.push(`/songs/${nextSong.slug}?playlistId=${playlistId}`);
+                }
+              }}
+              disabled={!nextSong}
+              className="group flex flex-col items-center cursor-pointer text-sm opacity-70 hover:opacity-100 transition-all duration-200 disabled:opacity-30 disabled:cursor-default"
+            >
+              <ArrowRightIcon className="h-5" />
+              <span className="text-[12px] mt-1 opacity-0 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0">
+                Neste
+              </span>
+            </button>
+          </div>
+        )}
       </section>
     </main>
   );

@@ -19,7 +19,9 @@ export default function FavoritesPage() {
   // Sort using Norwegian locale (handles æ, ø, å correctly)
   const sortedSongs = useMemo(() => {
     return [...(songs ?? [])].sort((a, b) =>
-      (a.title ?? '').trim().localeCompare((b.title ?? '').trim(), 'no', { sensitivity: 'variant' })
+      (a.title ?? '')
+        .trim()
+        .localeCompare((b.title ?? '').trim(), 'no', { sensitivity: 'variant', numeric: true })
     );
   }, [songs]);
 

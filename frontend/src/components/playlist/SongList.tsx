@@ -51,17 +51,11 @@ export default function SongList({
         {/* Tabs header */}
         <div className="sticky top-0 z-10 bg-popover isolate">
           <TabsList className="mb-2">
-            <TabsTrigger
-              value="all"
-              className="data-[state=active]:bg-list-bg data-[state=active]:border-0"
-            >
+            <TabsTrigger value="all" className="dark:border-none">
               Alle sanger ({availableSongs.length})
             </TabsTrigger>
 
-            <TabsTrigger
-              value="selected"
-              className="data-[state=active]:bg-list-bg data-[state=active]:border-0"
-            >
+            <TabsTrigger value="selected" className="dark:border-none">
               Valgte sanger ({addedSongs.length})
             </TabsTrigger>
           </TabsList>
