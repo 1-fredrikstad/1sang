@@ -94,7 +94,10 @@ export default function PlaylistForm({
           <FieldLabel htmlFor="playlist-title">Tittel*</FieldLabel>
           <Input
             id="playlist-title"
-            {...register('title', getPlaylistFieldValidation('title'))}
+            {...register('title', {
+              ...getPlaylistFieldValidation('title'),
+              setValueAs: (v) => (typeof v === 'string' ? v.trim() : v),
+            })}
             onBlur={(e) => setValue('title', capitalizeFirst(e.target.value))}
           />
           {errors.title && <FieldError errors={[errors.title]} />}
@@ -121,7 +124,10 @@ export default function PlaylistForm({
               <div className="relative">
                 <Input
                   id="playlist-password"
-                  {...register('password', getPlaylistFieldValidation('password'))}
+                  {...register('password', {
+                    ...getPlaylistFieldValidation('password'),
+                    setValueAs: (v) => (typeof v === 'string' ? v.trim() : v),
+                  })}
                   type={showPassword ? 'text' : 'password'}
                 />
                 <button
