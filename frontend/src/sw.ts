@@ -3,8 +3,8 @@
 import { defaultCache } from '@serwist/next/worker';
 import type { PrecacheEntry, SerwistGlobalConfig } from 'serwist';
 import { Serwist } from 'serwist';
-import { NetworkFirst } from 'serwist';
-import { CacheableResponsePlugin } from 'serwist';
+import { NetworkFirst, StaleWhileRevalidate } from 'serwist';
+import { CacheableResponsePlugin, ExpirationPlugin } from 'serwist';
 
 // This declares the value of `injectionPoint` to TypeScript.
 // `injectionPoint` is the string that will be replaced by the
@@ -30,16 +30,23 @@ const serwist = new Serwist({
   },
   runtimeCaching: [
     {
+      // Cache the HTML shell for dynamic song/playlist pages
+      matcher: ({ url }) =>
+        url.pathname.startsWith('/songs/') || url.pathname.startsWith('/playlists/'),
+      handler: new StaleWhileRevalidate({
+        cacheName: 'dynamic-pages',
+        plugins: [
+          new CacheableResponsePlugin({ statuses: [0, 200] }),
+          new ExpirationPlugin({ maxEntries: 200, maxAgeSeconds: 30 * 24 * 60 * 60 }),
+        ],
+      }),
+    },
+    {
       matcher: ({ request }) => request.mode === 'navigate' || request.destination === 'document',
-
       handler: new NetworkFirst({
         cacheName: 'pages',
         networkTimeoutSeconds: 3,
-        plugins: [
-          new CacheableResponsePlugin({
-            statuses: [0, 200],
-          }),
-        ],
+        plugins: [new CacheableResponsePlugin({ statuses: [0, 200] })],
       }),
     },
     ...defaultCache,

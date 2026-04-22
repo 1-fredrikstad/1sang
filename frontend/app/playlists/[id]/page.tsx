@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-static';
+
 import { useParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
 import BackButton from '@/src/components/BackButton';
@@ -20,6 +22,10 @@ export default function PlaylistDetailPage() {
 
   useEffect(() => {
     const loadAdmin = async () => {
+      if (!navigator.onLine) {
+        setIsAdmin(false);
+        return;
+      }
       try {
         const supabase = createClient();
         const {
