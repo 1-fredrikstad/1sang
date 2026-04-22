@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
-import { withDefaultSongTags } from '@/src/lib/constants/tags';
 import { capitalizeFirst } from '@/src/lib/utils/capitalizeFormat';
 
 function getPublicEnv() {
@@ -91,10 +90,9 @@ export async function PATCH(req: Request, ctx: Ctx) {
       has_chords: typeof json.has_chords === 'boolean' ? json.has_chords : false,
     };
 
-    const tags = Array.isArray(json.tags)
+    const finalTags = Array.isArray(json.tags)
       ? json.tags.filter((tagId: unknown): tagId is string => typeof tagId === 'string')
       : [];
-    const finalTags = withDefaultSongTags(tags);
 
     const { isAdmin } = await checkAdminAccess(token);
 

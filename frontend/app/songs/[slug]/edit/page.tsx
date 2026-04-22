@@ -10,7 +10,6 @@ import { createClient } from '@/src/lib/supabase/client';
 import { DeleteSongButton } from '@/src/components/DeleteSongButton';
 import { useState } from 'react';
 import { Spinner } from '@/components/ui/spinner';
-import { withDefaultSongTags } from '@/src/lib/constants/tags';
 
 export default function EditSongPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -94,7 +93,7 @@ export default function EditSongPage() {
 
     const updatedSong = body?.data;
 
-    const finalTagIds = withDefaultSongTags(data.tags ?? []);
+    const finalTagIds = data.tags ?? [];
 
     // Update tag relations locally
     await db.songs.update(song.id, {
