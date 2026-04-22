@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Song } from '@/src/lib/db';
 import { db } from '@/src/lib/db';
 import { SongBox } from '../songs/SongBox';
 import { SongListProps } from '@/src/types/songList';
@@ -12,6 +11,7 @@ import { useDebounce } from '@/src/hooks/useDebounce';
 import TagSelect from '@/src/components/TagSelect';
 import { searchSongs } from '@/src/lib/search/searchSongs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ScoredSong } from '@/src/types/scoredSong';
 import { useTagFilter } from '@/src/context/TagFilterContext';
 
 export function HomePage({ songs = [], isLoading, error }: SongListProps) {
@@ -69,21 +69,26 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
     }, [selectedTags]) ?? [];
 
   // Combine text search + tag filtering
-  const filteredSongs =
+  const filteredSongs: ScoredSong[] =
     selectedTags.length === 0
       ? searchedSongs
-      : searchedSongs.filter((song: Song) => matchingSongIds.includes(song.id));
+      : searchedSongs.filter((item) => matchingSongIds.includes(item.song.id));
 
   // Sort songs
   const sortedSongs = useMemo(() => {
-    return [...filteredSongs].sort(
+    return [...filteredSongs].sort((a, b) => {
+      // 1. Score first
+      const scoreDiff = b.score - a.score;
+      if (scoreDiff !== 0) return scoreDiff;
+
+      // 2. fallback: alphabetical sort
       // 'no' - gives correct norwegian sorting (æ, ø, å)
       // sensitivity 'base' - lowercase and uppercase doesn't affect sorting
-      (a, b) =>
-        (a.title ?? '')
-          .trim()
-          .localeCompare((b.title ?? '').trim(), 'no', { sensitivity: 'base', numeric: true })
-    );
+      return (a.song.title ?? '').trim().localeCompare((b.song.title ?? '').trim(), 'no', {
+        sensitivity: 'base',
+        numeric: true,
+      });
+    });
   }, [filteredSongs]);
 
   if (error) return <div>Error: {error.message}</div>;
@@ -135,9 +140,9 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
             </p>
           ) : (
             <ul className="flex flex-col gap-2">
-              {sortedSongs.map((song: Song) => (
-                <li key={song.id}>
-                  <SongBox song={song} />
+              {sortedSongs.map((item: ScoredSong) => (
+                <li key={item.song.id}>
+                  <SongBox song={item.song} />
                 </li>
               ))}
             </ul>
