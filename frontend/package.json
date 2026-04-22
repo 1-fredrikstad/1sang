@@ -10,7 +10,7 @@
     "lint": "eslint",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
-    "prepare": "husky",
+    "prepare": "if [ \"$VERCEL\" != \"1\" ]; then husky; fi",
     "test": "vitest",
     "cypress": "cypress open",
     "test:e2e": "start-server-and-test dev http://localhost:3000 cypress"
