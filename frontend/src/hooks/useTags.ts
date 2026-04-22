@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { syncService } from '@/src/lib/syncService';
 
 export type Tag = {
   id: string;
@@ -18,6 +19,9 @@ export function useTags() {
     if (body.ok) setTags(body.data);
     setIsLoading(false);
   };
+
+  // syncs Dexie so the rest of the app (song page, tag select) sees the change
+  const syncDexieTags = () => syncService.syncTable('tags', { forceFresh: true });
 
   useEffect(() => {
     fetchTags();
@@ -47,7 +51,7 @@ export function useTags() {
       const body = await res.json();
       if (!res.ok) throw new Error(body?.error ?? 'Opprettelse feilet');
       toast.success('Tag opprettet');
-      await fetchTags();
+      await Promise.all([fetchTags(), syncDexieTags()]);
       return true;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Kunne ikke opprette tag');
@@ -61,24 +65,15 @@ export function useTags() {
     if (!validate(name, id)) return false;
     setIsPending(true);
     try {
-      const deleteRes = await fetch('/api/tags', {
-        method: 'DELETE',
+      const res = await fetch('/api/tags', {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id, name: name.trim() }),
       });
-      const deleteBody = await deleteRes.json().catch(() => null);
-      if (!deleteRes.ok) throw new Error(deleteBody?.error ?? 'Oppdatering feilet');
-
-      const createRes = await fetch('/api/tags', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim() }),
-      });
-      const createBody = await createRes.json();
-      if (!createRes.ok) throw new Error(createBody?.error ?? 'Oppdatering feilet');
-
+      const body = await res.json();
+      if (!res.ok) throw new Error(body?.error ?? 'Oppdatering feilet');
       toast.success('Tag oppdatert');
-      await fetchTags();
+      await Promise.all([fetchTags(), syncDexieTags()]);
       return true;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Kunne ikke oppdatere tag');
@@ -100,7 +95,7 @@ export function useTags() {
       const body = await res.json().catch(() => null);
       if (!res.ok) throw new Error(body?.error ?? 'Sletting feilet');
       toast.success('Tag slettet');
-      await fetchTags();
+      await Promise.all([fetchTags(), syncDexieTags()]);
       return true;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Kunne ikke slette tag');
