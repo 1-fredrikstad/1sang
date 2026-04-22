@@ -41,7 +41,7 @@ export function SuggestionActions({ id }: Props) {
       setTimeout(() => router.push('/admin'), 300);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Ukjent feil';
-      toast(message || 'Kunne ikke godkjenne');
+      toast.error(message || 'Kunne ikke godkjenne');
     }
   }
 

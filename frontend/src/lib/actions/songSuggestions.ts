@@ -99,7 +99,13 @@ export async function approveSuggestion(id: string) {
 
   if (insertErr) {
     console.error(insertErr);
-    throw new Error('Kunne ikke legge til sang');
+    const errorMessage = insertErr.message ?? '';
+
+    throw new Error(
+      errorMessage.includes('songs_title_key') || errorMessage.includes('songs_slug_key')
+        ? 'Det finnes allerede en sang med denne tittelen'
+        : 'Kunne ikke legge til sangen'
+    );
   }
 
   // 3. Remove original suggestion
