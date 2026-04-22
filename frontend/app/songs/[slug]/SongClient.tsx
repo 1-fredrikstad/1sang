@@ -19,7 +19,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
 import { useSwipeable } from 'react-swipeable';
 import { Spinner } from '@/components/ui/spinner';
 
-export default function SongPage() {
+export default function SongClient() {
   // Read dynamic route param: /songs/[slug]
   const { slug } = useParams<{ slug: string }>();
   // Check whether current user is admin

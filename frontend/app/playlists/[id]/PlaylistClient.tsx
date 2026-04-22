@@ -10,7 +10,7 @@ import PlaylistSettingsMenu from '@/src/components/playlist/PlaylistSettingsMenu
 import { useEffect, useState } from 'react';
 import { createClient } from '@/src/lib/supabase/client';
 
-export default function PlaylistDetailPage() {
+export default function PlaylistClient() {
   const params = useParams<{ id: string }>();
   const id = params?.id as string | undefined;
 
