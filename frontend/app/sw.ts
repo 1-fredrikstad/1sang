@@ -8,14 +8,26 @@ declare global {
   }
 }
 
-declare const self: WorkerGlobalScope;
+declare const self: ServiceWorkerGlobalScope;
 
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   skipWaiting: true,
   clientsClaim: true,
-  navigationPreload: true,
+  navigationPreload: false,
   runtimeCaching: defaultCache,
+  fallbacks: {
+    entries: [
+      {
+        url: '/',
+        matcher({ request }) {
+          if (request.mode !== 'navigate') return false;
+          const url = new URL(request.url);
+          return url.pathname.startsWith('/songs/');
+        },
+      },
+    ],
+  },
 });
 
 serwist.addEventListeners();
