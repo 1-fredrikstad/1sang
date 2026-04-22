@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import EditSongPage from '../../../app/songs/[slug]/edit/page';
-import { DEFAULT_HJEMMELAGET_TAG_ID } from '../../../src/lib/constants/tags';
 
 // samling av mock funksjoner
 const {
@@ -280,7 +279,6 @@ describe('EditSongPage', () => {
     expect(mockBulkAdd).toHaveBeenCalledWith([
       { song_id: '123', tag_id: 'tag2' },
       { song_id: '123', tag_id: 'tag3' },
-      { song_id: '123', tag_id: DEFAULT_HJEMMELAGET_TAG_ID },
     ]);
 
     expect(mockReplace).toHaveBeenCalledWith('/songs/ny-tittel');
