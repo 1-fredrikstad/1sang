@@ -1,11 +1,18 @@
 import type { NextConfig } from 'next';
+import withPWA from 'next-pwa';
+
+const pwa = withPWA({
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
+  register: true,
+  skipWaiting: true,
+});
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: __dirname,
-
   turbopack: {
     root: __dirname,
   },
 };
 
-export default nextConfig;
+export default pwa(nextConfig);
