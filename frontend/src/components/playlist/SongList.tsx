@@ -39,14 +39,14 @@ export default function SongList({
   if (error) return <div>Error: {error.message}</div>;
   if (!songs) return <div>Laster data...</div>;
 
-  const addedSongs = sortedSongs.filter((item) => isAdded(item.song.id));
+  const addedSongs = songs.filter((item) => isAdded(item.song.id));
   const availableSongs = sortedSongs.filter((item) => !isAdded(item.song.id));
 
   // Function to show a list of songs
   const renderList = (songs: ScoredSong[]) =>
-    songs.map((item) => (
+    songs.map((item: ScoredSong) => (
       <li key={item.song.id} className="flex items-center gap-2">
-        <span
+        <button
           onClick={() => onToggleSong(item.song)}
           className="flex-1 hover:shadow-sm active:scale-[0.99] w-full transition cursor-pointer"
         >
@@ -55,7 +55,7 @@ export default function SongList({
             mode="select"
             hoverVariant={isAdded(item.song.id) ? 'red' : 'green'}
           />
-        </span>
+        </button>
       </li>
     ));
 
@@ -67,17 +67,11 @@ export default function SongList({
         {/* Tabs navigation */}
         <div className="sticky top-0 z-10 bg-popover isolate">
           <TabsList className="mb-2">
-            <TabsTrigger
-              value="all"
-              className="data-[state=active]:bg-list-bg data-[state=active]:border-0"
-            >
+            <TabsTrigger value="all" className="dark:border-none">
               Alle sanger ({availableSongs.length})
             </TabsTrigger>
 
-            <TabsTrigger
-              value="selected"
-              className="data-[state=active]:bg-list-bg data-[state=active]:border-0"
-            >
+            <TabsTrigger value="selected" className="dark:border-none">
               Valgte sanger ({addedSongs.length})
             </TabsTrigger>
           </TabsList>

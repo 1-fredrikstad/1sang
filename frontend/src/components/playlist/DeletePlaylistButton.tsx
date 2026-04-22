@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { db } from '@/src/lib/db';
 import { toast } from 'sonner';
@@ -16,6 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 
 type Props = {
   playlistId: string;
@@ -108,17 +108,16 @@ export function DeletePlaylistButton({
 
   return (
     <>
-      <button
+      <Button
         onClick={() => setOpen(true)}
         disabled={isDeleting}
         aria-label="Slett spilleliste"
         type="button"
-        className={`p-3 bg-danger hover:cursor-pointer hover:bg-danger-hover rounded ${
-          className ?? ''
-        }`}
+        variant={'destructive'}
+        className={`hover:cursor-pointer text-red-500 ${className ?? ''}`}
       >
-        <Image src="/trash.png" alt="" width={20} height={20} />
-      </button>
+        Slett spilleliste
+      </Button>
 
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent size="sm">

@@ -12,11 +12,7 @@ import TagSelect from '@/src/components/TagSelect';
 import { searchSongs } from '@/src/lib/search/searchSongs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScoredSong } from '@/src/types/scoredSong';
-
-type Tag = {
-  id: string;
-  name: string;
-};
+import { useTagFilter } from '@/src/context/TagFilterContext';
 
 export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   const router = useRouter();
@@ -26,7 +22,7 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   const [value, setValue] = useState(searchParams.get('q') ?? '');
   const debouncedQuery = useDebounce(value, 300);
 
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const { selectedTags, setSelectedTags } = useTagFilter();
   const [isOnline, setIsOnline] = useState(() => window.navigator.onLine);
 
   useEffect(() => {
