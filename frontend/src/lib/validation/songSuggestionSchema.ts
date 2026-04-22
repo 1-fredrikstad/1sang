@@ -1,3 +1,5 @@
+import { capitalizeFirst } from '../utils/capitalizeFormat';
+
 export const TEXT_PATTERN = /^[a-zA-ZæøåÆØÅ0-9\s.\-/:;,'’*!?()"…–]+$/;
 export const LYRICS_PATTERN = /^[\s\S]+$/;
 
@@ -124,9 +126,9 @@ export type SongValidationErrors = Partial<Record<keyof SongInput | `verses.${nu
 
 export function normalizeSongInput(input: Partial<SongInput>): SongInput {
   return {
-    title: typeof input.title === 'string' ? input.title.trim() : '',
-    melody: typeof input.melody === 'string' ? input.melody.trim() : '',
-    author: typeof input.author === 'string' ? input.author.trim() : '',
+    title: typeof input.title === 'string' ? capitalizeFirst(input.title.trim()) : '',
+    melody: typeof input.melody === 'string' ? capitalizeFirst(input.melody.trim()) : '',
+    author: typeof input.author === 'string' ? capitalizeFirst(input.author.trim()) : '',
     chorus: typeof input.chorus === 'string' ? input.chorus.trim() : '',
     verses: Array.isArray(input.verses)
       ? input.verses.map((v) => (typeof v === 'string' ? v.trim() : ''))
@@ -168,25 +170,34 @@ export function validateSongInput(input: Partial<SongInput>): SongValidationErro
     }
   }
 
-  if (
-    (songSuggestionSchema.verses.required && !data.verses.length) ||
-    data.verses.every((v) => !v)
-  ) {
+  const isValidVerse = (verse: string) =>
+    verse.trim().length >= songSuggestionSchema.verses.minLength &&
+    verse.trim().length <= songSuggestionSchema.verses.maxLength &&
+    LYRICS_PATTERN.test(verse);
+
+  const hasValidVerse = data.verses.some(isValidVerse);
+
+  if (!hasValidVerse) {
     errors.verses = songSuggestionSchema.verses.messages.required;
-  } else {
-    data.verses.forEach((verse, i) => {
-      if (verse.length < songSuggestionSchema.verses.minLength) {
-        errors[`verses.${i}` as keyof SongValidationErrors] =
-          songSuggestionSchema.verses.messages.minLength;
-      } else if (verse.length > songSuggestionSchema.verses.maxLength) {
-        errors[`verses.${i}` as keyof SongValidationErrors] =
-          songSuggestionSchema.verses.messages.maxLength;
-      } else if (!LYRICS_PATTERN.test(verse)) {
-        errors[`verses.${i}` as keyof SongValidationErrors] =
-          songSuggestionSchema.verses.messages.pattern;
-      }
-    });
+    return errors;
   }
+
+  data.verses.forEach((verse, i) => {
+    const trimmed = verse.trim();
+
+    if (trimmed.length === 0) return;
+
+    if (trimmed.length < songSuggestionSchema.verses.minLength) {
+      errors[`verses.${i}` as keyof SongValidationErrors] =
+        songSuggestionSchema.verses.messages.minLength;
+    } else if (trimmed.length > songSuggestionSchema.verses.maxLength) {
+      errors[`verses.${i}` as keyof SongValidationErrors] =
+        songSuggestionSchema.verses.messages.maxLength;
+    } else if (!LYRICS_PATTERN.test(trimmed)) {
+      errors[`verses.${i}` as keyof SongValidationErrors] =
+        songSuggestionSchema.verses.messages.pattern;
+    }
+  });
 
   return errors;
 }

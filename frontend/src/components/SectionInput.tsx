@@ -34,7 +34,12 @@ export default function SectionInput({
     <Field data-invalid={!!error}>
       {label && <FieldLabel className="text-sm text-gray-400">{label}</FieldLabel>}
       <InputGroup>
-        <InputGroupTextarea {...register} rows={rows} className="focus-visible:ring-1 text-sm" />
+        <InputGroupTextarea
+          {...register}
+          rows={rows}
+          aria-invalid={!!error}
+          className="focus-visible:ring-1 text-sm"
+        />
         <span
           className={`absolute bottom-1 right-2 text-sm ${
             isNearLimit ? 'text-red-500' : 'text-gray-400'
