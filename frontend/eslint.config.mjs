@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     'out/**',
     'build/**',
     'next-env.d.ts',
+    // Generated service worker - not to be linted:
+    'public/sw.js',
   ]),
 ]);
 
