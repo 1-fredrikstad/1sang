@@ -56,8 +56,8 @@
   let g = async () => {
       for (let e of u) await e();
     },
-    w = '-precache-',
-    p = async (e, t = w) => {
+    p = '-precache-',
+    w = async (e, t = p) => {
       let a = (await self.caches.keys()).filter(
         (a) => a.includes(t) && a.includes(self.registration.scope) && a !== e
       );
@@ -68,13 +68,13 @@
       return (e.waitUntil(a), a);
     },
     _ = (e, t) => t.some((t) => e instanceof t),
-    x = new WeakMap(),
     b = new WeakMap(),
-    E = new WeakMap(),
-    R = {
+    x = new WeakMap(),
+    R = new WeakMap(),
+    E = {
       get(e, t, a) {
         if (e instanceof IDBTransaction) {
-          if ('done' === t) return x.get(e);
+          if ('done' === t) return b.get(e);
           if ('store' === t)
             return a.objectStoreNames[1] ? void 0 : a.objectStore(a.objectStoreNames[0]);
         }
@@ -99,11 +99,11 @@
             };
           (e.addEventListener('success', r), e.addEventListener('error', n));
         })),
-        E.set(t, e),
+        R.set(t, e),
         t
       );
     }
-    if (b.has(e)) return b.get(e);
+    if (x.has(e)) return x.get(e);
     let t = (function (e) {
       if ('function' == typeof e)
         return (
@@ -122,7 +122,7 @@
             };
       return (e instanceof IDBTransaction &&
         (function (e) {
-          if (x.has(e)) return;
+          if (b.has(e)) return;
           let t = new Promise((t, a) => {
             let s = () => {
                 (e.removeEventListener('complete', r),
@@ -139,15 +139,15 @@
               e.addEventListener('error', n),
               e.addEventListener('abort', n));
           });
-          x.set(e, t);
+          b.set(e, t);
         })(e),
       _(e, s || (s = [IDBDatabase, IDBObjectStore, IDBIndex, IDBCursor, IDBTransaction])))
-        ? new Proxy(e, R)
+        ? new Proxy(e, E)
         : e;
     })(e);
-    return (t !== e && (b.set(e, t), E.set(t, e)), t);
+    return (t !== e && (x.set(e, t), R.set(t, e)), t);
   }
-  let q = (e) => E.get(e);
+  let q = (e) => R.get(e);
   function S(e, t, { blocked: a, upgrade: s, blocking: r, terminated: n } = {}) {
     let i = indexedDB.open(e, t),
       c = v(i);
@@ -167,24 +167,24 @@
     );
   }
   let D = ['get', 'getKey', 'getAll', 'getAllKeys', 'count'],
-    N = ['put', 'add', 'delete', 'clear'],
-    C = new Map();
+    C = ['put', 'add', 'delete', 'clear'],
+    N = new Map();
   function T(e, t) {
     if (!(e instanceof IDBDatabase && !(t in e) && 'string' == typeof t)) return;
-    if (C.get(t)) return C.get(t);
+    if (N.get(t)) return N.get(t);
     let a = t.replace(/FromIndex$/, ''),
       s = t !== a,
-      r = N.includes(a);
+      r = C.includes(a);
     if (!(a in (s ? IDBIndex : IDBObjectStore).prototype) || !(r || D.includes(a))) return;
     let n = async function (e, ...t) {
       let n = this.transaction(e, r ? 'readwrite' : 'readonly'),
         i = n.store;
       return (s && (i = i.index(t.shift())), (await Promise.all([i[a](...t), r && n.done]))[0]);
     };
-    return (C.set(t, n), n);
+    return (N.set(t, n), n);
   }
-  R = {
-    ...(e = R),
+  E = {
+    ...(e = E),
     get: (t, a, s) => T(t, a) || e.get(t, a, s),
     has: (t, a) => !!T(t, a) || e.has(t, a),
   };
@@ -210,7 +210,7 @@
     let t = this;
     if ((t instanceof IDBCursor || (t = await t.openCursor(...e)), !t)) return;
     let a = new Proxy(t, U);
-    for (I.set(a, t), E.set(a, q(t)); t; )
+    for (I.set(a, t), R.set(a, q(t)); t; )
       (yield a, (t = await (A.get(a) || t.continue())), A.delete(a));
   }
   function F(e, t) {
@@ -219,12 +219,12 @@
       ('iterate' === t && _(e, [IDBIndex, IDBObjectStore]))
     );
   }
-  R = {
-    ...(t = R),
+  E = {
+    ...(t = E),
     get: (e, a, s) => (F(e, a) ? L : t.get(e, a, s)),
     has: (e, a) => F(e, a) || t.has(e, a),
   };
-  let M = async (e, t) => {
+  let O = async (e, t) => {
       let s = null;
       if ((e.url && (s = new URL(e.url).origin), s !== self.location.origin))
         throw new l('cross-origin-copy-response', { origin: s });
@@ -248,29 +248,29 @@
           : r.body;
       return new Response(c, i);
     },
-    O = 'requests',
+    M = 'requests',
     B = 'queueName';
   class K {
     _db = null;
     async addEntry(e) {
-      let t = (await this.getDb()).transaction(O, 'readwrite', { durability: 'relaxed' });
+      let t = (await this.getDb()).transaction(M, 'readwrite', { durability: 'relaxed' });
       (await t.store.add(e), await t.done);
     }
     async getFirstEntryId() {
       let e = await this.getDb(),
-        t = await e.transaction(O).store.openCursor();
+        t = await e.transaction(M).store.openCursor();
       return t?.value.id;
     }
     async getAllEntriesByQueueName(e) {
       let t = await this.getDb();
-      return (await t.getAllFromIndex(O, B, IDBKeyRange.only(e))) || [];
+      return (await t.getAllFromIndex(M, B, IDBKeyRange.only(e))) || [];
     }
     async getEntryCountByQueueName(e) {
-      return (await this.getDb()).countFromIndex(O, B, IDBKeyRange.only(e));
+      return (await this.getDb()).countFromIndex(M, B, IDBKeyRange.only(e));
     }
     async deleteEntry(e) {
       let t = await this.getDb();
-      await t.delete(O, e);
+      await t.delete(M, e);
     }
     async getFirstEntryByQueueName(e) {
       return await this.getEndEntryFromIndex(IDBKeyRange.only(e), 'next');
@@ -280,7 +280,7 @@
     }
     async getEndEntryFromIndex(e, t) {
       let a = await this.getDb(),
-        s = await a.transaction(O).store.index(B).openCursor(e, t);
+        s = await a.transaction(M).store.index(B).openCursor(e, t);
       return s?.value;
     }
     async getDb() {
@@ -291,9 +291,9 @@
       );
     }
     _upgradeDb(e, t) {
-      (t > 0 && t < 3 && e.objectStoreNames.contains(O) && e.deleteObjectStore(O),
+      (t > 0 && t < 3 && e.objectStoreNames.contains(M) && e.deleteObjectStore(M),
         e
-          .createObjectStore(O, { autoIncrement: !0, keyPath: 'id' })
+          .createObjectStore(M, { autoIncrement: !0, keyPath: 'id' })
           .createIndex(B, B, { unique: !1 }));
     }
   }
@@ -838,7 +838,7 @@
       cacheWillUpdate: async ({ response: e }) => (!e || e.status >= 400 ? null : e),
     };
     static copyRedirectedCacheableResponsesPlugin = {
-      cacheWillUpdate: async ({ response: e }) => (e.redirected ? await M(e) : e),
+      cacheWillUpdate: async ({ response: e }) => (e.redirected ? await O(e) : e),
     };
     constructor(e = {}) {
       ((e.cacheName = c(e.cacheName)),
@@ -963,22 +963,48 @@
       .map((e) => e.result);
   };
   'u' > typeof navigator && /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-  let eh = 'cache-entries',
-    eu = (e) => {
+  class eh {
+    _statuses;
+    _headers;
+    constructor(e = {}) {
+      ((this._statuses = e.statuses), e.headers && (this._headers = new Headers(e.headers)));
+    }
+    isResponseCacheable(e) {
+      let t = !0;
+      if ((this._statuses && (t = this._statuses.includes(e.status)), this._headers && t)) {
+        for (let [a, s] of this._headers.entries())
+          if (e.headers.get(a) !== s) {
+            t = !1;
+            break;
+          }
+      }
+      return t;
+    }
+  }
+  class eu {
+    _cacheableResponse;
+    constructor(e) {
+      this._cacheableResponse = new eh(e);
+    }
+    cacheWillUpdate = async ({ response: e }) =>
+      this._cacheableResponse.isResponseCacheable(e) ? e : null;
+  }
+  let ed = 'cache-entries',
+    em = (e) => {
       let t = new URL(e, location.href);
       return ((t.hash = ''), t.href);
     };
-  class ed {
+  class ef {
     _cacheName;
     _db = null;
     constructor(e) {
       this._cacheName = e;
     }
     _getId(e) {
-      return `${this._cacheName}|${eu(e)}`;
+      return `${this._cacheName}|${em(e)}`;
     }
     _upgradeDb(e) {
-      let t = e.createObjectStore(eh, { keyPath: 'id' });
+      let t = e.createObjectStore(ed, { keyPath: 'id' });
       (t.createIndex('cacheName', 'cacheName', { unique: !1 }),
         t.createIndex('timestamp', 'timestamp', { unique: !1 }));
     }
@@ -992,19 +1018,19 @@
           })(this._cacheName));
     }
     async setTimestamp(e, t) {
-      e = eu(e);
+      e = em(e);
       let a = { id: this._getId(e), cacheName: this._cacheName, url: e, timestamp: t },
-        s = (await this.getDb()).transaction(eh, 'readwrite', { durability: 'relaxed' });
+        s = (await this.getDb()).transaction(ed, 'readwrite', { durability: 'relaxed' });
       (await s.store.put(a), await s.done);
     }
     async getTimestamp(e) {
       let t = await this.getDb(),
-        a = await t.get(eh, this._getId(e));
+        a = await t.get(ed, this._getId(e));
       return a?.timestamp;
     }
     async expireEntries(e, t) {
       let a = await this.getDb(),
-        s = await a.transaction(eh, 'readwrite').store.index('timestamp').openCursor(null, 'prev'),
+        s = await a.transaction(ed, 'readwrite').store.index('timestamp').openCursor(null, 'prev'),
         r = [],
         n = 0;
       for (; s; ) {
@@ -1025,7 +1051,7 @@
       );
     }
   }
-  class em {
+  class eg {
     _isRunning = !1;
     _rerunRequested = !1;
     _maxEntries;
@@ -1038,7 +1064,7 @@
         (this._maxAgeSeconds = t.maxAgeSeconds),
         (this._matchOptions = t.matchOptions),
         (this._cacheName = e),
-        (this._timestampModel = new ed(e)));
+        (this._timestampModel = new ef(e)));
     }
     async expireEntries() {
       if (this._isRunning) {
@@ -1066,7 +1092,7 @@
       ((this._rerunRequested = !1), await this._timestampModel.expireEntries(1 / 0));
     }
   }
-  class ef {
+  class ep {
     _config;
     _cacheExpirations;
     constructor(e = {}) {
@@ -1081,7 +1107,7 @@
     _getCacheExpiration(e) {
       if (e === o()) throw new l('expire-custom-caches-only');
       let t = this._cacheExpirations.get(e);
-      return (t || ((t = new em(e, this._config)), this._cacheExpirations.set(e, t)), t);
+      return (t || ((t = new eg(e, this._config)), this._cacheExpirations.set(e, t)), t);
     }
     cachedResponseWillBeUsed({ event: e, cacheName: t, request: a, cachedResponse: s }) {
       if (!s) return null;
@@ -1117,10 +1143,10 @@
       this._cacheExpirations = new Map();
     }
   }
-  let eg = 'www.google-analytics.com',
-    ew = 'www.googletagmanager.com',
-    ep = /^\/(\w+\/)?collect/,
-    ey = ({ serwist: e, cacheName: t, ...a }) => {
+  let ew = 'www.google-analytics.com',
+    ey = 'www.googletagmanager.com',
+    e_ = /^\/(\w+\/)?collect/,
+    eb = ({ serwist: e, cacheName: t, ...a }) => {
       let s,
         r,
         c = t || i(n.googleAnalytics),
@@ -1161,22 +1187,22 @@
         });
       for (let t of [
         new es(
-          ({ url: e }) => e.hostname === ew && '/gtm.js' === e.pathname,
+          ({ url: e }) => e.hostname === ey && '/gtm.js' === e.pathname,
           new ee({ cacheName: c }),
           'GET'
         ),
         new es(
-          ({ url: e }) => e.hostname === eg && '/analytics.js' === e.pathname,
+          ({ url: e }) => e.hostname === ew && '/analytics.js' === e.pathname,
           new ee({ cacheName: c }),
           'GET'
         ),
         new es(
-          ({ url: e }) => e.hostname === ew && '/gtag/js' === e.pathname,
+          ({ url: e }) => e.hostname === ey && '/gtag/js' === e.pathname,
           new ee({ cacheName: c }),
           'GET'
         ),
         new es(
-          (s = ({ url: e }) => e.hostname === eg && ep.test(e.pathname)),
+          (s = ({ url: e }) => e.hostname === ew && e_.test(e.pathname)),
           (r = new et({ plugins: [o] })),
           'GET'
         ),
@@ -1184,7 +1210,7 @@
       ])
         e.registerRoute(t);
     };
-  class e_ {
+  class ex {
     _fallbackUrls;
     _serwist;
     constructor({ fallbackUrls: e, serwist: t }) {
@@ -1201,7 +1227,7 @@
         }
     }
   }
-  let ex = async (e, t) => {
+  let eR = async (e, t) => {
     try {
       if (206 === t.status) return t;
       let a = e.headers.get('range');
@@ -1247,11 +1273,11 @@
       return new Response('', { status: 416, statusText: 'Range Not Satisfiable' });
     }
   };
-  class eb {
+  class eE {
     cachedResponseWillBeUsed = async ({ request: e, cachedResponse: t }) =>
-      t && e.headers.has('range') ? await ex(e, t) : t;
+      t && e.headers.has('range') ? await eR(e, t) : t;
   }
-  class eE extends Z {
+  class ev extends Z {
     async _handle(e, t) {
       let a,
         s = await t.cacheMatch(e);
@@ -1265,7 +1291,7 @@
       return s;
     }
   }
-  class eR extends Z {
+  class eq extends Z {
     constructor(e = {}) {
       (super(e), this.plugins.some((e) => 'cacheWillUpdate' in e) || this.plugins.unshift(J));
     }
@@ -1285,7 +1311,7 @@
       return r;
     }
   }
-  class ev extends es {
+  class eS extends es {
     constructor(e, t) {
       super(({ request: a }) => {
         let s = e.getUrlsToPrecacheKeys();
@@ -1324,7 +1350,7 @@
       }, e.precacheStrategy);
     }
   }
-  class eq {
+  class eD {
     _precacheController;
     constructor({ precacheController: e }) {
       this._precacheController = e;
@@ -1334,7 +1360,7 @@
       return a ? new Request(a, { headers: e.headers }) : e;
     };
   }
-  class eS {
+  class eC {
     _urlsToCacheKeys = new Map();
     _urlsToCacheModes = new Map();
     _cacheKeysToIntegrities = new Map();
@@ -1361,7 +1387,7 @@
       const {
         precacheStrategyOptions: f,
         precacheRouteOptions: g,
-        precacheMiscOptions: w,
+        precacheMiscOptions: p,
       } = ((e, t = {}) => {
         let {
           cacheName: a,
@@ -1377,12 +1403,12 @@
           concurrency: m = 10,
           navigateFallback: f,
           navigateFallbackAllowlist: g,
-          navigateFallbackDenylist: w,
+          navigateFallbackDenylist: p,
         } = t ?? {};
         return {
           precacheStrategyOptions: {
             cacheName: c(a),
-            plugins: [...s, new eq({ precacheController: e })],
+            plugins: [...s, new eD({ precacheController: e })],
             fetchOptions: r,
             matchOptions: n,
             fallbackToNetwork: i,
@@ -1398,12 +1424,12 @@
             concurrency: m,
             navigateFallback: f,
             navigateFallbackAllowlist: g,
-            navigateFallbackDenylist: w,
+            navigateFallbackDenylist: p,
           },
         };
       })(this, t);
       if (
-        ((this._concurrentPrecaching = w.concurrency),
+        ((this._concurrentPrecaching = p.concurrency),
         (this._precacheStrategy = new er(f)),
         (this._routes = new Map()),
         (this._defaultHandlerMap = new Map()),
@@ -1436,26 +1462,26 @@
             }),
         o && self.addEventListener('activate', () => self.clients.claim()),
         e && e.length > 0 && this.addToPrecacheList(e),
-        w.cleanupOutdatedCaches &&
+        p.cleanupOutdatedCaches &&
           ((e) => {
             self.addEventListener('activate', (t) => {
-              t.waitUntil(p(c(e)).then((e) => {}));
+              t.waitUntil(w(c(e)).then((e) => {}));
             });
           })(f.cacheName),
-        this.registerRoute(new ev(this, g)),
-        w.navigateFallback &&
+        this.registerRoute(new eS(this, g)),
+        p.navigateFallback &&
           this.registerRoute(
-            new en(this.createHandlerBoundToUrl(w.navigateFallback), {
-              allowlist: w.navigateFallbackAllowlist,
-              denylist: w.navigateFallbackDenylist,
+            new en(this.createHandlerBoundToUrl(p.navigateFallback), {
+              allowlist: p.navigateFallbackAllowlist,
+              denylist: p.navigateFallbackDenylist,
             })
           ),
         void 0 !== h &&
-          ('boolean' == typeof h ? h && ey({ serwist: this }) : ey({ ...h, serwist: this })),
+          ('boolean' == typeof h ? h && eb({ serwist: this }) : eb({ ...h, serwist: this })),
         void 0 !== l)
       ) {
         if (void 0 !== d) {
-          const e = new e_({ fallbackUrls: d.entries, serwist: this });
+          const e = new ex({ fallbackUrls: d.entries, serwist: this });
           l.forEach((t) => {
             t.handler instanceof Z &&
               !t.handler.plugins.some((e) => 'handlerDidError' in e) &&
@@ -1686,95 +1712,95 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`);
       return {};
     }
   }
-  let eD = [
+  let eN = [
     {
       matcher: /^https:\/\/fonts\.(?:gstatic)\.com\/.*/i,
-      handler: new eE({
+      handler: new ev({
         cacheName: 'google-fonts-webfonts',
-        plugins: [new ef({ maxEntries: 4, maxAgeSeconds: 31536e3, maxAgeFrom: 'last-used' })],
+        plugins: [new ep({ maxEntries: 4, maxAgeSeconds: 31536e3, maxAgeFrom: 'last-used' })],
       }),
     },
     {
       matcher: /^https:\/\/fonts\.(?:googleapis)\.com\/.*/i,
-      handler: new eR({
+      handler: new eq({
         cacheName: 'google-fonts-stylesheets',
-        plugins: [new ef({ maxEntries: 4, maxAgeSeconds: 604800, maxAgeFrom: 'last-used' })],
+        plugins: [new ep({ maxEntries: 4, maxAgeSeconds: 604800, maxAgeFrom: 'last-used' })],
       }),
     },
     {
       matcher: /\.(?:eot|otf|ttc|ttf|woff|woff2|font.css)$/i,
-      handler: new eR({
+      handler: new eq({
         cacheName: 'static-font-assets',
-        plugins: [new ef({ maxEntries: 4, maxAgeSeconds: 604800, maxAgeFrom: 'last-used' })],
+        plugins: [new ep({ maxEntries: 4, maxAgeSeconds: 604800, maxAgeFrom: 'last-used' })],
       }),
     },
     {
       matcher: /\.(?:jpg|jpeg|gif|png|svg|ico|webp)$/i,
-      handler: new eR({
+      handler: new eq({
         cacheName: 'static-image-assets',
-        plugins: [new ef({ maxEntries: 64, maxAgeSeconds: 2592e3, maxAgeFrom: 'last-used' })],
+        plugins: [new ep({ maxEntries: 64, maxAgeSeconds: 2592e3, maxAgeFrom: 'last-used' })],
       }),
     },
     {
       matcher: /\/_next\/static.+\.js$/i,
-      handler: new eE({
+      handler: new ev({
         cacheName: 'next-static-js-assets',
-        plugins: [new ef({ maxEntries: 64, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' })],
+        plugins: [new ep({ maxEntries: 64, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' })],
       }),
     },
     {
       matcher: /\/_next\/image\?url=.+$/i,
-      handler: new eR({
+      handler: new eq({
         cacheName: 'next-image',
-        plugins: [new ef({ maxEntries: 64, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' })],
+        plugins: [new ep({ maxEntries: 64, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' })],
       }),
     },
     {
       matcher: /\.(?:mp3|wav|ogg)$/i,
-      handler: new eE({
+      handler: new ev({
         cacheName: 'static-audio-assets',
         plugins: [
-          new ef({ maxEntries: 32, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' }),
-          new eb(),
+          new ep({ maxEntries: 32, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' }),
+          new eE(),
         ],
       }),
     },
     {
       matcher: /\.(?:mp4|webm)$/i,
-      handler: new eE({
+      handler: new ev({
         cacheName: 'static-video-assets',
         plugins: [
-          new ef({ maxEntries: 32, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' }),
-          new eb(),
+          new ep({ maxEntries: 32, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' }),
+          new eE(),
         ],
       }),
     },
     {
       matcher: /\.(?:js)$/i,
-      handler: new eR({
+      handler: new eq({
         cacheName: 'static-js-assets',
-        plugins: [new ef({ maxEntries: 48, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' })],
+        plugins: [new ep({ maxEntries: 48, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' })],
       }),
     },
     {
       matcher: /\.(?:css|less)$/i,
-      handler: new eR({
+      handler: new eq({
         cacheName: 'static-style-assets',
-        plugins: [new ef({ maxEntries: 32, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' })],
+        plugins: [new ep({ maxEntries: 32, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' })],
       }),
     },
     {
       matcher: /\/_next\/data\/.+\/.+\.json$/i,
       handler: new ee({
         cacheName: 'next-data',
-        plugins: [new ef({ maxEntries: 32, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' })],
+        plugins: [new ep({ maxEntries: 32, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' })],
       }),
     },
     {
       matcher: /\.(?:json|xml|csv)$/i,
       handler: new ee({
         cacheName: 'static-data-assets',
-        plugins: [new ef({ maxEntries: 32, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' })],
+        plugins: [new ep({ maxEntries: 32, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' })],
       }),
     },
     { matcher: /\/api\/auth\/.*/, handler: new et({ networkTimeoutSeconds: 10 }) },
@@ -1783,7 +1809,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`);
       method: 'GET',
       handler: new ee({
         cacheName: 'apis',
-        plugins: [new ef({ maxEntries: 16, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' })],
+        plugins: [new ep({ maxEntries: 16, maxAgeSeconds: 86400, maxAgeFrom: 'last-used' })],
         networkTimeoutSeconds: 10,
       }),
     },
@@ -1795,7 +1821,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`);
         !t.startsWith('/api/'),
       handler: new ee({
         cacheName: 'pages-rsc-prefetch',
-        plugins: [new ef({ maxEntries: 32, maxAgeSeconds: 86400 })],
+        plugins: [new ep({ maxEntries: 32, maxAgeSeconds: 86400 })],
       }),
     },
     {
@@ -1803,7 +1829,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`);
         '1' === e.headers.get('RSC') && a && !t.startsWith('/api/'),
       handler: new ee({
         cacheName: 'pages-rsc',
-        plugins: [new ef({ maxEntries: 32, maxAgeSeconds: 86400 })],
+        plugins: [new ep({ maxEntries: 32, maxAgeSeconds: 86400 })],
       }),
     },
     {
@@ -1811,27 +1837,27 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`);
         e.headers.get('Content-Type')?.includes('text/html') && a && !t.startsWith('/api/'),
       handler: new ee({
         cacheName: 'pages',
-        plugins: [new ef({ maxEntries: 32, maxAgeSeconds: 86400 })],
+        plugins: [new ep({ maxEntries: 32, maxAgeSeconds: 86400 })],
       }),
     },
     {
       matcher: ({ url: { pathname: e }, sameOrigin: t }) => t && !e.startsWith('/api/'),
       handler: new ee({
         cacheName: 'others',
-        plugins: [new ef({ maxEntries: 32, maxAgeSeconds: 86400 })],
+        plugins: [new ep({ maxEntries: 32, maxAgeSeconds: 86400 })],
       }),
     },
     {
       matcher: ({ sameOrigin: e }) => !e,
       handler: new ee({
         cacheName: 'cross-origin',
-        plugins: [new ef({ maxEntries: 32, maxAgeSeconds: 3600 })],
+        plugins: [new ep({ maxEntries: 32, maxAgeSeconds: 3600 })],
         networkTimeoutSeconds: 10,
       }),
     },
     { matcher: /.*/i, method: 'GET', handler: new et() },
   ];
-  new eS({
+  new eC({
     precacheEntries: [
       { revision: '703704c29727acd8539e21c1f519ee30', url: '/DINOT\\DINOT-Black.otf' },
       { revision: 'a067055eca9bfc8a4677d70c2eb93632', url: '/DINOT\\DINOT-Bold.otf' },
@@ -1845,11 +1871,11 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`);
       { revision: '9923d9195c455bc9931b813194b73daa', url: '/DINOT\\DINOTRegular.pdf' },
       {
         revision: '9c4bfcc90e50a71271321750ef68c36e',
-        url: '/_next/static/R5KJ3RF6ZkA-IO3VlWI2q/_buildManifest.js',
+        url: '/_next/static/NO8J7AP3B8eNguYYFiFI4/_buildManifest.js',
       },
       {
         revision: 'b6652df95db52feb4daf4eca35380933',
-        url: '/_next/static/R5KJ3RF6ZkA-IO3VlWI2q/_ssgManifest.js',
+        url: '/_next/static/NO8J7AP3B8eNguYYFiFI4/_ssgManifest.js',
       },
       { revision: null, url: '/_next/static/chunks/010a5622-f0776d288299636c.js' },
       { revision: null, url: '/_next/static/chunks/1384-92cbd2ed7aae9090.js' },
@@ -1880,27 +1906,27 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`);
       { revision: null, url: '/_next/static/chunks/9538-1d074db72ab43c4a.js' },
       { revision: null, url: '/_next/static/chunks/9733-009ea3469c904ef5.js' },
       { revision: null, url: '/_next/static/chunks/9988-9c6463dd20293f1c.js' },
-      { revision: null, url: '/_next/static/chunks/app/(main)/page-7ef6971f6c03247f.js' },
+      { revision: null, url: '/_next/static/chunks/app/(main)/page-0bc2345707520e25.js' },
       { revision: null, url: '/_next/static/chunks/app/_global-error/page-cce2fdd2bb8e67ac.js' },
       { revision: null, url: '/_next/static/chunks/app/_not-found/page-cce2fdd2bb8e67ac.js' },
-      { revision: null, url: '/_next/static/chunks/app/add/page-d53a47b3ae174e66.js' },
+      { revision: null, url: '/_next/static/chunks/app/add/page-f7c91e4f0424f9b6.js' },
       {
         revision: null,
-        url: '/_next/static/chunks/app/admin/(protected)/dashboard/page-fc7ffeb1083c0cb4.js',
+        url: '/_next/static/chunks/app/admin/(protected)/dashboard/page-0a4a027716538232.js',
       },
       {
         revision: null,
-        url: '/_next/static/chunks/app/admin/(protected)/layout-e0c94d6d0094aa51.js',
+        url: '/_next/static/chunks/app/admin/(protected)/layout-50bf98657cfef90f.js',
       },
       {
         revision: null,
-        url: '/_next/static/chunks/app/admin/(protected)/suggestions/%5Bid%5D/edit/page-dfd10f7c16a1ab26.js',
+        url: '/_next/static/chunks/app/admin/(protected)/suggestions/%5Bid%5D/edit/page-4885e4a43665acde.js',
       },
       {
         revision: null,
-        url: '/_next/static/chunks/app/admin/(protected)/suggestions/%5Bid%5D/page-f9e77ce9fe80d50a.js',
+        url: '/_next/static/chunks/app/admin/(protected)/suggestions/%5Bid%5D/page-be137e20475f79b9.js',
       },
-      { revision: null, url: '/_next/static/chunks/app/admin/page-6f6abb64982ed62a.js' },
+      { revision: null, url: '/_next/static/chunks/app/admin/page-7a03f5f401d0f038.js' },
       {
         revision: null,
         url: '/_next/static/chunks/app/api/admin/users/role/route-cce2fdd2bb8e67ac.js',
@@ -1937,34 +1963,34 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`);
       { revision: null, url: '/_next/static/chunks/app/api/tags/route-cce2fdd2bb8e67ac.js' },
       { revision: null, url: '/_next/static/chunks/app/api/users/me/route-cce2fdd2bb8e67ac.js' },
       { revision: null, url: '/_next/static/chunks/app/api/users/route-cce2fdd2bb8e67ac.js' },
-      { revision: null, url: '/_next/static/chunks/app/campfire/page-d69a3d3ac2fc052c.js' },
-      { revision: null, url: '/_next/static/chunks/app/favorites/page-c6debc8cc986d888.js' },
-      { revision: null, url: '/_next/static/chunks/app/layout-c83da5b7b1abef2a.js' },
-      { revision: null, url: '/_next/static/chunks/app/make_playlist/page-948cde947ab784b3.js' },
+      { revision: null, url: '/_next/static/chunks/app/campfire/page-4339a7d8dc44de96.js' },
+      { revision: null, url: '/_next/static/chunks/app/favorites/page-68c3c3624ea299ec.js' },
+      { revision: null, url: '/_next/static/chunks/app/layout-bbf40ceb0fe8b92f.js' },
+      { revision: null, url: '/_next/static/chunks/app/make_playlist/page-30a65e76a7fffc55.js' },
       {
         revision: null,
         url: '/_next/static/chunks/app/manifest.webmanifest/route-cce2fdd2bb8e67ac.js',
       },
-      { revision: null, url: '/_next/static/chunks/app/not-found-3e05f8d47c6dbb63.js' },
+      { revision: null, url: '/_next/static/chunks/app/not-found-a5f75b6c7f428b39.js' },
       {
         revision: null,
-        url: '/_next/static/chunks/app/playlists/%5Bid%5D/%5Bedit%5D/page-969a75ac6471910d.js',
+        url: '/_next/static/chunks/app/playlists/%5Bid%5D/%5Bedit%5D/page-2824fd7e707e5a83.js',
       },
       {
         revision: null,
-        url: '/_next/static/chunks/app/playlists/%5Bid%5D/page-73c0f96721a477fc.js',
+        url: '/_next/static/chunks/app/playlists/%5Bid%5D/page-82a5ad4f7a9da03d.js',
       },
-      { revision: null, url: '/_next/static/chunks/app/playlists/page-7c392f8b2d0d5a23.js' },
-      { revision: null, url: '/_next/static/chunks/app/settings/page-6d316afe2bec84d5.js' },
+      { revision: null, url: '/_next/static/chunks/app/playlists/page-e83c8261c51208f3.js' },
+      { revision: null, url: '/_next/static/chunks/app/settings/page-9aa46f2ef8604100.js' },
       {
         revision: null,
-        url: '/_next/static/chunks/app/songs/%5Bslug%5D/edit/page-0e5eb0a9be79ebc8.js',
+        url: '/_next/static/chunks/app/songs/%5Bslug%5D/edit/page-2d6ff8ffba9ca905.js',
       },
-      { revision: null, url: '/_next/static/chunks/app/songs/%5Bslug%5D/page-8070ef750f5d7a67.js' },
+      { revision: null, url: '/_next/static/chunks/app/songs/%5Bslug%5D/page-02e7811ec7d4cb69.js' },
       { revision: null, url: '/_next/static/chunks/ee73f628-1bcb3a81896bbd13.js' },
       { revision: null, url: '/_next/static/chunks/framework-a036e86c9c8e5729.js' },
       { revision: null, url: '/_next/static/chunks/main-1a1be6e02cb76d06.js' },
-      { revision: null, url: '/_next/static/chunks/main-app-b7c16e878d8bb8a5.js' },
+      { revision: null, url: '/_next/static/chunks/main-app-cc639cbc629b1380.js' },
       {
         revision: null,
         url: '/_next/static/chunks/next/dist/client/components/builtin/app-error-cce2fdd2bb8e67ac.js',
@@ -1975,7 +2001,7 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`);
       },
       {
         revision: null,
-        url: '/_next/static/chunks/next/dist/client/components/builtin/global-error-75e0ec23a5a8b1a6.js',
+        url: '/_next/static/chunks/next/dist/client/components/builtin/global-error-8db49c6b6ec991b3.js',
       },
       {
         revision: null,
@@ -2051,6 +2077,21 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`);
     skipWaiting: !0,
     clientsClaim: !0,
     navigationPreload: !0,
-    runtimeCaching: eD,
+    disableDevLogs: !0,
+    precacheOptions: { cleanupOutdatedCaches: !0, ignoreURLParametersMatching: [/.*/] },
+    runtimeCaching: [
+      {
+        matcher: ({ request: e }) => 'navigate' === e.mode,
+        handler: new ee({
+          cacheName: 'navigations',
+          networkTimeoutSeconds: 5,
+          plugins: [
+            new eu({ statuses: [0, 200] }),
+            new ep({ maxEntries: 50, maxAgeSeconds: 604800 }),
+          ],
+        }),
+      },
+      ...eN,
+    ],
   }).addEventListeners();
 })();
