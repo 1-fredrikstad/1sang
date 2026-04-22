@@ -17,15 +17,10 @@ type SyncOptions = { forceFresh?: boolean };
 class SyncService {
   private supabase: ReturnType<typeof createClient> | null = null;
   private syncing = new Set<TableName>();
-  private initialSyncPromise: Promise<void> | null = null;
 
   private getSupabase() {
     if (!this.supabase) this.supabase = createClient();
     return this.supabase;
-  }
-
-  private getAutoSyncTables(): TableName[] {
-    return ['songs', 'tags', 'song_tags', 'song_links', 'song_suggestions', 'users'];
   }
 
   async syncTable(tableName: TableName, options: SyncOptions = {}) {
@@ -33,31 +28,35 @@ class SyncService {
       const stale = await this.isTableStale(tableName, 5);
       if (!stale) return;
     }
-
     if (this.syncing.has(tableName) && !options.forceFresh) return;
 
     this.syncing.add(tableName);
-
     try {
       const supabase = this.getSupabase();
-      const { data, error } = await supabase.from(tableName).select('*');
 
+      const { data, error } = await supabase.from(tableName).select('*');
       if (error) throw error;
 
+      // update dexie cache with fresh data
       if (data) {
         const table = db.table(tableName);
+        await table.bulkPut(data);
+
         const tablesWithTwoIds: TableName[] = ['song_tags', 'playlist_items'];
 
         if (tablesWithTwoIds.includes(tableName)) {
+          // enkel strategi
           await table.clear();
           await table.bulkPut(data);
         } else {
+          // behold eksisterende diff-logikk
+          await table.bulkPut(data);
+
           type RowWithId = { id: string };
 
           const remoteRows = data as RowWithId[];
-          const remoteIds = new Set(remoteRows.map((row) => row.id));
 
-          await table.bulkPut(data);
+          const remoteIds = new Set(remoteRows.map((row) => row.id));
 
           const localRows = (await table.toArray()) as RowWithId[];
 
@@ -92,59 +91,44 @@ class SyncService {
     return Date.now() - last.getTime() > maxAgeMins * 60 * 1000;
   }
 
-  async initialSync(forceFresh = true) {
-    if (this.initialSyncPromise) {
-      return this.initialSyncPromise;
-    }
-
-    this.initialSyncPromise = (async () => {
-      if (!navigator.onLine) return;
-
-      const tables = this.getAutoSyncTables();
-
-      try {
-        await syncPlaylists();
-
-        await Promise.all(tables.map((table) => this.syncTable(table, { forceFresh })));
-      } finally {
-        this.initialSyncPromise = null;
-      }
-    })();
-
-    return this.initialSyncPromise;
-  }
-
+  // Auto sync every 3 minutes
   startAutoSync(intervalMs = 180000) {
-    const tables = this.getAutoSyncTables();
+    const tables: TableName[] = [
+      'songs',
+      'tags',
+      'song_tags',
+      'song_links',
+      'song_suggestions',
+      'users',
+    ];
 
-    const run = async (forceFresh = false) => {
+    const run = async () => {
       if (!navigator.onLine) return;
 
       try {
+        // Sync playlists
         await syncPlaylists();
-        await Promise.all(tables.map((table) => this.syncTable(table, { forceFresh })));
+
+        // Sync all other tables
+        await Promise.all(tables.map((table) => this.syncTable(table)));
       } catch (err) {
         console.error('Auto sync failed:', err);
       }
     };
 
-    void this.initialSync(true).catch((err) => {
-      console.error('Initial sync failed:', err);
-    });
+    // run immediately
+    run();
 
-    const interval = setInterval(() => {
-      void run(false);
-    }, intervalMs);
+    // periodic sync
+    const interval = setInterval(run, intervalMs);
 
-    const handleOnline = () => {
-      void run(true);
-    };
+    // sync when back online
+    window.addEventListener('online', run);
 
-    window.addEventListener('online', handleOnline);
-
+    // cleanup
     return () => {
       clearInterval(interval);
-      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('online', run);
     };
   }
 }
