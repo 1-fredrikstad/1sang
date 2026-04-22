@@ -30,7 +30,7 @@ const serwist = new Serwist({
   },
   runtimeCaching: [
     {
-      // Cache the HTML shell for dynamic song/playlist pages
+      // Dynamic song/playlist page shells
       matcher: ({ url }) =>
         url.pathname.startsWith('/songs/') || url.pathname.startsWith('/playlists/'),
       handler: new StaleWhileRevalidate({
@@ -42,33 +42,11 @@ const serwist = new Serwist({
       }),
     },
     {
+      // All other navigation
       matcher: ({ request }) => request.mode === 'navigate' || request.destination === 'document',
       handler: new NetworkFirst({
         cacheName: 'pages',
         networkTimeoutSeconds: 3,
-        runtimeCaching: [
-          {
-            matcher: ({ url }) =>
-              url.pathname.startsWith('/songs/') || url.pathname.startsWith('/playlists/'),
-            handler: new NetworkFirst({
-              cacheName: 'dynamic-pages',
-              networkTimeoutSeconds: 2,
-              plugins: [
-                new CacheableResponsePlugin({ statuses: [0, 200] }),
-                new ExpirationPlugin({ maxEntries: 200, maxAgeSeconds: 30 * 24 * 60 * 60 }),
-              ],
-            }),
-          },
-          {
-            matcher: ({ request }) => request.mode === 'navigate',
-            handler: new NetworkFirst({
-              cacheName: 'pages',
-              networkTimeoutSeconds: 3,
-              plugins: [new CacheableResponsePlugin({ statuses: [0, 200] })],
-            }),
-          },
-          ...defaultCache,
-        ],
         plugins: [new CacheableResponsePlugin({ statuses: [0, 200] })],
       }),
     },
