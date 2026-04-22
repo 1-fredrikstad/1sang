@@ -64,4 +64,40 @@ const serwist = new Serwist({
   },
 });
 
+// After serwist is instantiated, before addEventListeners()
+
+self.addEventListener('fetch', (event: FetchEvent) => {
+  const url = new URL(event.request.url);
+
+  const isDynamicRoute =
+    (url.pathname.startsWith('/songs/') && url.pathname !== '/songs/') ||
+    (url.pathname.startsWith('/playlists/') && url.pathname !== '/playlists/');
+
+  if (event.request.mode !== 'navigate' || !isDynamicRoute) return;
+
+  event.respondWith(
+    fetch(event.request).catch(async () => {
+      const cache = await caches.open('dynamic-pages');
+
+      // Try exact URL first
+      const exact = await cache.match(event.request);
+      if (exact) return exact;
+
+      // Fall back to ANY cached shell for this route prefix
+      // This works because all /songs/* pages have the same HTML shell
+      const prefix = url.pathname.startsWith('/songs/') ? '/songs/' : '/playlists/';
+      const allCached = await cache.keys();
+      const shellFallback = allCached.find((req) => new URL(req.url).pathname.startsWith(prefix));
+
+      if (shellFallback) {
+        const shellResponse = await cache.match(shellFallback);
+        if (shellResponse) return shellResponse;
+      }
+
+      // Last resort
+      return (await caches.match('/offline')) ?? Response.error();
+    })
+  );
+});
+
 serwist.addEventListeners();
