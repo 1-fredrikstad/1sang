@@ -1,15 +1,19 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+
 import ConditionalHeader from '@/src/components/global/ConditionalHeader';
 import ConditionalNavbar from '@/src/components/global/ConditionalNavbar';
+
 import { AuthProvider } from '@/src/context/AuthContext';
 import { ThemeProvider } from 'next-themes';
 import { HeaderColorProvider } from '@/src/context/HeaderColorProvider';
+import { TagFilterProvider } from '@/src/context/TagFilterContext';
+import { TooltipProvider } from '@/components/ui/tooltip';
+
 import { getCookie } from 'cookies-next/server';
 import { cookies } from 'next/headers';
 import { HeaderColor, HEADERCOLOR_OPTIONS } from '@/src/types/theme';
-import { TooltipProvider } from '@/components/ui/tooltip';
 import GlobalSync from '@/src/components/global/GlobalSync';
 import { Toaster } from 'sonner';
 
@@ -52,13 +56,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem enableColorScheme>
               <HeaderColorProvider initialColor={headerColor}>
                 <ConditionalHeader />
-
-                <main className="flex-1 overflow-y-auto">
-                  <section className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20 m-5 max-w-4xl mx-auto px-5">
-                    {children}
-                  </section>
-                </main>
-
+                <TagFilterProvider>
+                  <main className="flex-1 overflow-y-auto">
+                    <section className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20 m-5 max-w-4xl mx-auto px-5">
+                      {children}
+                    </section>
+                  </main>
+                </TagFilterProvider>
                 <ConditionalNavbar />
                 <Toaster position="top-center" richColors duration={3000} />
               </HeaderColorProvider>

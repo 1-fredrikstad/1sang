@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 import { withDefaultSongTags } from '@/src/lib/constants/tags';
+import { capitalizeFirst } from '@/src/lib/utils/capitalizeFormat';
 
 function getPublicEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -77,9 +78,9 @@ export async function POST(req: Request) {
     const finalTagIds = withDefaultSongTags(tagIds);
 
     const payload = {
-      title: typeof json.title === 'string' ? json.title.trim() : '',
-      melody: typeof json.melody === 'string' ? json.melody.trim() || null : null,
-      author: typeof json.author === 'string' ? json.author.trim() || null : null,
+      title: typeof json.title === 'string' ? capitalizeFirst(json.title.trim()) : '',
+      melody: typeof json.melody === 'string' ? capitalizeFirst(json.melody.trim()) || null : null,
+      author: typeof json.author === 'string' ? capitalizeFirst(json.author.trim()) || null : null,
       chorus: typeof json.chorus === 'string' ? json.chorus.trim() || null : null,
       verses: Array.isArray(versesInput)
         ? (versesInput as string[]).map((v: string) => v.trim()).filter((v: string) => v.length > 0)

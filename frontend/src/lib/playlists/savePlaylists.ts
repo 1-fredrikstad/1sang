@@ -1,8 +1,11 @@
 import { PlaylistInputs } from '@/src/types/playlistInputs';
 import { db } from '../db';
 import { v4 as uuidv4 } from 'uuid';
+import { capitalizeFirst } from '@/src/lib/utils/capitalizeFormat';
 
 export async function savePlaylist(data: PlaylistInputs) {
+  const normalizedTitle = capitalizeFirst(data.title);
+
   // ID for IndexedDB
   const localId =
     typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
@@ -19,7 +22,7 @@ export async function savePlaylist(data: PlaylistInputs) {
     id: localId,
     server_id: undefined, // Only exists if the playlist is public and synced to backend
     synced: 0,
-    title: data.title,
+    title: normalizedTitle,
     playlist_password: data.password,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -51,7 +54,7 @@ export async function savePlaylist(data: PlaylistInputs) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         action: 'create',
-        title: data.title,
+        title: normalizedTitle,
         password: data.password,
         is_public: true,
         expires_at,

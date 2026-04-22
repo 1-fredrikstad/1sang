@@ -33,12 +33,23 @@ describe('SongList', () => {
 
   test('calls onToggleSong when song is clicked', async () => {
     const user = userEvent.setup();
-    const song = { id: '1', title: 'A' } as Song;
+    const song = {
+      id: '1',
+      title: 'A',
+      verses: [],
+      has_chords: false,
+    } as Song;
+
+    const scoredSong = {
+      song,
+      score: 10,
+    };
+
     const onToggleSong = vi.fn();
 
     render(
       <SongList
-        songs={[song]}
+        songs={[scoredSong]}
         isLoading={false}
         error={null}
         onToggleSong={onToggleSong}

@@ -8,21 +8,21 @@ import { DEFAULT_HJEMMELAGET_TAG_ID } from '../../../src/lib/constants/tags';
 const {
   mockUseAuth,
   mockUseLiveQuery,
-  mockPush,
   mockSongForm,
   mockDelete,
   mockBulkAdd,
   mockUpdate,
   mockGetSession,
+  mockReplace,
 } = vi.hoisted(() => ({
   mockUseAuth: vi.fn(),
   mockUseLiveQuery: vi.fn(),
-  mockPush: vi.fn(),
   mockSongForm: vi.fn(),
   mockDelete: vi.fn(),
   mockBulkAdd: vi.fn(),
   mockUpdate: vi.fn(),
   mockGetSession: vi.fn(),
+  mockReplace: vi.fn(),
 }));
 
 type Tag = {
@@ -53,7 +53,7 @@ type SongFormProps = {
 
 vi.mock('next/navigation', () => ({
   useParams: () => ({ slug: 'min-sang' }),
-  useRouter: () => ({ push: mockPush }),
+  useRouter: () => ({ replace: mockReplace }),
 }));
 
 vi.mock('dexie-react-hooks', () => ({
@@ -283,6 +283,6 @@ describe('EditSongPage', () => {
       { song_id: '123', tag_id: DEFAULT_HJEMMELAGET_TAG_ID },
     ]);
 
-    expect(mockPush).toHaveBeenCalledWith('/songs/ny-tittel');
+    expect(mockReplace).toHaveBeenCalledWith('/songs/ny-tittel');
   });
 });

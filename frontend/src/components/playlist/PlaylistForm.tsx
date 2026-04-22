@@ -21,6 +21,8 @@ import {
 } from '@/components/ui/select';
 import PlaylistSongPickerModal from './PlaylistSongPickerModal';
 import { SongBox } from '../songs/SongBox';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { capitalizeFirst } from '@/src/lib/utils/capitalizeFormat';
 
 type PlaylistFormProps = {
   onSubmit: SubmitHandler<PlaylistInputs>;
@@ -53,6 +55,7 @@ export default function PlaylistForm({
 
   const isPublic = useWatch({ name: 'isPublic', control });
   const [open, setOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const songsInPlaylist = useWatch({
     name: 'songsInPlaylist',
@@ -67,14 +70,19 @@ export default function PlaylistForm({
   });
 
   const handleFormSubmit: SubmitHandler<PlaylistInputs> = async (data) => {
-    await onSubmit(data);
+    const normalized = {
+      ...data,
+      title: capitalizeFirst(data.title),
+    };
+
+    await onSubmit(normalized);
   };
 
   return (
     <form
       id="form-add-playlist"
       onSubmit={handleSubmit(handleFormSubmit)}
-      className="flex flex-col m-4 mx-auto gap-1 max-w-2xl"
+      className="flex flex-col m-4 mx-auto gap-1 max-w-2xl mb-0"
     >
       <h1 className="text-xl mb-2">
         {mode === 'edit' ? 'Rediger spilleliste' : 'Lag ny spilleliste'}
@@ -84,25 +92,81 @@ export default function PlaylistForm({
         {/* Title */}
         <Field data-invalid={!!errors.title}>
           <FieldLabel htmlFor="playlist-title">Tittel*</FieldLabel>
-          <Input id="playlist-title" {...register('title', getPlaylistFieldValidation('title'))} />
+          <Input
+            id="playlist-title"
+            {...register('title', {
+              ...getPlaylistFieldValidation('title'),
+              setValueAs: (v) => (typeof v === 'string' ? v.trim() : v),
+            })}
+            onBlur={(e) => setValue('title', capitalizeFirst(e.target.value))}
+          />
           {errors.title && <FieldError errors={[errors.title]} />}
         </Field>
 
-        {/* Password / New Password */}
+        {/* Password fields */}
         {mode === 'create' ? (
-          <Field data-invalid={!!errors.password}>
-            <FieldLabel htmlFor="playlist-password">Passord*</FieldLabel>
-            <FieldDescription>NB: Husk for å redigere/slette spillelister</FieldDescription>
-            <Input
-              id="playlist-password"
-              {...register('password', getPlaylistFieldValidation('password'))}
-            />
-            {errors.password && <FieldError errors={[errors.password]} />}
-          </Field>
+          <>
+            <Field data-invalid={!!errors.password}>
+              <FieldLabel htmlFor="playlist-password">
+                <span className="flex items-center gap-2">
+                  Lag passord*
+                  <MobileTooltip
+                    trigger={<QuestionMarkCircleIcon className="h-6 w-6 text-foreground" />}
+                  >
+                    Passord må være mellom 4 og 20 tegn
+                  </MobileTooltip>
+                </span>
+              </FieldLabel>
+              <FieldDescription>
+                NB! Husk passordet. Du kommer til å trenge det senere for å redigere og slette
+                spillelisten.
+              </FieldDescription>
+              <div className="relative">
+                <Input
+                  id="playlist-password"
+                  {...register('password', {
+                    ...getPlaylistFieldValidation('password'),
+                    setValueAs: (v) => (typeof v === 'string' ? v.trim() : v),
+                  })}
+                  type={showPassword ? 'text' : 'password'}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
+                >
+                  {showPassword ? (
+                    <EyeSlashIcon className="h-5 w-5" />
+                  ) : (
+                    <EyeIcon className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+
+              {errors.password && <FieldError errors={[errors.password]} />}
+            </Field>
+          </>
         ) : (
           <Field data-invalid={!!errors.newPassword}>
             <FieldLabel htmlFor="playlist-new-password">Nytt passord (valgfritt)</FieldLabel>
-            <Input id="playlist-new-password" {...register('newPassword')} />
+            <div className="relative">
+              <Input
+                id="playlist-new-password"
+                {...register('newPassword')}
+                type={showPassword ? 'text' : 'password'}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
+              >
+                {showPassword ? (
+                  <EyeSlashIcon className="h-5 w-5" />
+                ) : (
+                  <EyeIcon className="h-5 w-5" />
+                )}
+              </button>
+            </div>
             {errors.newPassword && <FieldError errors={[errors.newPassword]} />}
           </Field>
         )}
@@ -110,7 +174,14 @@ export default function PlaylistForm({
         {/* Songlist */}
         <Field>
           <FieldLabel>
-            {hasSongs ? `Sanger (${songsInPlaylist.length})` : 'Legg til sanger'}
+            <span className="flex items-center gap-2">
+              {hasSongs ? `Sanger (${songsInPlaylist.length})` : 'Legg til sanger'}
+              <MobileTooltip
+                trigger={<QuestionMarkCircleIcon className="h-6 w-6 text-foreground" />}
+              >
+                Du må legge til minst én sang
+              </MobileTooltip>
+            </span>
           </FieldLabel>
 
           {songsInPlaylist.length > 0 && (
@@ -140,8 +211,20 @@ export default function PlaylistForm({
 
         {/* Public switch */}
         <Field className="flex flex-row">
-          <FieldLabel>Offentlig spilleliste</FieldLabel>
+          <FieldLabel>
+            <span className="flex items-center gap-2">
+              Offentlig spilleliste
+              <MobileTooltip
+                trigger={<QuestionMarkCircleIcon className="h-6 w-6 text-foreground" />}
+              >
+                Velg om du vil gjøre spillelisten privat eller offentlig. Bare du kan se den om den
+                er privat
+              </MobileTooltip>
+            </span>
+          </FieldLabel>
+
           <Switch
+            size="lg"
             checked={isPublic}
             onCheckedChange={(val) => setValue('isPublic', val)}
             disabled={isSubmitting}
@@ -180,13 +263,14 @@ export default function PlaylistForm({
         )}
       </FieldGroup>
 
+      {/* Submit and reset */}
       <div className="flex gap-4 mt-4">
         <SubmitButton
           submitLabel={mode === 'edit' ? 'Lagre endringer' : 'Opprett spilleliste'}
           disabled={isSubmitting}
         />
         <Button type="button" variant="outline" onClick={() => reset()} disabled={isSubmitting}>
-          Reset
+          Nullstill
         </Button>
       </div>
     </form>

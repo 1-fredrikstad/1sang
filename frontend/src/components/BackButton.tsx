@@ -1,17 +1,20 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { ArrowLongLeftIcon } from '@heroicons/react/24/solid';
 
-export default function BackButton({ href }: { href?: string }) {
+export default function BackButton({ fallback, href }: { fallback?: string; href?: string }) {
   const router = useRouter();
-  const pathname = usePathname();
 
   const handleBack = () => {
+    // If href provided, use it
     if (href) {
       router.push(href);
-    } else if (pathname === '/admin') {
-      router.push('/');
+      // If fallback url provided, use it
+    } else if (fallback) {
+      router.replace(fallback);
+      return;
+      // else, go back
     } else {
       router.back();
     }

@@ -17,8 +17,12 @@ import { FaSpotify, FaYoutube } from 'react-icons/fa';
 export default function SuggestionPage() {
   const { id } = useParams<{ id: string }>();
   const mounted = useMounted();
+
+  // UI state for chord toggle
   const [showChords, setShowChords] = useState(false);
 
+  // Load suggestion from Dexie (client-side cache)
+  // Guarded by mounted check to avoid hydration / SSR mismatch
   const dexieSuggestion = useLiveQuery(() => {
     if (typeof window === 'undefined' || !mounted || !id) {
       return undefined;
@@ -28,14 +32,17 @@ export default function SuggestionPage() {
 
   const suggestion = dexieSuggestion ?? null;
 
+  // Loading state while Dexie is not ready
   if (!mounted || dexieSuggestion === undefined) {
     return <Spinner message="Laster sangforslag" />;
   }
 
+  // Defensive fallback if record doesn't exist
   if (dexieSuggestion === null || !suggestion) {
     return <Spinner message="Oppdaterer data" />;
   }
 
+  // Detect external platform (Spotify / YouTube) from URL
   const getLinkPlatform = (url: string) => {
     try {
       const hostname = new URL(url).hostname;
@@ -47,6 +54,7 @@ export default function SuggestionPage() {
         return { name: 'YouTube', icon: FaYoutube, color: 'text-red-500' };
       }
     } catch {
+      // Fallback for invalid URL
       return { name: 'Link' };
     }
 
@@ -55,14 +63,15 @@ export default function SuggestionPage() {
 
   const { name, icon: Icon, color } = getLinkPlatform(suggestion.spotify_youtube || '');
 
+  // Simple heuristic: detect chord notation in text
   const hasChords =
     suggestion.verses?.some((v) => v.includes('[')) || suggestion.chorus?.includes('[');
 
   return (
     <main className="relative w-full text-center px-4">
-      {/* Back */}
+      {/* Back to admin page */}
       <div className="absolute **:left-5 cursor-pointer">
-        <BackButton />
+        <BackButton href="/admin" />
       </div>
 
       {/* Edit button */}

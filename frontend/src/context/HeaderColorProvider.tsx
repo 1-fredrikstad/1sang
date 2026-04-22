@@ -67,7 +67,7 @@ export function HeaderColorProvider({
   );
 }
 
-// Helper hook
+// Hook to use context safely
 export function useHeaderColor() {
   const ctx = useContext(HeaderColorContext);
   if (!ctx) throw new Error('useHeaderColor must be used inside HeaderColorProvider');
