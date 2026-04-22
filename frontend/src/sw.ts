@@ -29,20 +29,8 @@ const serwist = new Serwist({
     ignoreURLParametersMatching: [/.*/],
   },
   runtimeCaching: [
+    // ← Remove the StaleWhileRevalidate block entirely, custom handler replaces it
     {
-      // Dynamic song/playlist page shells
-      matcher: ({ url }) =>
-        url.pathname.startsWith('/songs/') || url.pathname.startsWith('/playlists/'),
-      handler: new StaleWhileRevalidate({
-        cacheName: 'dynamic-pages',
-        plugins: [
-          new CacheableResponsePlugin({ statuses: [0, 200] }),
-          new ExpirationPlugin({ maxEntries: 200, maxAgeSeconds: 30 * 24 * 60 * 60 }),
-        ],
-      }),
-    },
-    {
-      // All other navigation
       matcher: ({ request }) => request.mode === 'navigate' || request.destination === 'document',
       handler: new NetworkFirst({
         cacheName: 'pages',
@@ -63,40 +51,51 @@ const serwist = new Serwist({
     ],
   },
 });
-
-// After serwist is instantiated, before addEventListeners()
-
 self.addEventListener('fetch', (event: FetchEvent) => {
   const url = new URL(event.request.url);
 
+  const isRSC = event.request.headers.get('RSC') === '1' || url.searchParams.has('_rsc');
   const isDynamicRoute =
     (url.pathname.startsWith('/songs/') && url.pathname !== '/songs/') ||
     (url.pathname.startsWith('/playlists/') && url.pathname !== '/playlists/');
 
-  if (event.request.mode !== 'navigate' || !isDynamicRoute) return;
+  if (event.request.mode !== 'navigate' || !isDynamicRoute || isRSC) return;
 
   event.respondWith(
-    fetch(event.request).catch(async () => {
-      const cache = await caches.open('dynamic-pages');
+    fetch(event.request)
+      .then(async (response) => {
+        // ← This is what was missing: manually populate the cache on success
+        if (response.ok) {
+          const cache = await caches.open('dynamic-pages');
+          cache.put(event.request, response.clone());
+        }
+        return response;
+      })
+      .catch(async () => {
+        const cache = await caches.open('dynamic-pages');
 
-      // Try exact URL first
-      const exact = await cache.match(event.request);
-      if (exact) return exact;
+        const exact = await cache.match(event.request);
+        if (exact) return exact;
 
-      // Fall back to ANY cached shell for this route prefix
-      // This works because all /songs/* pages have the same HTML shell
-      const prefix = url.pathname.startsWith('/songs/') ? '/songs/' : '/playlists/';
-      const allCached = await cache.keys();
-      const shellFallback = allCached.find((req) => new URL(req.url).pathname.startsWith(prefix));
+        const prefix = url.pathname.startsWith('/songs/') ? '/songs/' : '/playlists/';
+        const allCached = await cache.keys();
 
-      if (shellFallback) {
-        const shellResponse = await cache.match(shellFallback);
-        if (shellResponse) return shellResponse;
-      }
+        const shellFallback = allCached.find((req) => {
+          const reqUrl = new URL(req.url);
+          return (
+            reqUrl.pathname.startsWith(prefix) &&
+            !req.headers.get('RSC') &&
+            !reqUrl.searchParams.has('_rsc')
+          );
+        });
 
-      // Last resort
-      return (await caches.match('/offline')) ?? Response.error();
-    })
+        if (shellFallback) {
+          const shellResponse = await cache.match(shellFallback);
+          if (shellResponse) return shellResponse;
+        }
+
+        return (await caches.match('/offline')) ?? Response.error();
+      })
   );
 });
 
