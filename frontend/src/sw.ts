@@ -4,7 +4,6 @@ import { defaultCache } from '@serwist/next/worker';
 import type { PrecacheEntry, SerwistGlobalConfig } from 'serwist';
 import { Serwist } from 'serwist';
 import { NetworkFirst } from 'serwist';
-import { ExpirationPlugin } from 'serwist';
 import { CacheableResponsePlugin } from 'serwist';
 
 // This declares the value of `injectionPoint` to TypeScript.
@@ -31,23 +30,30 @@ const serwist = new Serwist({
   },
   runtimeCaching: [
     {
-      matcher: ({ request }) => request.mode === 'navigate',
+      matcher: ({ request }) => request.mode === 'navigate' || request.destination === 'document',
+
       handler: new NetworkFirst({
-        cacheName: 'navigations',
-        networkTimeoutSeconds: 5,
+        cacheName: 'pages',
+        networkTimeoutSeconds: 3,
         plugins: [
           new CacheableResponsePlugin({
             statuses: [0, 200],
-          }),
-          new ExpirationPlugin({
-            maxEntries: 50,
-            maxAgeSeconds: 7 * 24 * 60 * 60,
           }),
         ],
       }),
     },
     ...defaultCache,
   ],
+  fallbacks: {
+    entries: [
+      {
+        url: '/offline',
+        matcher({ request }) {
+          return request.mode === 'navigate';
+        },
+      },
+    ],
+  },
 });
 
 serwist.addEventListeners();
