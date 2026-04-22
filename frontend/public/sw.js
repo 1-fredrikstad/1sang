@@ -1845,16 +1845,16 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`);
       { revision: '9923d9195c455bc9931b813194b73daa', url: '/DINOT\\DINOTRegular.pdf' },
       {
         revision: '9c4bfcc90e50a71271321750ef68c36e',
-        url: '/_next/static/ZqCrhBMugav1EmHQNn8VH/_buildManifest.js',
+        url: '/_next/static/R5KJ3RF6ZkA-IO3VlWI2q/_buildManifest.js',
       },
       {
         revision: 'b6652df95db52feb4daf4eca35380933',
-        url: '/_next/static/ZqCrhBMugav1EmHQNn8VH/_ssgManifest.js',
+        url: '/_next/static/R5KJ3RF6ZkA-IO3VlWI2q/_ssgManifest.js',
       },
       { revision: null, url: '/_next/static/chunks/010a5622-f0776d288299636c.js' },
       { revision: null, url: '/_next/static/chunks/1384-92cbd2ed7aae9090.js' },
       { revision: null, url: '/_next/static/chunks/1551-8b0cd5b1025f0dd5.js' },
-      { revision: null, url: '/_next/static/chunks/2050-d002c9209ab2492e.js' },
+      { revision: null, url: '/_next/static/chunks/2050-031f1aab46a103be.js' },
       { revision: null, url: '/_next/static/chunks/2280-4f01d4e1117be4c1.js' },
       { revision: null, url: '/_next/static/chunks/2352-39757522c0453a36.js' },
       { revision: null, url: '/_next/static/chunks/2504-c241575ae8cf8f09.js' },
@@ -1894,11 +1894,11 @@ This is generally NOT safe. Learn more at https://bit.ly/wb-precache`);
       },
       {
         revision: null,
-        url: '/_next/static/chunks/app/admin/(protected)/suggestions/%5Bid%5D/edit/page-e457cf06eda729e1.js',
+        url: '/_next/static/chunks/app/admin/(protected)/suggestions/%5Bid%5D/edit/page-dfd10f7c16a1ab26.js',
       },
       {
         revision: null,
-        url: '/_next/static/chunks/app/admin/(protected)/suggestions/%5Bid%5D/page-9d94ea876e698d6f.js',
+        url: '/_next/static/chunks/app/admin/(protected)/suggestions/%5Bid%5D/page-f9e77ce9fe80d50a.js',
       },
       { revision: null, url: '/_next/static/chunks/app/admin/page-6f6abb64982ed62a.js' },
       {

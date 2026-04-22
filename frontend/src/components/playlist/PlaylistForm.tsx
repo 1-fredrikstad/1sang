@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/select';
 import PlaylistSongPickerModal from './PlaylistSongPickerModal';
 import { SongBox } from '../songs/SongBox';
+import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
 
 type PlaylistFormProps = {
   onSubmit: SubmitHandler<PlaylistInputs>;
@@ -53,6 +54,7 @@ export default function PlaylistForm({
 
   const isPublic = useWatch({ name: 'isPublic', control });
   const [open, setOpen] = useState(false);
+  const isOnline = useOnlineStatus();
 
   const songsInPlaylist = useWatch({
     name: 'songsInPlaylist',
@@ -144,9 +146,14 @@ export default function PlaylistForm({
           <Switch
             checked={isPublic}
             onCheckedChange={(val) => setValue('isPublic', val)}
-            disabled={isSubmitting}
+            disabled={!isOnline || isSubmitting}
             className="cursor-pointer"
           />
+          {!isOnline && (
+            <FieldDescription>
+              Du er offline. Gå online for å legge til offentlige spillelister.
+            </FieldDescription>
+          )}
         </Field>
 
         {/* Duration */}
