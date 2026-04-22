@@ -55,10 +55,16 @@ export default function AddSongPage() {
           await syncService.syncTable('tags', { forceFresh: true });
           const body = await res.json().catch(() => null);
 
-          if (!res.ok || body?.error) {
-            throw new Error('Kunne ikke legge til sang');
-          }
+          if (!res.ok) {
+            const errorMessage =
+              typeof body?.error === 'string' ? body.error : (body?.error?.message ?? '');
 
+            throw new Error(
+              errorMessage.includes('songs_title_key') || errorMessage.includes('songs_slug_key')
+                ? 'Det finnes allerede en sang med denne tittelen'
+                : 'Kunne ikke legge til sangen'
+            );
+          }
           router.push('/');
         }}
       />
