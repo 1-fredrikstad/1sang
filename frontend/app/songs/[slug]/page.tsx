@@ -17,6 +17,7 @@ import { useSearchParams } from 'next/navigation';
 import { usePlaylistDetails } from '@/src/hooks/usePlaylistDetails';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
 import { useSwipeable } from 'react-swipeable';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function SongPage() {
   // Read dynamic route param: /songs/[slug]
@@ -83,7 +84,11 @@ export default function SongPage() {
   if (!song) {
     return (
       <div className="flex justify-center items-center min-h-screen text-center">
-        Laster sang...
+        {navigator.onLine ? (
+          <Spinner message="Laster sang"></Spinner>
+        ) : (
+          <p>Denne sangen er ikke lagret offline ennå</p>
+        )}
       </div>
     );
   }

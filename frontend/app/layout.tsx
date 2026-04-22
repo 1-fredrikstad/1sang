@@ -11,6 +11,7 @@ import { cookies } from 'next/headers';
 import { HeaderColor, HEADERCOLOR_OPTIONS } from '@/src/types/theme';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import GlobalSync from '@/src/components/global/GlobalSync';
+import ServiceWorkerRegister from '@/src/components/ServiceWorkerRegister';
 import { Toaster } from 'sonner';
 
 const geistSans = Geist({
@@ -52,6 +53,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden h-screen flex flex-col`}
       >
+        <ServiceWorkerRegister />
         <AuthProvider>
           <GlobalSync />
           <TooltipProvider>

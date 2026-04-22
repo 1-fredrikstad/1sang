@@ -9,13 +9,10 @@ const withSerwist = withSerwistInit({
   disable: process.env.NODE_ENV === 'development',
 });
 
-// const nextConfig: NextConfig = {
-//   outputFileTracingRoot: __dirname,
+const nextConfig: NextConfig = {
+  outputFileTracingRoot: __dirname,
+  reactStrictMode: true,
+  // Ensure all pages are included in the build
+};
 
-//   // turbopack: {
-//   //   root: __dirname,
-//   // },
-//   reactStrictMode: true,
-// };
-
-export default withSerwist({});
+export default withSerwist(nextConfig);
