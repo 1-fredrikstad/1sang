@@ -24,7 +24,6 @@ const serwist = new Serwist({
     ignoreURLParametersMatching: [/.*/],
   },
 
-  // 1. ADD THIS: Restore your offline fallback page
   fallbacks: {
     entries: [
       {
@@ -38,23 +37,17 @@ const serwist = new Serwist({
   },
 
   runtimeCaching: [
-    // 2. ADD THIS RULE BEFORE your other caches
     {
-      // Match the exact path you use for songs (update this if you named the folder '/songs/view')
       matcher: ({ url }) => url.pathname.startsWith('/songs'),
       handler: new StaleWhileRevalidate({
         cacheName: 'song-page-shells',
         matchOptions: {
-          // THIS IS THE MAGIC FIX:
-          // It forces the SW to ignore the ?slug=abc and ?_rsc=123 part of the URL.
-          // Now, all songs will seamlessly share the exact same cached Next.js shell!
           ignoreSearch: true,
         },
         plugins: [new CacheableResponsePlugin({ statuses: [0, 200] })],
       }),
     },
 
-    // Next.js static assets
     {
       matcher: ({ url }) => url.pathname.startsWith('/_next/static/'),
       handler: new StaleWhileRevalidate({
@@ -65,7 +58,6 @@ const serwist = new Serwist({
         ],
       }),
     },
-    // Your public folder assets
     {
       matcher: ({ url }) =>
         url.pathname.startsWith('/DINOT/') ||
@@ -84,7 +76,6 @@ const serwist = new Serwist({
   ],
 });
 
-// Dynamic route shell caching (/songs/[slug], /playlists/[id])
 self.addEventListener('fetch', (event: FetchEvent) => {
   const url = new URL(event.request.url);
 

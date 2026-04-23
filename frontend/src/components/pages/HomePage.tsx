@@ -42,8 +42,10 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
     }
 
     const qs = params.toString();
-    router.replace(qs ? `${pathname}?${qs}` : pathname);
-  }, [debouncedQuery, pathname, router]);
+    const newUrl = qs ? `${pathname}?${qs}` : pathname;
+
+    window.history.replaceState(null, '', newUrl);
+  }, [debouncedQuery, pathname]);
 
   // Track online/offline state for UX feedback
   useEffect(() => {
