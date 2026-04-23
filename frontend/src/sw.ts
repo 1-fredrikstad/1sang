@@ -77,41 +77,35 @@ self.addEventListener('fetch', (event: FetchEvent) => {
     (async () => {
       try {
         const response = await fetch(event.request);
-        if (response.ok) {
-          const cacheName = isRSC ? 'dynamic-rsc' : 'dynamic-pages';
-          const cache = await caches.open(cacheName);
-          if (isRSC) {
-            cache.put(url.pathname, response.clone());
-          } else {
-            cache.put(event.request, response.clone());
-          }
+        if (response.ok && !isRSC) {
+          const cache = await caches.open('dynamic-pages');
+          cache.put(event.request, response.clone());
         }
         return response;
-      } catch (error) {
+      } catch {
         if (isRSC) {
-          const cache = await caches.open('dynamic-rsc');
-          const cachedResponse = await cache.match(url.pathname);
-          if (cachedResponse) return cachedResponse;
-
-          return Response.redirect(url.origin + url.pathname, 302);
-        } else {
-          const cache = await caches.open('dynamic-pages');
-          let cachedResponse = await cache.match(event.request);
-
-          if (!cachedResponse) {
-            const prefix = url.pathname.startsWith('/songs/') ? '/songs/' : '/playlists/';
-            const allCached = await cache.keys();
-            const fallbackRequest = allCached.find((req) =>
-              new URL(req.url).pathname.startsWith(prefix)
-            );
-            if (fallbackRequest) {
-              cachedResponse = await cache.match(fallbackRequest);
-            }
+          const client = await self.clients.get(event.clientId);
+          if (client) {
+            (client as WindowClient).navigate(url.origin + url.pathname);
           }
-
-          if (cachedResponse) return cachedResponse;
-          return (await caches.match('/offline')) ?? Response.error();
+          return Response.error();
         }
+
+        // HTML navigation: serve any cached shell of the same route type.
+        // This is safe because useParams() reads from the browser URL, and
+        // IndexedDB has all songs/playlists synced from the first online visit.
+        const cache = await caches.open('dynamic-pages');
+        let cachedResponse = await cache.match(event.request);
+
+        if (!cachedResponse) {
+          const prefix = url.pathname.startsWith('/songs/') ? '/songs/' : '/playlists/';
+          const allCached = await cache.keys();
+          const fallback = allCached.find((req) => new URL(req.url).pathname.startsWith(prefix));
+          if (fallback) cachedResponse = await cache.match(fallback);
+        }
+
+        if (cachedResponse) return cachedResponse;
+        return (await caches.match('/offline')) ?? Response.error();
       }
     })()
   );
