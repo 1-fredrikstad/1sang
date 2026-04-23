@@ -39,7 +39,10 @@ const serwist = new Serwist({
       matcher: ({ request, url }) => {
         const isDocument = request.destination === 'document';
 
-        const isAppShellRoute = url.pathname === '/' || url.pathname.startsWith('/songs');
+        const isAppShellRoute =
+          url.pathname === '/' ||
+          url.pathname.startsWith('/songs') ||
+          url.pathname.startsWith('/playlists');
 
         return isDocument && isAppShellRoute;
       },
