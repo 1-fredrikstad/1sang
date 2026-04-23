@@ -46,6 +46,20 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en" suppressHydrationWarning data-theme={headerColor}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        {/* Prevent theme flash*/}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+            (function() {
+              try {
+                var match = document.cookie.match(/(?:^|;\\s*)headerColor=([^;]+)/);
+                if (match) document.documentElement.setAttribute('data-theme', match[1]);
+              } catch(e) {}
+            })();
+          `,
+          }}
+        />
+
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />

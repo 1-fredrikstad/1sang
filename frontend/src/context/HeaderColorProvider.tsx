@@ -21,8 +21,16 @@ export function HeaderColorProvider({
   initialColor?: HeaderColor;
 }) {
   const mounted = useMounted();
-  const [headerOverride, setHeaderOverride] = useState<HeaderColor | undefined>(() => initialColor);
   const { resolvedTheme } = useTheme();
+
+  const [headerOverride, setHeaderOverride] = useState<HeaderColor | undefined>(() => {
+    // Read cookie client-side immediately
+    if (typeof document !== 'undefined') {
+      const match = document.cookie.match(/(?:^|;\s*)headerColor=([^;]+)/);
+      if (match) return match[1] as HeaderColor;
+    }
+    return initialColor;
+  });
 
   // Derived header color
   const headerColor =
@@ -34,7 +42,7 @@ export function HeaderColorProvider({
         ? 'light_yellow'
         : undefined);
 
-  // --- Update DOM ---
+  // --- Correct DOM immediately on mount from the live cookie value---
   useEffect(() => {
     if (!mounted || headerColor === undefined) return;
 
