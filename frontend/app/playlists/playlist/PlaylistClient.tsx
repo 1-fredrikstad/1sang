@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
 import BackButton from '@/src/components/BackButton';
 import { usePlaylistDetails } from '@/src/hooks/usePlaylistDetails';
@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import PlaylistSettingsMenu from '@/src/components/playlist/PlaylistSettingsMenu';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/src/lib/supabase/client';
+import NotFound from '@/app/not-found';
 
 export default function PlaylistClient() {
   const searchParams = useSearchParams();
@@ -57,7 +58,11 @@ export default function PlaylistClient() {
     loadAdmin();
   }, []);
 
-  if (!id || isLoading || isAdmin === null) {
+  if (id === null) {
+    return <NotFound />;
+  }
+
+  if (isLoading || isAdmin === null) {
     return <Spinner message="Laster inn spilleliste" />;
   }
 

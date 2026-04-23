@@ -18,6 +18,7 @@ import { usePlaylistDetails } from '@/src/hooks/usePlaylistDetails';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
 import { useSwipeable } from 'react-swipeable';
 import { Spinner } from '@/components/ui/spinner';
+import NotFound from '../not-found';
 
 export default function SongClient() {
   const searchParams = useSearchParams();
@@ -32,10 +33,12 @@ export default function SongClient() {
   const [showChords, setShowChords] = useState(false);
 
   // Load song by slug from IndexedDB
-  const song = useLiveQuery<Song | undefined>(
-    () => (slug ? db.songs.where('slug').equals(slug).first() : undefined),
-    [slug]
-  );
+  const song = useLiveQuery(async () => {
+    if (!slug) return null;
+
+    const found = await db.songs.where('slug').equals(slug).first();
+    return found ?? null;
+  }, [slug]);
 
   // Load tags connected to the song through relation table
   const tags = useLiveQuery(async () => {
@@ -81,7 +84,7 @@ export default function SongClient() {
   });
 
   // Loading state while song is fetched
-  if (!song) {
+  if (song === undefined) {
     return (
       <div className="flex justify-center items-center min-h-screen text-center">
         {navigator.onLine ? (
@@ -91,6 +94,11 @@ export default function SongClient() {
         )}
       </div>
     );
+  }
+
+  // If song can't be fined
+  if (song === null) {
+    return <NotFound />;
   }
 
   // Detect platform from external song link
