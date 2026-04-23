@@ -73,58 +73,59 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 
   if (!isDynamicRoute) return;
 
-  // Full page navigation (hard refresh / direct URL)
-  if (event.request.mode === 'navigate' && !isRSC) {
-    event.respondWith(
-      fetch(event.request)
-        .then(async (response) => {
-          if (response.ok) {
-            const cache = await caches.open('dynamic-pages');
+  // Handle both navigation and RSC requests for dynamic routes
+  event.respondWith(
+    (async () => {
+      try {
+        // Try network first
+        const response = await fetch(event.request);
+        if (response.ok) {
+          // Cache successful responses
+          const cacheName = isRSC ? 'dynamic-rsc' : 'dynamic-pages';
+          const cache = await caches.open(cacheName);
+          if (isRSC) {
+            // For RSC, cache by pathname only (ignore _rsc param)
+            cache.put(url.pathname, response.clone());
+          } else {
+            // For navigation, cache the full request
             cache.put(event.request, response.clone());
           }
-          return response;
-        })
-        .catch(async () => {
-          const cache = await caches.open('dynamic-pages');
-          const exact = await cache.match(event.request);
-          if (exact) return exact;
+        }
+        return response;
+      } catch (error) {
+        // Network failed, try cache
+        const cacheName = isRSC ? 'dynamic-rsc' : 'dynamic-pages';
+        const cache = await caches.open(cacheName);
 
-          const prefix = url.pathname.startsWith('/songs/') ? '/songs/' : '/playlists/';
-          const allCached = await cache.keys();
-          const shellFallback = allCached.find((req) =>
-            new URL(req.url).pathname.startsWith(prefix)
-          );
-          if (shellFallback) {
-            const shellResponse = await cache.match(shellFallback);
-            if (shellResponse) return shellResponse;
+        let cachedResponse;
+        if (isRSC) {
+          // For RSC, match by pathname
+          cachedResponse = await cache.match(url.pathname);
+        } else {
+          // For navigation, try exact match first
+          cachedResponse = await cache.match(event.request);
+          if (!cachedResponse) {
+            // Fallback to any cached page of the same type
+            const prefix = url.pathname.startsWith('/songs/') ? '/songs/' : '/playlists/';
+            const allCached = await cache.keys();
+            const fallbackRequest = allCached.find((req) =>
+              new URL(req.url).pathname.startsWith(prefix)
+            );
+            if (fallbackRequest) {
+              cachedResponse = await cache.match(fallbackRequest);
+            }
           }
-          return (await caches.match('/offline')) ?? Response.error();
-        })
-    );
-    return;
-  }
+        }
 
-  // RSC payload (client-side navigation via clicking a link)
-  if (isRSC) {
-    event.respondWith(
-      fetch(event.request)
-        .then(async (response) => {
-          if (response.ok) {
-            const cache = await caches.open('dynamic-rsc');
-            // Cache by pathname only — _rsc param changes per build but pathname is stable
-            cache.put(url.pathname, response.clone());
-          }
-          return response;
-        })
-        .catch(async () => {
-          const cache = await caches.open('dynamic-rsc');
-          // Look up by pathname, ignoring the _rsc query param
-          const cached = await cache.match(url.pathname);
-          if (cached) return cached;
-          return Response.error();
-        })
-    );
-  }
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+
+        // Final fallback
+        return (await caches.match('/offline')) ?? Response.error();
+      }
+    })()
+  );
 });
 
 serwist.addEventListeners();
