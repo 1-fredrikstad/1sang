@@ -23,7 +23,37 @@ const serwist = new Serwist({
     cleanupOutdatedCaches: true,
     ignoreURLParametersMatching: [/.*/],
   },
+
+  // 1. ADD THIS: Restore your offline fallback page
+  fallbacks: {
+    entries: [
+      {
+        url: '/offline', // Ensure you have an app/offline/page.tsx
+        matcher({ request }) {
+          // If a user navigates to a totally uncached HTML page while offline, show this
+          return request.destination === 'document';
+        },
+      },
+    ],
+  },
+
   runtimeCaching: [
+    // 2. ADD THIS RULE BEFORE your other caches
+    {
+      // Match the exact path you use for songs (update this if you named the folder '/songs/view')
+      matcher: ({ url }) => url.pathname.startsWith('/songs'),
+      handler: new StaleWhileRevalidate({
+        cacheName: 'song-page-shells',
+        matchOptions: {
+          // THIS IS THE MAGIC FIX:
+          // It forces the SW to ignore the ?slug=abc and ?_rsc=123 part of the URL.
+          // Now, all songs will seamlessly share the exact same cached Next.js shell!
+          ignoreSearch: true,
+        },
+        plugins: [new CacheableResponsePlugin({ statuses: [0, 200] })],
+      }),
+    },
+
     // Next.js static assets
     {
       matcher: ({ url }) => url.pathname.startsWith('/_next/static/'),
@@ -35,7 +65,7 @@ const serwist = new Serwist({
         ],
       }),
     },
-    // Your public folder assets — fonts, icons, images, audio
+    // Your public folder assets
     {
       matcher: ({ url }) =>
         url.pathname.startsWith('/DINOT/') ||
