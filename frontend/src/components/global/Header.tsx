@@ -15,6 +15,7 @@ export default function Header() {
               height={200}
               className="h-14.5 w-auto"
               priority
+              unoptimized
             />
 
             <span className="text-navbar-title text-base leading-tight flex flex-col lg:flex-row lg:items-baseline lg:gap-2 lg:text-lg">
