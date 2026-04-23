@@ -2,14 +2,9 @@
 
 import { defaultCache } from '@serwist/next/worker';
 import type { PrecacheEntry, SerwistGlobalConfig } from 'serwist';
-import { Serwist } from 'serwist';
-import { NetworkFirst, StaleWhileRevalidate } from 'serwist';
+import { Serwist, StaleWhileRevalidate, CacheFirst } from 'serwist';
 import { CacheableResponsePlugin, ExpirationPlugin } from 'serwist';
 
-// This declares the value of `injectionPoint` to TypeScript.
-// `injectionPoint` is the string that will be replaced by the
-// actual precache manifest. By default, this string is set to
-// `"self.__SW_MANIFEST"`.
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
     __SW_MANIFEST: (PrecacheEntry | string)[] | undefined;
@@ -29,15 +24,7 @@ const serwist = new Serwist({
     ignoreURLParametersMatching: [/.*/],
   },
   runtimeCaching: [
-    // ← Remove the StaleWhileRevalidate block entirely, custom handler replaces it
-    {
-      matcher: ({ request }) => request.mode === 'navigate' || request.destination === 'document',
-      handler: new NetworkFirst({
-        cacheName: 'pages',
-        networkTimeoutSeconds: 3,
-        plugins: [new CacheableResponsePlugin({ statuses: [0, 200] })],
-      }),
-    },
+    // Next.js static assets
     {
       matcher: ({ url }) => url.pathname.startsWith('/_next/static/'),
       handler: new StaleWhileRevalidate({
@@ -48,60 +35,69 @@ const serwist = new Serwist({
         ],
       }),
     },
+    // Your public folder assets — fonts, icons, images, audio
+    {
+      matcher: ({ url }) =>
+        url.pathname.startsWith('/DINOT/') ||
+        url.pathname.startsWith('/favicon/') ||
+        url.pathname.startsWith('/campfire/') ||
+        url.pathname.match(/\.(otf|ttf|woff|woff2|svg|png|ico|mp3|jpg|jpeg|webp)$/) !== null,
+      handler: new CacheFirst({
+        cacheName: 'public-assets',
+        plugins: [
+          new CacheableResponsePlugin({ statuses: [0, 200] }),
+          new ExpirationPlugin({ maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 365 }),
+        ],
+      }),
+    },
     ...defaultCache,
   ],
-
-  fallbacks: {
-    entries: [
-      {
-        url: '/offline',
-        matcher({ request }) {
-          return request.mode === 'navigate';
-        },
-      },
-    ],
-  },
 });
 
+// Dynamic route shell caching (/songs/[slug], /playlists/[id])
 self.addEventListener('fetch', (event: FetchEvent) => {
   const url = new URL(event.request.url);
-  const isRSC = event.request.headers.get('RSC') === '1' || url.searchParams.has('_rsc');
+
+  if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith('/_next/')) return;
+  if (url.pathname.startsWith('/api/')) return;
+  if (url.pathname === '/manifest.webmanifest') return;
+  if (event.request.method !== 'GET') return;
+
+  const isRSC =
+    event.request.headers.get('RSC') === '1' ||
+    url.searchParams.has('_rsc') ||
+    event.request.headers.has('Next-Router-State-Tree');
+
+  const isNavigate = event.request.mode === 'navigate';
 
   const isDynamicRoute =
     (url.pathname.startsWith('/songs/') && url.pathname !== '/songs/') ||
     (url.pathname.startsWith('/playlists/') && url.pathname !== '/playlists/');
 
   if (!isDynamicRoute) return;
-
-  const rscKey = url.pathname.startsWith('/songs/') ? '/songs/_shell' : '/playlists/_shell';
+  if (!isNavigate && !isRSC) return;
 
   event.respondWith(
     (async () => {
+      const rscKey = url.pathname.startsWith('/songs/') ? '/songs/_shell' : '/playlists/_shell';
+      const htmlKey = rscKey.replace('_shell', '_html');
+      const cacheKey = isRSC ? rscKey : htmlKey;
+      const cacheName = isRSC ? 'dynamic-rsc' : 'dynamic-pages';
+
       try {
         const response = await fetch(event.request);
         if (response.ok) {
-          if (isRSC) {
-            const cache = await caches.open('dynamic-rsc');
-            cache.put(rscKey, response.clone());
-          } else {
-            const cache = await caches.open('dynamic-pages');
-            cache.put(rscKey.replace('_shell', '_html'), response.clone());
-          }
+          const cache = await caches.open(cacheName);
+          cache.put(cacheKey, response.clone());
         }
         return response;
       } catch {
-        if (isRSC) {
-          const cache = await caches.open('dynamic-rsc');
-          const cachedResponse = await cache.match(rscKey);
-          if (cachedResponse) return cachedResponse;
-        } else {
-          const cache = await caches.open('dynamic-pages');
-          const htmlKey = rscKey.replace('_shell', '_html');
-          const cachedResponse = await cache.match(htmlKey);
-          if (cachedResponse) return cachedResponse;
-        }
-
-        return (await caches.match('/offline')) ?? Response.error();
+        const cache = await caches.open(cacheName);
+        const cached = await cache.match(cacheKey);
+        if (cached) return cached;
+        // Last resort: serve precached shell
+        return (await caches.match('/', { ignoreSearch: true })) ?? Response.error();
       }
     })()
   );

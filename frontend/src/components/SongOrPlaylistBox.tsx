@@ -18,14 +18,22 @@ export default function SongOrPlaylistBox({ onClose, songChoice }: SongOrPlaylis
         {/* Add new song button */}
         <button
           className="cursor-pointer hover:bg-secondary w-full py-6 rounded-t-xl"
-          onClick={() => router.push('/add')}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+            router.push('/add');
+          }}
         >
           {songChoice}
         </button>
         {/* Create new playlist button */}
         <button
           className="cursor-pointer hover:bg-secondary w-full py-6"
-          onClick={() => router.push('/make_playlist')}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+            router.push('/make_playlist');
+          }}
         >
           Lag ny spilleliste
         </button>

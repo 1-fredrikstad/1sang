@@ -13,13 +13,7 @@ type Context = {
 
 const HeaderColorContext = createContext<Context | null>(null);
 
-export function HeaderColorProvider({
-  children,
-  initialColor,
-}: {
-  children: React.ReactNode;
-  initialColor?: HeaderColor;
-}) {
+export function HeaderColorProvider({ children }: { children: React.ReactNode }) {
   const mounted = useMounted();
   const { resolvedTheme } = useTheme();
 
@@ -29,13 +23,12 @@ export function HeaderColorProvider({
       const match = document.cookie.match(/(?:^|;\s*)headerColor=([^;]+)/);
       if (match) return match[1] as HeaderColor;
     }
-    return initialColor;
+    return undefined;
   });
 
   // Derived header color
   const headerColor =
     headerOverride ??
-    initialColor ??
     (resolvedTheme === 'dark'
       ? 'dark_gray'
       : resolvedTheme === 'light'

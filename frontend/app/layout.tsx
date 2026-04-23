@@ -6,9 +6,9 @@ import ConditionalNavbar from '@/src/components/global/ConditionalNavbar';
 import { AuthProvider } from '@/src/context/AuthContext';
 import { ThemeProvider } from 'next-themes';
 import { HeaderColorProvider } from '@/src/context/HeaderColorProvider';
-import { getCookie } from 'cookies-next/server';
-import { cookies } from 'next/headers';
-import { HeaderColor, HEADERCOLOR_OPTIONS } from '@/src/types/theme';
+// import { getCookie } from 'cookies-next/server';
+// import { cookies } from 'next/headers';
+// import { HeaderColor, HEADERCOLOR_OPTIONS } from '@/src/types/theme';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import GlobalSync from '@/src/components/global/GlobalSync';
 import ServiceWorkerRegister from '@/src/components/ServiceWorkerRegister';
@@ -36,14 +36,14 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookie = await getCookie('headerColor', { cookies });
+  // const cookie = await getCookie('headerColor', { cookies });
 
-  const headerColor = HEADERCOLOR_OPTIONS.map((o) => o.value).includes(cookie as HeaderColor)
-    ? (cookie as HeaderColor)
-    : undefined;
+  // const headerColor = HEADERCOLOR_OPTIONS.map((o) => o.value).includes(cookie as HeaderColor)
+  //   ? (cookie as HeaderColor)
+  //   : undefined;
 
   return (
-    <html lang="en" suppressHydrationWarning data-theme={headerColor}>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         {/* Prevent theme flash*/}
@@ -87,7 +87,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <GlobalSync />
           <TooltipProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem enableColorScheme>
-              <HeaderColorProvider initialColor={headerColor}>
+              <HeaderColorProvider>
                 <ConditionalHeader />
 
                 <main className="flex-1 overflow-y-auto">

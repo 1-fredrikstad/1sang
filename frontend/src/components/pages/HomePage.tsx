@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Song } from '@/src/lib/db';
@@ -29,7 +29,14 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [isOnline, setIsOnline] = useState(() => window.navigator.onLine);
 
+  const isFirstRender = useRef(true);
+
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     const params = new URLSearchParams();
 
     if (debouncedQuery.trim()) {
