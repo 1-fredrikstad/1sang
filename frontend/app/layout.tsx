@@ -48,22 +48,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     : undefined;
 
   return (
-    <html lang="en" suppressHydrationWarning data-theme={headerColor ?? undefined}>
+    <html lang="en" suppressHydrationWarning data-theme={headerColor}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        {/* Prevent theme flash*/}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-            (function() {
-              try {
-                var match = document.cookie.match(/(?:^|;\\s*)headerColor=([^;]+)/);
-                if (match) document.documentElement.setAttribute('data-theme', match[1]);
-              } catch(e) {}
-            })();
-          `,
-          }}
-        />
+
         <script
           dangerouslySetInnerHTML={{
             __html: `
