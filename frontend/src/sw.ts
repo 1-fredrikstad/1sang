@@ -12,7 +12,6 @@ declare global {
 }
 
 declare const self: ServiceWorkerGlobalScope;
-
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   skipWaiting: true,
@@ -27,9 +26,8 @@ const serwist = new Serwist({
   fallbacks: {
     entries: [
       {
-        url: '/offline', // Ensure you have an app/offline/page.tsx
+        url: '/offline',
         matcher({ request }) {
-          // If a user navigates to a totally uncached HTML page while offline, show this
           return request.destination === 'document';
         },
       },
@@ -38,9 +36,15 @@ const serwist = new Serwist({
 
   runtimeCaching: [
     {
-      matcher: ({ url }) => url.pathname.startsWith('/songs'),
+      matcher: ({ request, url }) => {
+        const isDocument = request.destination === 'document';
+
+        const isAppShellRoute = url.pathname === '/' || url.pathname.startsWith('/songs');
+
+        return isDocument && isAppShellRoute;
+      },
       handler: new StaleWhileRevalidate({
-        cacheName: 'song-page-shells',
+        cacheName: 'app-html-shells',
         matchOptions: {
           ignoreSearch: true,
         },
@@ -48,6 +52,7 @@ const serwist = new Serwist({
       }),
     },
 
+    // 2. Next.js static assets
     {
       matcher: ({ url }) => url.pathname.startsWith('/_next/static/'),
       handler: new StaleWhileRevalidate({
@@ -58,6 +63,7 @@ const serwist = new Serwist({
         ],
       }),
     },
+    // 3. Your public folder assets
     {
       matcher: ({ url }) =>
         url.pathname.startsWith('/DINOT/') ||
