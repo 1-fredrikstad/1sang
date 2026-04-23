@@ -17,7 +17,6 @@ import { HeaderColor, HEADERCOLOR_OPTIONS } from '@/src/types/theme';
 import GlobalSync from '@/src/components/global/GlobalSync';
 import ServiceWorkerRegister from '@/src/components/ServiceWorkerRegister';
 import { Toaster } from 'sonner';
-import RoutePrewarmer from '@/src/components/RoutePrewarmer';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -76,7 +75,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden h-screen flex flex-col`}
       >
         <ServiceWorkerRegister />
-        <RoutePrewarmer />
 
         <AuthProvider>
           <GlobalSync />
