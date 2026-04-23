@@ -73,38 +73,34 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 
   if (!isDynamicRoute) return;
 
+  const rscKey = url.pathname.startsWith('/songs/') ? '/songs/_shell' : '/playlists/_shell';
+
   event.respondWith(
     (async () => {
       try {
         const response = await fetch(event.request);
-        if (response.ok && !isRSC) {
-          const cache = await caches.open('dynamic-pages');
-          cache.put(event.request, response.clone());
+        if (response.ok) {
+          if (isRSC) {
+            const cache = await caches.open('dynamic-rsc');
+            cache.put(rscKey, response.clone());
+          } else {
+            const cache = await caches.open('dynamic-pages');
+            cache.put(rscKey.replace('_shell', '_html'), response.clone());
+          }
         }
         return response;
       } catch {
         if (isRSC) {
-          const client = await self.clients.get(event.clientId);
-          if (client) {
-            (client as WindowClient).navigate(url.origin + url.pathname);
-          }
-          return Response.error();
+          const cache = await caches.open('dynamic-rsc');
+          const cachedResponse = await cache.match(rscKey);
+          if (cachedResponse) return cachedResponse;
+        } else {
+          const cache = await caches.open('dynamic-pages');
+          const htmlKey = rscKey.replace('_shell', '_html');
+          const cachedResponse = await cache.match(htmlKey);
+          if (cachedResponse) return cachedResponse;
         }
 
-        // HTML navigation: serve any cached shell of the same route type.
-        // This is safe because useParams() reads from the browser URL, and
-        // IndexedDB has all songs/playlists synced from the first online visit.
-        const cache = await caches.open('dynamic-pages');
-        let cachedResponse = await cache.match(event.request);
-
-        if (!cachedResponse) {
-          const prefix = url.pathname.startsWith('/songs/') ? '/songs/' : '/playlists/';
-          const allCached = await cache.keys();
-          const fallback = allCached.find((req) => new URL(req.url).pathname.startsWith(prefix));
-          if (fallback) cachedResponse = await cache.match(fallback);
-        }
-
-        if (cachedResponse) return cachedResponse;
         return (await caches.match('/offline')) ?? Response.error();
       }
     })()
