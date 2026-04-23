@@ -26,23 +26,25 @@ export function HeaderColorProvider({
 
   // Derived header color
   const headerColor =
-    headerOverride ?? initialColor ?? (resolvedTheme === 'dark' ? 'dark_gray' : 'light_yellow');
+    headerOverride ??
+    initialColor ??
+    (resolvedTheme === 'dark'
+      ? 'dark_gray'
+      : resolvedTheme === 'light'
+        ? 'light_yellow'
+        : undefined);
 
   // --- Update DOM ---
   useEffect(() => {
-    if (mounted && typeof document !== 'undefined') {
-      if (headerColor) {
-        document.documentElement.setAttribute('data-theme', headerColor);
-      } else {
-        document.documentElement.removeAttribute('data-theme');
-      }
+    if (!mounted || headerColor === undefined) return;
 
-      const timer = setTimeout(() => {
-        document.documentElement.classList.add('theme-ready');
-      }, 50);
+    document.documentElement.setAttribute('data-theme', headerColor);
 
-      return () => clearTimeout(timer);
-    }
+    const timer = setTimeout(() => {
+      document.documentElement.classList.add('theme-ready');
+    }, 50);
+
+    return () => clearTimeout(timer);
   }, [headerColor, mounted]);
 
   function setHeaderColor(color: HeaderColor | null) {
