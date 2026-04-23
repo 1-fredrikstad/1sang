@@ -91,14 +91,11 @@ self.addEventListener('fetch', (event: FetchEvent) => {
         const cached = await cache.match(url.pathname);
         if (cached) return cached;
 
-        // HTML navigation only: any shell of same type works since
-        // useParams() reads from browser URL and data comes from IndexedDB
-        if (!isRSC) {
-          const prefix = url.pathname.startsWith('/songs/') ? '/songs/' : '/playlists/';
-          const keys = await cache.keys();
-          const fallback = keys.find((r) => new URL(r.url).pathname.startsWith(prefix));
-          if (fallback) return (await cache.match(fallback)) ?? Response.error();
-        }
+        // DO NOT SERVE A DIFFERENT SONG'S HTML HERE.
+        // If it's an RSC request, failing is fine (Next.js handles it).
+        if (isRSC) return Response.error();
+
+        // If it's HTML, show the offline page.
         return (await caches.match('/offline')) ?? Response.error();
       }
     })()

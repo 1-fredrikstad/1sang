@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type Song } from '@/src/lib/db';
 import BackButton from '@/src/components/BackButton';
@@ -20,14 +20,14 @@ import { useSwipeable } from 'react-swipeable';
 import { Spinner } from '@/components/ui/spinner';
 
 export default function SongClient() {
-  // Read dynamic route param: /songs/[slug]
-  const { slug } = useParams<{ slug: string }>();
+  const searchParams = useSearchParams();
+  const slug = searchParams.get('slug'); // Get slug from query instead of useParams()
+  const playlistId = searchParams.get('playlistId');
+
   // Check whether current user is admin
   const { isAdmin } = useAuth();
   const router = useRouter();
 
-  const searchParams = useSearchParams();
-  const playlistId = searchParams.get('playlistId');
   // Toggle for showing/hiding chords in lyrics
   const [showChords, setShowChords] = useState(false);
 
@@ -67,12 +67,12 @@ export default function SongClient() {
   const handlers = useSwipeable({
     onSwipedLeft: () => {
       if (nextSong) {
-        router.push(`/songs/${nextSong.slug}?playlistId=${playlistId}`);
+        router.push(`/songs?slug=${nextSong.slug}&playlistId=${playlistId}`);
       }
     },
     onSwipedRight: () => {
       if (prevSong) {
-        router.push(`/songs/${prevSong.slug}?playlistId=${playlistId}`);
+        router.push(`/songs?slug=${prevSong.slug}&playlistId=${playlistId}`);
       }
     },
     trackTouch: true,
@@ -128,7 +128,7 @@ export default function SongClient() {
             <StarIcon songId={song.id} />
             {isAdmin && (
               <div>
-                <Link href={`/songs/${slug}/edit`}>
+                <Link href={`/songs?slug=${slug}/edit`}>
                   <PencilSquareIcon className="size-6 cursor-pointer" />
                 </Link>
               </div>
@@ -201,7 +201,7 @@ export default function SongClient() {
             <button
               onClick={() => {
                 if (prevSong) {
-                  router.push(`/songs/${prevSong.slug}?playlistId=${playlistId}`);
+                  router.push(`/songs?slug=${prevSong.slug}&playlistId=${playlistId}`);
                 }
               }}
               disabled={!prevSong}
@@ -216,7 +216,7 @@ export default function SongClient() {
             <button
               onClick={() => {
                 if (nextSong) {
-                  router.push(`/songs/${nextSong.slug}?playlistId=${playlistId}`);
+                  router.push(`/songs?slug=${nextSong.slug}&playlistId=${playlistId}`);
                 }
               }}
               disabled={!nextSong}
