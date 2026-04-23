@@ -21,6 +21,7 @@ import { db } from '@/src/lib/db';
 import { approveSuggestion, deleteSuggestion } from '@/src/lib/actions/songSuggestions';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { syncService } from '@/src/lib/syncService';
 
 interface Props {
   id: string;
@@ -36,6 +37,8 @@ export function SuggestionActions({ id }: Props) {
       await approveSuggestion(id);
       if (typeof window !== 'undefined') {
         await db.song_suggestions.clear(); // removes the old cached row
+        await syncService.syncTable('song_tags', { forceFresh: true });
+        await syncService.syncTable('songs', { forceFresh: true });
       }
       toast.success('Sang lagt til!');
       setTimeout(() => router.push('/admin'), 300);

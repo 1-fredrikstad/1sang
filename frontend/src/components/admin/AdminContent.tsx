@@ -9,6 +9,7 @@ import ExportLatexModal from '../latex/ExportLatexModal';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { generateLatex } from '../latex/GenerateLatex';
+import TagManager from './TagManager';
 import { createClient } from '@/src/lib/supabase/client';
 import { toast } from 'sonner';
 
@@ -119,6 +120,10 @@ export default function AdminContent() {
           <UserRoleManager users={users} loading={usersLoading} onReload={loadUsers} />
         )}
       </section>
+
+      <article className="allow-animation mt-5">
+        <TagManager />
+      </article>
     </main>
   );
 }

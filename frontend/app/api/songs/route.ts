@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
+import { withDefaultSongTags } from '@/src/lib/constants/tags';
 import { capitalizeFirst } from '@/src/lib/utils/capitalizeFormat';
 
 function getPublicEnv() {
@@ -74,6 +75,7 @@ export async function POST(req: Request) {
     const tagIds: string[] = Array.isArray(json.tags)
       ? json.tags.filter((tag: unknown): tag is string => typeof tag === 'string')
       : [];
+    const finalTagIds = withDefaultSongTags(tagIds);
 
     const payload = {
       title: typeof json.title === 'string' ? capitalizeFirst(json.title.trim()) : '',
@@ -129,10 +131,10 @@ export async function POST(req: Request) {
       );
     }
 
-    if (isAdmin && table === 'songs' && tagIds.length > 0) {
+    if (isAdmin && table === 'songs' && finalTagIds.length > 0) {
       const songId = insertBody[0].id;
 
-      const rows = tagIds.map((tagId) => ({
+      const rows = finalTagIds.map((tagId) => ({
         song_id: songId,
         tag_id: tagId,
       }));

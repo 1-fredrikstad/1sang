@@ -90,7 +90,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
       has_chords: typeof json.has_chords === 'boolean' ? json.has_chords : false,
     };
 
-    const tags = Array.isArray(json.tags)
+    const finalTags = Array.isArray(json.tags)
       ? json.tags.filter((tagId: unknown): tagId is string => typeof tagId === 'string')
       : [];
 
@@ -151,8 +151,8 @@ export async function PATCH(req: Request, ctx: Ctx) {
     }
 
     // 3. Legg inn nye tag-relasjoner
-    if (tags.length > 0) {
-      const tagRows = tags.map((tagId: string) => ({
+    if (finalTags.length > 0) {
+      const tagRows = finalTags.map((tagId: string) => ({
         song_id: id,
         tag_id: tagId,
       }));
