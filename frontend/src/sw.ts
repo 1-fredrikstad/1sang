@@ -2,7 +2,7 @@
 
 import { defaultCache } from '@serwist/next/worker';
 import type { PrecacheEntry, SerwistGlobalConfig } from 'serwist';
-import { Serwist, StaleWhileRevalidate, CacheFirst } from 'serwist';
+import { Serwist, StaleWhileRevalidate, CacheFirst, NetworkFirst } from 'serwist';
 import { CacheableResponsePlugin, ExpirationPlugin } from 'serwist';
 
 declare global {
@@ -12,6 +12,32 @@ declare global {
 }
 
 declare const self: ServiceWorkerGlobalScope;
+
+function isRSCRequest(request: Request, url: URL): boolean {
+  return (
+    request.headers.get('RSC') === '1' ||
+    url.searchParams.has('_rsc') ||
+    request.headers.has('Next-Router-State-Tree')
+  );
+}
+
+function isPageRequest(request: Request, url: URL): boolean {
+  if (url.origin !== self.location.origin) return false;
+  if (url.pathname.startsWith('/_next/')) return false;
+  if (url.pathname.startsWith('/api/')) return false;
+  if (request.method !== 'GET') return false;
+  return request.mode === 'navigate' || isRSCRequest(request, url);
+}
+
+function shellCacheKeyPlugin(shellPrefix: string) {
+  return {
+    cacheKeyWillBeUsed: async ({ request }: { request: Request }) => {
+      const url = new URL(request.url);
+      const suffix = isRSCRequest(request, url) ? '_rsc' : '_html';
+      return `${url.origin}${shellPrefix}${suffix}`;
+    },
+  };
+}
 
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
@@ -24,7 +50,40 @@ const serwist = new Serwist({
     ignoreURLParametersMatching: [/.*/],
   },
   runtimeCaching: [
-    // Next.js static assets
+    {
+      matcher: ({ request, url }) =>
+        isPageRequest(request, url) && /^\/songs\/[^/]+$/.test(url.pathname),
+      handler: new NetworkFirst({
+        cacheName: 'song-shells',
+        plugins: [
+          shellCacheKeyPlugin('/songs/_shell'),
+          new CacheableResponsePlugin({ statuses: [0, 200] }),
+          new ExpirationPlugin({ maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 30 }),
+        ],
+      }),
+    },
+    {
+      matcher: ({ request, url }) =>
+        isPageRequest(request, url) && /^\/playlists\/[^/]+$/.test(url.pathname),
+      handler: new NetworkFirst({
+        cacheName: 'playlist-shells',
+        plugins: [
+          shellCacheKeyPlugin('/playlists/_shell'),
+          new CacheableResponsePlugin({ statuses: [0, 200] }),
+          new ExpirationPlugin({ maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 30 }),
+        ],
+      }),
+    },
+    {
+      matcher: ({ request, url }) => isPageRequest(request, url),
+      handler: new NetworkFirst({
+        cacheName: 'pages',
+        plugins: [
+          new CacheableResponsePlugin({ statuses: [0, 200] }),
+          new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 }),
+        ],
+      }),
+    },
     {
       matcher: ({ url }) => url.pathname.startsWith('/_next/static/'),
       handler: new StaleWhileRevalidate({
@@ -35,7 +94,6 @@ const serwist = new Serwist({
         ],
       }),
     },
-    // Your public folder assets — fonts, icons, images, audio
     {
       matcher: ({ url }) =>
         url.pathname.startsWith('/DINOT/') ||
@@ -52,55 +110,6 @@ const serwist = new Serwist({
     },
     ...defaultCache,
   ],
-});
-
-// Dynamic route shell caching (/songs/[slug], /playlists/[id])
-self.addEventListener('fetch', (event: FetchEvent) => {
-  const url = new URL(event.request.url);
-
-  if (url.origin !== self.location.origin) return;
-  if (url.pathname.startsWith('/_next/')) return;
-  if (url.pathname.startsWith('/api/')) return;
-  if (url.pathname === '/manifest.webmanifest') return;
-  if (event.request.method !== 'GET') return;
-
-  const isRSC =
-    event.request.headers.get('RSC') === '1' ||
-    url.searchParams.has('_rsc') ||
-    event.request.headers.has('Next-Router-State-Tree');
-
-  const isNavigate = event.request.mode === 'navigate';
-
-  const isDynamicRoute =
-    (url.pathname.startsWith('/songs/') && url.pathname !== '/songs/') ||
-    (url.pathname.startsWith('/playlists/') && url.pathname !== '/playlists/');
-
-  if (!isDynamicRoute) return;
-  if (!isNavigate && !isRSC) return;
-
-  event.respondWith(
-    (async () => {
-      const rscKey = url.pathname.startsWith('/songs/') ? '/songs/_shell' : '/playlists/_shell';
-      const htmlKey = rscKey.replace('_shell', '_html');
-      const cacheKey = isRSC ? rscKey : htmlKey;
-      const cacheName = isRSC ? 'dynamic-rsc' : 'dynamic-pages';
-
-      try {
-        const response = await fetch(event.request);
-        if (response.ok) {
-          const cache = await caches.open(cacheName);
-          cache.put(cacheKey, response.clone());
-        }
-        return response;
-      } catch {
-        const cache = await caches.open(cacheName);
-        const cached = await cache.match(cacheKey);
-        if (cached) return cached;
-        // Last resort: serve precached shell
-        return (await caches.match('/', { ignoreSearch: true })) ?? Response.error();
-      }
-    })()
-  );
 });
 
 serwist.addEventListeners();
