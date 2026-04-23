@@ -15,6 +15,7 @@ const withSerwist = withSerwistInit({
     { url: '/make_playlist', revision: null },
     { url: '/playlists', revision: null },
     { url: '/add', revision: null },
+    { url: '/not-found', revision: null },
   ],
 });
 
