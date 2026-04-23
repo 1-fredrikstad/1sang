@@ -15,6 +15,7 @@ const withSerwist = withSerwistInit({
     { url: '/make_playlist', revision: null },
     { url: '/playlists', revision: null },
     { url: '/add', revision: null },
+    { url: '/songs', revision: null },
     { url: '/offline', revision: null },
   ],
 });
