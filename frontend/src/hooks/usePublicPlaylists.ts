@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Playlist } from '../lib/db';
+import { db, Playlist } from '../lib/db';
 
 type State = {
   data: Playlist[];
@@ -27,8 +27,9 @@ export function usePublicPlaylists(): State {
         }
 
         setData(json.data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
+      } catch {
+        const local = await db.playlists.filter((p) => p.is_public).toArray();
+        setData(local);
       } finally {
         setIsLoading(false);
       }

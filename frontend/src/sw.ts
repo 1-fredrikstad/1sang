@@ -39,6 +39,35 @@ function shellCacheKeyPlugin(shellPrefix: string) {
   };
 }
 
+const PAGES_TO_CACHE = [
+  '/',
+  '/campfire',
+  '/favorites',
+  '/settings',
+  '/make_playlist',
+  '/playlists',
+  '/add',
+];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    (async () => {
+      const cache = await caches.open('pages');
+      const origin = self.location.origin;
+      await Promise.allSettled(
+        PAGES_TO_CACHE.flatMap((path) => [
+          fetch(path).then((res) => {
+            if (res.ok) return cache.put(`${origin}${path}`, res);
+          }),
+          fetch(path, { headers: { RSC: '1' } }).then((res) => {
+            if (res.ok) return cache.put(`${origin}${path}?_type=rsc`, res);
+          }),
+        ])
+      );
+    })()
+  );
+});
+
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   skipWaiting: true,
@@ -79,6 +108,13 @@ const serwist = new Serwist({
       handler: new NetworkFirst({
         cacheName: 'pages',
         plugins: [
+          {
+            cacheKeyWillBeUsed: async ({ request }: { request: Request }) => {
+              const url = new URL(request.url);
+              const suffix = isRSCRequest(request, url) ? '?_type=rsc' : '';
+              return `${url.origin}${url.pathname}${suffix}`;
+            },
+          },
           new CacheableResponsePlugin({ statuses: [0, 200] }),
           new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 }),
         ],
