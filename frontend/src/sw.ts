@@ -22,7 +22,7 @@ const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   skipWaiting: true,
   clientsClaim: true,
-  navigationPreload: true,
+  navigationPreload: false,
   disableDevLogs: true,
   precacheOptions: {
     cleanupOutdatedCaches: true,
@@ -38,8 +38,19 @@ const serwist = new Serwist({
         plugins: [new CacheableResponsePlugin({ statuses: [0, 200] })],
       }),
     },
+    {
+      matcher: ({ url }) => url.pathname.startsWith('/_next/static/'),
+      handler: new StaleWhileRevalidate({
+        cacheName: 'next-static',
+        plugins: [
+          new CacheableResponsePlugin({ statuses: [0, 200] }),
+          new ExpirationPlugin({ maxEntries: 500, maxAgeSeconds: 60 * 60 * 24 * 30 }),
+        ],
+      }),
+    },
     ...defaultCache,
   ],
+
   fallbacks: {
     entries: [
       {

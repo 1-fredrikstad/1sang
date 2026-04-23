@@ -59,7 +59,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           `,
           }}
         />
-
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                window.addEventListener('error', function(e) {
+                  if (e.message && (e.message.includes('Loading chunk') || e.message.includes('ChunkLoadError'))) {
+                    if (!sessionStorage.getItem('chunk-reload')) {
+                      sessionStorage.setItem('chunk-reload', '1');
+                      window.location.reload();
+                    }
+                  }
+                });
+              })();
+            `,
+          }}
+        />
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
