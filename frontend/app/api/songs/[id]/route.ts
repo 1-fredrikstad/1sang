@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
+import { capitalizeFirst } from '@/src/lib/utils/capitalizeFormat';
 
 function getPublicEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -77,9 +78,9 @@ export async function PATCH(req: Request, ctx: Ctx) {
     const versesInput = json.verses as unknown;
 
     const payload = {
-      title: typeof json.title === 'string' ? json.title.trim() : '',
-      melody: typeof json.melody === 'string' ? json.melody.trim() || null : null,
-      author: typeof json.author === 'string' ? json.author.trim() || null : null,
+      title: typeof json.title === 'string' ? capitalizeFirst(json.title.trim()) : '',
+      melody: typeof json.melody === 'string' ? capitalizeFirst(json.melody.trim()) || null : null,
+      author: typeof json.author === 'string' ? capitalizeFirst(json.author.trim()) || null : null,
       chorus: typeof json.chorus === 'string' ? json.chorus.trim() : '',
       verses: Array.isArray(versesInput)
         ? (versesInput as string[]).map((v: string) => v.trim()).filter((v: string) => v.length > 0)
@@ -89,7 +90,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
       has_chords: typeof json.has_chords === 'boolean' ? json.has_chords : false,
     };
 
-    const tags = Array.isArray(json.tags)
+    const finalTags = Array.isArray(json.tags)
       ? json.tags.filter((tagId: unknown): tagId is string => typeof tagId === 'string')
       : [];
 
@@ -150,8 +151,8 @@ export async function PATCH(req: Request, ctx: Ctx) {
     }
 
     // 3. Legg inn nye tag-relasjoner
-    if (tags.length > 0) {
-      const tagRows = tags.map((tagId: string) => ({
+    if (finalTags.length > 0) {
+      const tagRows = finalTags.map((tagId: string) => ({
         song_id: id,
         tag_id: tagId,
       }));

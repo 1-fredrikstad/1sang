@@ -30,7 +30,9 @@ export default function PlaylistSongPickerModal({
   songsInPlaylist: Song[];
   setSongsInPlaylist: (songs: Song[]) => void;
 }) {
-  const [localSongs, setLocalSongs] = useState<Song[]>([]);
+  const [localSongs, setLocalSongs] = useState<Song[]>(() =>
+    songsInPlaylist ? [...songsInPlaylist] : []
+  );
 
   const songPicker = useSongPicker(songs, localSongs, setLocalSongs, open);
 
@@ -49,8 +51,9 @@ export default function PlaylistSongPickerModal({
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (nextOpen) {
-      setLocalSongs(songsInPlaylist);
+      setLocalSongs(songsInPlaylist ? [...songsInPlaylist] : []);
     }
+
     onOpenChange(nextOpen);
   };
 

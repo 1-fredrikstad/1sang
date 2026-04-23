@@ -93,6 +93,8 @@ export default function EditSongPage() {
 
     const updatedSong = body?.data;
 
+    const finalTagIds = data.tags ?? [];
+
     // Update tag relations locally
     await db.songs.update(song.id, {
       title: data.title,
@@ -105,21 +107,21 @@ export default function EditSongPage() {
     // Replace tag relations
     await db.song_tags.where('song_id').equals(song?.id).delete();
 
-    if (data.tags && data.tags.length > 0) {
+    if (finalTagIds.length > 0) {
       await db.song_tags.bulkAdd(
-        data.tags.map((tagId) => ({
+        finalTagIds.map((tagId) => ({
           song_id: song?.id,
           tag_id: tagId,
         }))
       );
     }
 
-    router.push(`/songs/${updatedSong?.slug ?? song.slug}`);
+    router.replace(`/songs/${updatedSong?.slug ?? song.slug}`);
   };
 
   return (
     <main>
-      <BackButton />
+      <BackButton fallback={`/songs/${slug}`} />
 
       <SongForm
         heading="Rediger sang"

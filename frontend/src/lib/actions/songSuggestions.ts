@@ -3,6 +3,7 @@
 import { createClient } from '@/src/lib/supabase/server';
 import { requireAdmin } from '@/src/lib/actions/auth';
 import { revalidatePath } from 'next/cache';
+import { DEFAULT_HJEMMELAGET_TAG_ID } from '@/src/lib/constants/tags';
 
 type SongInput = {
   title: string;
@@ -87,19 +88,33 @@ export async function approveSuggestion(id: string) {
   }
 
   // 2. Insert approved suggestion to songs
-  const { error: insertErr } = await supabase.from('songs').insert({
-    title: suggestion.title,
-    melody: suggestion.melody,
-    author: suggestion.author,
-    chorus: suggestion.chorus,
-    verses: suggestion.verses,
-    spotify_youtube: suggestion.spotify_youtube,
-    has_chords: suggestion.has_chords,
-  });
+  const { data: insertedSong, error: insertErr } = await supabase
+    .from('songs')
+    .insert({
+      title: suggestion.title,
+      melody: suggestion.melody,
+      author: suggestion.author,
+      chorus: suggestion.chorus,
+      verses: suggestion.verses,
+      spotify_youtube: suggestion.spotify_youtube,
+      has_chords: suggestion.has_chords,
+    })
+    .select('id')
+    .single();
 
-  if (insertErr) {
+  if (insertErr || !insertedSong) {
     console.error(insertErr);
     throw new Error('Kunne ikke legge til sang');
+  }
+
+  const { error: tagErr } = await supabase.from('song_tags').insert({
+    song_id: insertedSong.id,
+    tag_id: DEFAULT_HJEMMELAGET_TAG_ID,
+  });
+
+  if (tagErr) {
+    console.error(tagErr);
+    throw new Error('Kunne ikke legge til standardtag på sang');
   }
 
   // 3. Remove original suggestion

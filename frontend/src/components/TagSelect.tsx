@@ -11,11 +11,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-
-type Tag = {
-  id: string;
-  name: string;
-};
+import type { Tag } from '../lib/db';
 
 export type TagSelectProps = {
   value: Tag[];
@@ -23,9 +19,11 @@ export type TagSelectProps = {
   triggerClassName?: string;
 };
 
+// Multi-select dropdown for choosing tags
 export default function TagSelect({ value, onChange, triggerClassName }: TagSelectProps) {
   const [tags, setTags] = useState<Tag[]>([]);
 
+  // Fetch all tags once on mount
   useEffect(() => {
     const fetchTags = async () => {
       if (typeof navigator !== 'undefined' && !navigator.onLine) {
@@ -48,6 +46,7 @@ export default function TagSelect({ value, onChange, triggerClassName }: TagSele
   const selectedIds = useMemo(() => value.map((t) => t.id), [value]);
   const [open, setOpen] = useState(false);
 
+  // Toggle a tag in the selection
   const toggleTag = (tag: Tag) => {
     const isSelected = selectedIds.includes(tag.id);
     const newSelectedIds = isSelected

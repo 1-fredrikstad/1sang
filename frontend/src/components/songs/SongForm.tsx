@@ -12,6 +12,9 @@ import SectionInput from '../SectionInput';
 import ChordPreview from '../chords/ChordPreview';
 import { useEffect, useState } from 'react';
 import { Switch } from '@/components/ui/switch';
+import { capitalizeFirst } from '@/src/lib/utils/capitalizeFormat';
+import MobileTooltip from '../MobileTooltip';
+import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 
 /**
  * Form data structure used both for:
@@ -87,32 +90,6 @@ export default function SongForm({
   });
 
   /**
-   * Reactive field subscriptions (UI-only derived values)
-   * useWatch ensures component re-renders when values change.
-   */
-  const chorusValue = useWatch({ control, name: 'chorus' }) || '';
-  const chorusCharCount = chorusValue.length;
-
-  const watchVerses = useWatch({ control, name: 'verses' }) || [];
-
-  /**
-   * Chorus UI toggle (local UI state, not persisted field)
-   * Controls whether chorus input exists in the form.
-   */
-  const [hasChorus, setHasChorus] = useState(!!initialValues?.chorus);
-
-  /**
-   * Chords toggle stored in form state (boolean)
-   */
-  const hasChords = useWatch({
-    control,
-    name: 'has_chords',
-    defaultValue: false,
-  });
-
-  const selectedTags = useWatch({ control, name: 'tags' }) ?? [];
-
-  /**
    * Hydrate form when editing existing song.
    * React Hook Form does NOT update defaultValues after mount,
    * so reset() is required when initialValues arrives async.
@@ -131,6 +108,44 @@ export default function SongForm({
       has_chords: initialValues.has_chords ?? false,
     });
   }, [initialValues, reset]);
+
+  /**
+   * Reactive field subscriptions (UI-only derived values)
+   * useWatch ensures component re-renders when values change.
+   */
+  const chorusValue = useWatch({ control, name: 'chorus' }) || '';
+  const chorusCharCount = chorusValue.length;
+
+  const watchVerses = useWatch({ control, name: 'verses' }) || [];
+
+  // Checks whether there exists a verse with content
+  const hasAnyVerseContent = watchVerses.some((v) => v && v.trim().length > 0);
+
+  /**
+   * Chorus UI toggle (local UI state, not persisted field)
+   * Controls whether chorus input exists in the form.
+   */
+  const [hasChorus, setHasChorus] = useState(!!initialValues?.chorus);
+
+  const selectedTags = useWatch({ control, name: 'tags' }) ?? [];
+
+  /**
+   * Chords toggle stored in form state (boolean)
+   */
+  const hasChords = useWatch({
+    control,
+    name: 'has_chords',
+    defaultValue: false,
+  });
+
+  /**
+   * Turns off has_chords where there is no verse
+   */
+  useEffect(() => {
+    if (!hasAnyVerseContent && hasChords) {
+      setValue('has_chords', false);
+    }
+  }, [hasAnyVerseContent, hasChords, setValue]);
 
   /**
    * Submit handler:
@@ -190,7 +205,12 @@ export default function SongForm({
           <Input
             id="form-add-song-title"
             aria-invalid={!!errors.title}
-            {...register('title', getFieldValidation('title'))}
+            {...register('title', {
+              ...getFieldValidation('title'),
+              setValueAs: (v) => (typeof v === 'string' ? v.trim() : v),
+            })}
+            placeholder="Når dagen begynnner en knute jeg gjør"
+            onBlur={(e) => setValue('title', capitalizeFirst(e.target.value))}
             className="focus-visible:ring-1 text-sm"
           />
           {errors.title && <FieldError errors={[errors.title]} />}
@@ -202,7 +222,12 @@ export default function SongForm({
           <Input
             id="form-add-song-author"
             aria-invalid={!!errors.author}
-            {...register('author', getFieldValidation('author'))}
+            {...register('author', {
+              ...getFieldValidation('author'),
+              setValueAs: (v) => (typeof v === 'string' ? v.trim() : v),
+            })}
+            placeholder="Hans Møller Gasmann"
+            onBlur={(e) => setValue('author', capitalizeFirst(e.target.value))}
             className="focus-visible:ring-1 text-sm"
           />
           {errors.author && <FieldError errors={[errors.author]} />}
@@ -214,7 +239,12 @@ export default function SongForm({
           <Input
             id="form-add-song-melody"
             aria-invalid={!!errors.melody}
-            {...register('melody', getFieldValidation('melody'))}
+            {...register('melody', {
+              ...getFieldValidation('melody'),
+              setValueAs: (v) => (typeof v === 'string' ? v.trim() : v),
+            })}
+            placeholder="Turallerei"
+            onBlur={(e) => setValue('melody', capitalizeFirst(e.target.value))}
             className="focus-visible:ring-1 text-sm"
           />
           {errors.melody && <FieldError errors={[errors.melody]} />}
@@ -222,11 +252,21 @@ export default function SongForm({
 
         {/* Links */}
         <Field data-invalid={!!errors.spotify_youtube}>
-          <FieldLabel htmlFor="add-form-song-link">Spotify/YouTube-lenke</FieldLabel>
+          <FieldLabel htmlFor="add-form-song-link">
+            <span className="flex items-center gap-2">
+              Spotify/YouTube-lenke
+              <MobileTooltip
+                trigger={<QuestionMarkCircleIcon className="h-6 w-6 text-foreground" />}
+              >
+                Her kan du legge inn en lenke til melodi på Spotify eller Youtube
+              </MobileTooltip>
+            </span>
+          </FieldLabel>
           <Input
             id="form-add-song-link"
             aria-invalid={!!errors.spotify_youtube}
             {...register('spotify_youtube', getFieldValidation('spotify_youtube'))}
+            placeholder="https://youtube.com/"
             className="focus-visible:ring-1 text-sm"
           />
           {errors.spotify_youtube && <FieldError errors={[errors.spotify_youtube]} />}
@@ -235,14 +275,23 @@ export default function SongForm({
         {/* Tags */}
         {showTags && (
           <Field className="w-full">
-            <FieldLabel htmlFor="form-add-song-tags">Tags</FieldLabel>
+            <FieldLabel htmlFor="form-add-song-tags">
+              <span className="flex items-center gap-2">
+                Tags
+                <MobileTooltip
+                  trigger={<QuestionMarkCircleIcon className="h-6 w-6 text-foreground" />}
+                >
+                  Tags gjør at du kan si hva slags type sang dette er
+                </MobileTooltip>
+              </span>
+            </FieldLabel>
             <TagSelect value={selectedTags} onChange={(tags) => setValue('tags', tags)} />
           </Field>
         )}
       </FieldGroup>
 
       {/* Verses */}
-      <Field>
+      <Field data-invalid={typeof errors.verses === 'string'}>
         <FieldLabel>Vers*</FieldLabel>
         {watchVerses.map((verse, i) => {
           const charCount = verse?.length || 0;
@@ -251,7 +300,10 @@ export default function SongForm({
             <SectionInput
               key={i}
               label={`Vers ${i + 1}`}
-              register={register(`verses.${i}`, getFieldValidation('verses'))}
+              register={register(`verses.${i}`, {
+                ...getFieldValidation('verses'),
+                setValueAs: (v) => (typeof v === 'string' ? v.trim() : v),
+              })}
               error={errors.verses && errors.verses[i]?.message}
               removable={i > 0}
               onRemove={() => {
@@ -274,16 +326,21 @@ export default function SongForm({
           >
             + Legg til vers
           </Button>
-          {errors.verses && <FieldError errors={[errors.verses]} />}
+          {typeof errors.verses === 'string' && (
+            <FieldError errors={[{ message: errors.verses }]} />
+          )}
         </div>
       </Field>
 
       {/* Chorus */}
-      <Field data-invalid={!!errors.chorus}>
+      <Field data-invalid={!!errors.chorus} className="mt-4">
         <FieldLabel>Refreng</FieldLabel>
         {hasChorus ? (
           <SectionInput
-            register={register('chorus', getFieldValidation('chorus'))}
+            register={register('chorus', {
+              ...getFieldValidation('chorus'),
+              setValueAs: (v) => (typeof v === 'string' ? v.trim() : v),
+            })}
             error={errors.chorus?.message}
             removable
             onRemove={() => {
@@ -311,22 +368,24 @@ export default function SongForm({
       </Field>
 
       {/* Chord-toggle */}
-      <div className="flex items-center gap-3 mt-2">
+      <Field className="flex flex-row my-4">
+        <FieldLabel>Legg til akkorder</FieldLabel>
         <Switch
+          size="lg"
           checked={hasChords}
           onCheckedChange={(val) => setValue('has_chords', val)}
+          disabled={!hasAnyVerseContent}
           className="cursor-pointer"
         />
-        <label className="text-sm">Legg til akkorder</label>
-      </div>
+      </Field>
 
       {hasChords && <ChordPreview sections={chordSections} />}
 
       {/* Submit and reset */}
-      <div className="mt-4 flex flex-row gap-4">
+      <div className="flex gap-4 mt-4">
         <SubmitButton submitLabel={submitLabel} disabled={isSubmitting} />
         <Button type="button" variant="outline" onClick={() => reset()} className="cursor-pointer">
-          Reset
+          Nullstill
         </Button>
       </div>
     </form>

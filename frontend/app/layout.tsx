@@ -1,15 +1,19 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+
 import ConditionalHeader from '@/src/components/global/ConditionalHeader';
 import ConditionalNavbar from '@/src/components/global/ConditionalNavbar';
+
 import { AuthProvider } from '@/src/context/AuthContext';
 import { ThemeProvider } from 'next-themes';
 import { HeaderColorProvider } from '@/src/context/HeaderColorProvider';
-// import { getCookie } from 'cookies-next/server';
-// import { cookies } from 'next/headers';
-// import { HeaderColor, HEADERCOLOR_OPTIONS } from '@/src/types/theme';
+import { TagFilterProvider } from '@/src/context/TagFilterContext';
 import { TooltipProvider } from '@/components/ui/tooltip';
+
+import { getCookie } from 'cookies-next/server';
+import { cookies } from 'next/headers';
+import { HeaderColor, HEADERCOLOR_OPTIONS } from '@/src/types/theme';
 import GlobalSync from '@/src/components/global/GlobalSync';
 import ServiceWorkerRegister from '@/src/components/ServiceWorkerRegister';
 import { Toaster } from 'sonner';
@@ -37,14 +41,14 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // const cookie = await getCookie('headerColor', { cookies });
+  const cookie = await getCookie('headerColor', { cookies });
 
-  // const headerColor = HEADERCOLOR_OPTIONS.map((o) => o.value).includes(cookie as HeaderColor)
-  //   ? (cookie as HeaderColor)
-  //   : undefined;
+  const headerColor = HEADERCOLOR_OPTIONS.map((o) => o.value).includes(cookie as HeaderColor)
+    ? (cookie as HeaderColor)
+    : undefined;
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning data-theme={headerColor ?? undefined}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         {/* Prevent theme flash*/}
@@ -92,13 +96,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem enableColorScheme>
               <HeaderColorProvider>
                 <ConditionalHeader />
-
-                <main className="flex-1 overflow-y-auto">
-                  <section className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20 m-5 max-w-4xl mx-auto px-5">
-                    {children}
-                  </section>
-                </main>
-
+                <TagFilterProvider>
+                  <main className="flex-1 overflow-y-auto">
+                    <section className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20 m-5 max-w-4xl mx-auto px-5">
+                      {children}
+                    </section>
+                  </main>
+                </TagFilterProvider>
                 <ConditionalNavbar />
                 <Toaster position="top-center" richColors duration={3000} />
               </HeaderColorProvider>

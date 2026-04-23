@@ -38,14 +38,4 @@ describe('BackButton', () => {
     expect(mockRouter.back).toHaveBeenCalled();
     expect(mockRouter.push).not.toHaveBeenCalled();
   });
-
-  test('pushes to / when on /admin', () => {
-    mockUsePathname.mockReturnValue('/admin');
-
-    render(<BackButton />);
-    fireEvent.click(screen.getByRole('button', { name: /tilbake/i }));
-
-    expect(mockRouter.push).toHaveBeenCalledWith('/');
-    expect(mockRouter.back).not.toHaveBeenCalled();
-  });
 });

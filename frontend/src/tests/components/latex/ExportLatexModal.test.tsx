@@ -25,14 +25,17 @@ describe('ExportLatexModal', () => {
       melody: 'Test melodi',
       verses: ['Vers 1'],
       chorus: 'Refreng',
+      has_chords: false,
     },
   ];
 
   beforeEach(() => {
+    vi.clearAllMocks();
+
     mockUseSongPicker.mockReturnValue({
       search: '',
       setSearch: vi.fn(),
-      filteredSongs: [{ id: '1', title: 'Test sang' }],
+      filteredSongs: [{ song: mockSongs[0], score: 10 }],
       isSongAdded: () => true,
       toggleSong: vi.fn(),
       clearAll: vi.fn(),

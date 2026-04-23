@@ -1,6 +1,7 @@
 import { describe, expect, vi, beforeEach, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 // Mock next/router and toast
 const mockRouter = {
@@ -47,18 +48,30 @@ describe('SongForm', () => {
   });
 
   test('renders form with initial heading and submit label', async () => {
-    render(<SongForm heading="Add Song" submitLabel="Save" onSubmit={mockOnSubmit} />);
+    render(
+      <TooltipProvider>
+        <SongForm heading="Add Song" submitLabel="Save" onSubmit={mockOnSubmit} />
+      </TooltipProvider>
+    );
     expect(screen.getByText('Add Song')).toBeInTheDocument();
     expect(screen.getByText('Save')).toBeInTheDocument();
   });
 
   test('renders default verse input', async () => {
-    render(<SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />);
+    render(
+      <TooltipProvider>
+        <SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />
+      </TooltipProvider>
+    );
     expect(screen.getByText('Vers 1')).toBeInTheDocument();
   });
 
   test('adds a new verse when "+ Legg til vers" is clicked', async () => {
-    render(<SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />);
+    render(
+      <TooltipProvider>
+        <SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />
+      </TooltipProvider>
+    );
     const addVerseButton = screen.getByText('+ Legg til vers');
     await user.click(addVerseButton);
     expect(screen.getByText('Vers 2')).toBeInTheDocument();
@@ -91,8 +104,12 @@ describe('SongForm', () => {
   // });
 
   test('resets form when reset button is clicked', async () => {
-    render(<SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />);
-    const resetButton = screen.getByText('Reset');
+    render(
+      <TooltipProvider>
+        <SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />
+      </TooltipProvider>
+    );
+    const resetButton = screen.getByText('Nullstill');
     await user.click(resetButton);
     expect(screen.getByLabelText(/Tittel\*/i)).toHaveValue('');
   });

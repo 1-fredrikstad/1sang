@@ -3,6 +3,7 @@ import { vi, expect, describe, test } from 'vitest';
 import PlaylistForm from '@/src/components/playlist/PlaylistForm';
 import { Song } from '@/src/lib/db';
 import userEvent from '@testing-library/user-event';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 // ---- mocks ----
 vi.mock('sonner', async () => {
@@ -70,10 +71,16 @@ describe('PlaylistForm', () => {
       localId: 'local-1',
     });
 
-    render(<PlaylistForm onSubmit={onSubmit} />);
+    render(
+      <TooltipProvider>
+        <PlaylistForm onSubmit={onSubmit} />
+      </TooltipProvider>
+    );
 
     await user.type(screen.getByRole('textbox', { name: /tittel/i }), 'Test playlist');
-    await user.type(screen.getByRole('textbox', { name: /passord/i }), '1234');
+    await user.type(screen.getByLabelText('Lag passord*'), '1234');
+    await user.click(screen.getByRole('button', { name: /Velg sanger/i }));
+    await user.click(screen.getByRole('button', { name: /toggle-song/i }));
 
     await user.click(screen.getByRole('button', { name: /opprett spilleliste/i }));
 
@@ -82,18 +89,20 @@ describe('PlaylistForm', () => {
 
   test('renders edit mode correctly', () => {
     render(
-      <PlaylistForm
-        onSubmit={vi.fn()}
-        mode="edit"
-        initialValues={{
-          title: 'Min spilleliste',
-          password: '',
-          newPassword: '',
-          songsInPlaylist: [],
-          isPublic: false,
-          duration: 604800,
-        }}
-      />
+      <TooltipProvider>
+        <PlaylistForm
+          onSubmit={vi.fn()}
+          mode="edit"
+          initialValues={{
+            title: 'Min spilleliste',
+            password: '',
+            newPassword: '',
+            songsInPlaylist: [],
+            isPublic: false,
+            duration: 604800,
+          }}
+        />
+      </TooltipProvider>
     );
 
     expect(screen.getByText(/rediger spilleliste/i)).toBeInTheDocument();
@@ -102,18 +111,20 @@ describe('PlaylistForm', () => {
 
   test('shows new password field in edit mode instead of password field', () => {
     render(
-      <PlaylistForm
-        onSubmit={vi.fn()}
-        mode="edit"
-        initialValues={{
-          title: 'Min spilleliste',
-          password: '',
-          newPassword: '',
-          songsInPlaylist: [],
-          isPublic: false,
-          duration: 604800,
-        }}
-      />
+      <TooltipProvider>
+        <PlaylistForm
+          onSubmit={vi.fn()}
+          mode="edit"
+          initialValues={{
+            title: 'Min spilleliste',
+            password: '',
+            newPassword: '',
+            songsInPlaylist: [],
+            isPublic: false,
+            duration: 604800,
+          }}
+        />
+      </TooltipProvider>
     );
 
     expect(screen.getByLabelText(/nytt passord/i)).toBeInTheDocument();
@@ -122,18 +133,20 @@ describe('PlaylistForm', () => {
 
   test('uses initial values in edit mode', () => {
     render(
-      <PlaylistForm
-        onSubmit={vi.fn()}
-        mode="edit"
-        initialValues={{
-          title: 'Eksisterende spilleliste',
-          password: '',
-          newPassword: '',
-          songsInPlaylist: [],
-          isPublic: false,
-          duration: 604800,
-        }}
-      />
+      <TooltipProvider>
+        <PlaylistForm
+          onSubmit={vi.fn()}
+          mode="edit"
+          initialValues={{
+            title: 'Eksisterende spilleliste',
+            password: '',
+            newPassword: '',
+            songsInPlaylist: [],
+            isPublic: false,
+            duration: 604800,
+          }}
+        />
+      </TooltipProvider>
     );
 
     expect(screen.getByDisplayValue('Eksisterende spilleliste')).toBeInTheDocument();
@@ -149,11 +162,16 @@ describe('PlaylistForm', () => {
 
     const onSubmit = vi.fn().mockReturnValue(slowPromise);
 
-    render(<PlaylistForm onSubmit={onSubmit} />);
+    render(
+      <TooltipProvider>
+        <PlaylistForm onSubmit={onSubmit} />
+      </TooltipProvider>
+    );
 
     await user.type(screen.getByRole('textbox', { name: /tittel/i }), 'Test playlist');
-    await user.type(screen.getByRole('textbox', { name: /passord/i }), '1234');
+    await user.type(screen.getByLabelText('Lag passord*'), '1234');
 
+    await user.click(screen.getByRole('button', { name: /Velg sanger/i }));
     await user.click(screen.getByRole('button', { name: /toggle-song/i }));
 
     const submitButton = screen.getByRole('button', { name: /opprett spilleliste/i });
