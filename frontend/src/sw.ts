@@ -61,7 +61,6 @@ self.addEventListener('fetch', (event: FetchEvent) => {
   if (url.origin !== self.location.origin) return;
   if (url.pathname.startsWith('/_next/')) return;
   if (url.pathname.startsWith('/api/')) return;
-  if (url.pathname === '/manifest.webmanifest') return;
   if (event.request.method !== 'GET') return;
 
   const isRSC =
@@ -69,35 +68,38 @@ self.addEventListener('fetch', (event: FetchEvent) => {
     url.searchParams.has('_rsc') ||
     event.request.headers.has('Next-Router-State-Tree');
 
-  const isNavigate = event.request.mode === 'navigate';
-
   const isDynamicRoute =
     (url.pathname.startsWith('/songs/') && url.pathname !== '/songs/') ||
     (url.pathname.startsWith('/playlists/') && url.pathname !== '/playlists/');
 
   if (!isDynamicRoute) return;
-  if (!isNavigate && !isRSC) return;
 
   event.respondWith(
     (async () => {
-      const rscKey = url.pathname.startsWith('/songs/') ? '/songs/_shell' : '/playlists/_shell';
-      const htmlKey = rscKey.replace('_shell', '_html');
-      const cacheKey = isRSC ? rscKey : htmlKey;
-      const cacheName = isRSC ? 'dynamic-rsc' : 'dynamic-pages';
-
       try {
         const response = await fetch(event.request);
         if (response.ok) {
-          const cache = await caches.open(cacheName);
-          cache.put(cacheKey, response.clone());
+          const cache = await caches.open(isRSC ? 'dynamic-rsc' : 'dynamic-pages');
+          // Cache by exact pathname — RSC payloads contain slug-specific
+          // router state so they must be matched exactly
+          cache.put(url.pathname, response.clone());
         }
         return response;
       } catch {
-        const cache = await caches.open(cacheName);
-        const cached = await cache.match(cacheKey);
+        const cache = await caches.open(isRSC ? 'dynamic-rsc' : 'dynamic-pages');
+        // Try exact match first
+        const cached = await cache.match(url.pathname);
         if (cached) return cached;
-        // Last resort: serve precached shell
-        return (await caches.match('/', { ignoreSearch: true })) ?? Response.error();
+
+        // HTML navigation only: any shell of same type works since
+        // useParams() reads from browser URL and data comes from IndexedDB
+        if (!isRSC) {
+          const prefix = url.pathname.startsWith('/songs/') ? '/songs/' : '/playlists/';
+          const keys = await cache.keys();
+          const fallback = keys.find((r) => new URL(r.url).pathname.startsWith(prefix));
+          if (fallback) return (await cache.match(fallback)) ?? Response.error();
+        }
+        return (await caches.match('/offline')) ?? Response.error();
       }
     })()
   );
