@@ -42,14 +42,14 @@ export default function PlaylistSettingsMenu({
 
   const handleEdit = async () => {
     if (isAdmin || !playlist.is_public) {
-      router.push(editUrl ?? `/playlists/${playlist.id}/edit`);
+      router.push(editUrl ?? `/playlists/playlist/edit?id=${playlist.id}`);
       return;
     }
 
     const storedPassword = sessionStorage.getItem(`playlist-password-${playlist.id}`);
 
     if (storedPassword) {
-      router.push(editUrl ?? `/playlists/${playlist.id}/edit`);
+      router.push(editUrl ?? `/playlists/playlist/edit?id=${playlist.id}`);
       return;
     }
 
@@ -80,7 +80,7 @@ export default function PlaylistSettingsMenu({
     sessionStorage.setItem(`playlist-password-${playlist.id}`, password);
     setPassword('');
     setOpen(false);
-    router.push(editUrl ?? `/playlists/${playlist.id}/edit`);
+    router.push(editUrl ?? `/playlists/playlist/edit?id=${playlist.id}`);
   };
 
   return (

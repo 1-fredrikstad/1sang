@@ -128,7 +128,7 @@ export default function SongClient() {
             <StarIcon songId={song.id} />
             {isAdmin && (
               <div>
-                <Link href={`/songs?slug=${slug}/edit`}>
+                <Link href={`/songs/edit?slug=${slug}`}>
                   <PencilSquareIcon className="size-6 cursor-pointer" />
                 </Link>
               </div>

@@ -126,7 +126,7 @@ export default function PlaylistsPage() {
                       {tab.data.map((playlist) => (
                         <Link
                           key={playlist.id}
-                          href={`/playlists/${playlist.id}`}
+                          href={`/playlists/playlist?id=${playlist.id}`}
                           className="block"
                         >
                           <li className="py-3 hover:bg-black/5 dark:hover:bg-white/5 transition allow-animation cursor-pointer rounded-xs">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
 import BackButton from '@/src/components/BackButton';
 import { usePlaylistDetails } from '@/src/hooks/usePlaylistDetails';
@@ -11,8 +11,8 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/src/lib/supabase/client';
 
 export default function PlaylistClient() {
-  const params = useParams<{ id: string }>();
-  const id = params?.id as string | undefined;
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
 
   const { playlist, songs, isLoading } = usePlaylistDetails(id || '');
 
@@ -80,7 +80,7 @@ export default function PlaylistClient() {
           <div className="absolute right-0">
             <PlaylistSettingsMenu
               playlist={playlist}
-              editUrl={`/playlists/${playlist.id}/edit`}
+              editUrl={`/playlists/playlist/edit?id=${playlist.id}`}
               isAdmin={isAdmin}
             />
           </div>
