@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "if exist .next rmdir /s /q .next && next build --webpack",
+    "build": "rm -rf .next && next build --webpack",
     "start": "next start",
     "seed:songs": "node --env-file=.env.local ./scripts/seed-songs.mjs",
     "lint": "eslint",
