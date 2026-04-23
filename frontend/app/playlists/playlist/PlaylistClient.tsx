@@ -10,6 +10,8 @@ import PlaylistSettingsMenu from '@/src/components/playlist/PlaylistSettingsMenu
 import { useEffect, useState } from 'react';
 import { createClient } from '@/src/lib/supabase/client';
 import NotFound from '@/app/not-found';
+import Campfire from '@/src/components/Campfire';
+import Link from 'next/link';
 
 export default function PlaylistClient() {
   const searchParams = useSearchParams();
@@ -58,20 +60,16 @@ export default function PlaylistClient() {
     loadAdmin();
   }, []);
 
-  if (id === null) {
-    return <NotFound />;
-  }
-
   if (isLoading || isAdmin === null) {
     return <Spinner message="Laster inn spilleliste" />;
   }
 
   if (!playlist) {
     return (
-      <div className="text-center py-12">
-        <p>Spilleliste ikke funnet</p>
-        <BackButton />
-      </div>
+      <>
+        <Campfire message="Spillelisten finnes ikke" />
+        <Link href="/">Gå til hjemsiden</Link>
+      </>
     );
   }
 

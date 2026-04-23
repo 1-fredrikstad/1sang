@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, type Song } from '@/src/lib/db';
+import { db } from '@/src/lib/db';
 import BackButton from '@/src/components/BackButton';
 import Link from 'next/link';
 import { useAuth } from '@/src/context/AuthContext';
@@ -18,7 +18,7 @@ import { usePlaylistDetails } from '@/src/hooks/usePlaylistDetails';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
 import { useSwipeable } from 'react-swipeable';
 import { Spinner } from '@/components/ui/spinner';
-import NotFound from '../not-found';
+import Campfire from '@/src/components/Campfire';
 
 export default function SongClient() {
   const searchParams = useSearchParams();
@@ -98,7 +98,12 @@ export default function SongClient() {
 
   // If song can't be fined
   if (song === null) {
-    return <NotFound />;
+    return (
+      <>
+        <Campfire message="Sangen finnes ikke" />
+        <Link href="/">Gå til hjemsiden</Link>
+      </>
+    );
   }
 
   // Detect platform from external song link
