@@ -43,8 +43,8 @@ export async function updateSuggestion(id: string, data: SongInput) {
 
   // Refresh affected pages
   revalidatePath('/admin');
-  revalidatePath(`/admin/suggestions/${id}`);
-  revalidatePath(`/admin/suggestions/${id}/edit`);
+  revalidatePath(`/admin/suggestions?id=${id}`);
+  revalidatePath(`/admin/suggestions/edit?id=${id}`);
 
   return { success: true };
 }

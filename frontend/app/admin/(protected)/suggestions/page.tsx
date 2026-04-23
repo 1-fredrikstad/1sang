@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/src/lib/db';
 import BackButton from '@/src/components/BackButton';
@@ -15,7 +15,8 @@ import { useState } from 'react';
 import { FaSpotify, FaYoutube } from 'react-icons/fa';
 
 export default function SuggestionPage() {
-  const { id } = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id')!;
   const mounted = useMounted();
 
   // UI state for chord toggle
@@ -76,7 +77,7 @@ export default function SuggestionPage() {
 
       {/* Edit button */}
       <div className="absolute right-5 top-0">
-        <Link href={`/admin/suggestions/${id}/edit`} aria-label="Rediger forslag">
+        <Link href={`/admin/suggestions/edit?id=${id}`} aria-label="Rediger forslag">
           <PencilSquareIcon
             className="h-6 w-6 text-foreground transition-all duration-200 opacity-70 hover:opacity-100"
             title="Rediger forslag"

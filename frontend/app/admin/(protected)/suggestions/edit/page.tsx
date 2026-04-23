@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/src/lib/db';
 import SongForm from '@/src/components/songs/SongForm';
@@ -11,7 +11,8 @@ import BackButton from '@/src/components/BackButton';
 import { Spinner } from '@/components/ui/spinner';
 
 export default function EditSuggestionPage() {
-  const { id } = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id')!;
   const router = useRouter();
   const mounted = useMounted();
 
@@ -73,7 +74,7 @@ export default function EditSuggestionPage() {
               console.log('Dexie updated manually:', updatedRow.title);
             }
 
-            router.push(`/admin/suggestions/${id}`);
+            router.push(`/admin/suggestions?id=${id}`);
             // router.refresh();
           } catch (err: unknown) {
             console.error(err);
