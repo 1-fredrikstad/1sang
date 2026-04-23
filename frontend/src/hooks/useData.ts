@@ -28,7 +28,7 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const [stableData, setStableData] = useState<T[]>([]);
+  const [stableData, setStableData] = useState<T[] | undefined>(undefined);
 
   // offline-first read (Dexie)
   const data = useLiveQuery(() => db.table(tableName).toArray(), [tableName]);
@@ -67,6 +67,10 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
     if (isOnline) sync(true);
   }, [isOnline, sync]);
 
+  useEffect(() => {
+    if (data !== undefined) setStableData(data);
+  }, [data]);
+
   // periodic sync while online
   useEffect(() => {
     if (!isOnline) return;
@@ -79,7 +83,12 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
     if (data) setStableData(data);
   }, [data]);
 
-  return { data: stableData, isLoading, error, isOnline };
+  return {
+    data: stableData ?? [],
+    isLoading: isLoading || stableData === undefined,
+    error,
+    isOnline,
+  };
 }
 
 // hooks for each table
