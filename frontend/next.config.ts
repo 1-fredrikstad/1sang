@@ -4,7 +4,7 @@ import withSerwistInit from '@serwist/next';
 const withSerwist = withSerwistInit({
   swSrc: 'src/sw.ts',
   swDest: 'public/sw.js',
-  cacheOnNavigation: true,
+  cacheOnNavigation: false,
   reloadOnOnline: false,
   disable: process.env.NODE_ENV === 'development',
   additionalPrecacheEntries: [
@@ -15,7 +15,7 @@ const withSerwist = withSerwistInit({
     { url: '/make_playlist', revision: null },
     { url: '/playlists', revision: null },
     { url: '/add', revision: null },
-    { url: '/not-found', revision: null },
+    { url: '/offline', revision: null },
   ],
 });
 
