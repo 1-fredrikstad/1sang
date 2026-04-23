@@ -27,6 +27,7 @@ export default function Campfire({ message }: Props) {
           height={100}
           loading="eager"
           className={`allow-transition transition-all z-5 ${boost ? 'fire-boost' : 'fire-idle'}`}
+          unoptimized
         ></Image>
         <Image
           src="/campfire/wood2.png"
@@ -35,6 +36,7 @@ export default function Campfire({ message }: Props) {
           height={80}
           loading="eager"
           className="-mt-3 fire-idle"
+          unoptimized
         ></Image>
       </section>
       <p className="text-muted-foreground italic">Trykk for å legge på ved</p>

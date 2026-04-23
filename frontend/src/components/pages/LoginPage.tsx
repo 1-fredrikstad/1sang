@@ -26,6 +26,7 @@ export default function LoginPage() {
             height={200}
             className="h-29 w-auto"
             priority
+            unoptimized
           />
           <h1>Admin innlogging</h1>
           <GoogleLoginButton />
