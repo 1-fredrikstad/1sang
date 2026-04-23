@@ -73,39 +73,32 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 
   if (!isDynamicRoute) return;
 
-  // Handle both navigation and RSC requests for dynamic routes
   event.respondWith(
     (async () => {
       try {
-        // Try network first
         const response = await fetch(event.request);
         if (response.ok) {
-          // Cache successful responses
           const cacheName = isRSC ? 'dynamic-rsc' : 'dynamic-pages';
           const cache = await caches.open(cacheName);
           if (isRSC) {
-            // For RSC, cache by pathname only (ignore _rsc param)
             cache.put(url.pathname, response.clone());
           } else {
-            // For navigation, cache the full request
             cache.put(event.request, response.clone());
           }
         }
         return response;
       } catch (error) {
-        // Network failed, try cache
-        const cacheName = isRSC ? 'dynamic-rsc' : 'dynamic-pages';
-        const cache = await caches.open(cacheName);
-
-        let cachedResponse;
         if (isRSC) {
-          // For RSC, match by pathname
-          cachedResponse = await cache.match(url.pathname);
+          const cache = await caches.open('dynamic-rsc');
+          const cachedResponse = await cache.match(url.pathname);
+          if (cachedResponse) return cachedResponse;
+
+          return Response.redirect(url.origin + url.pathname, 302);
         } else {
-          // For navigation, try exact match first
-          cachedResponse = await cache.match(event.request);
+          const cache = await caches.open('dynamic-pages');
+          let cachedResponse = await cache.match(event.request);
+
           if (!cachedResponse) {
-            // Fallback to any cached page of the same type
             const prefix = url.pathname.startsWith('/songs/') ? '/songs/' : '/playlists/';
             const allCached = await cache.keys();
             const fallbackRequest = allCached.find((req) =>
@@ -115,14 +108,10 @@ self.addEventListener('fetch', (event: FetchEvent) => {
               cachedResponse = await cache.match(fallbackRequest);
             }
           }
-        }
 
-        if (cachedResponse) {
-          return cachedResponse;
+          if (cachedResponse) return cachedResponse;
+          return (await caches.match('/offline')) ?? Response.error();
         }
-
-        // Final fallback
-        return (await caches.match('/offline')) ?? Response.error();
       }
     })()
   );

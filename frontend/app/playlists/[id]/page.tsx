@@ -2,6 +2,6 @@ export const dynamic = 'force-static';
 
 import PlaylistClient from './PlaylistClient';
 
-export default function PlaylistPage() {
+export default function PlaylistDetailPage() {
   return <PlaylistClient />;
 }
