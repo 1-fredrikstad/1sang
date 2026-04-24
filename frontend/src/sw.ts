@@ -2,7 +2,7 @@
 
 import { defaultCache } from '@serwist/next/worker';
 import type { PrecacheEntry, SerwistGlobalConfig } from 'serwist';
-import { Serwist, StaleWhileRevalidate, CacheFirst } from 'serwist';
+import { Serwist, StaleWhileRevalidate, CacheFirst, NetworkFirst } from 'serwist';
 import { CacheableResponsePlugin, ExpirationPlugin } from 'serwist';
 
 // Extend the global scope to include the injected precache manifest
@@ -41,6 +41,22 @@ const serwist = new Serwist({
   },
 
   runtimeCaching: [
+    // 0. RSC requests — short timeout so offline nav fails fast
+    {
+      matcher: ({ url, request }) =>
+        url.searchParams.has('_rsc') ||
+        request.headers.get('RSC') === '1' ||
+        request.headers.has('Next-Router-State-Tree'),
+      handler: new NetworkFirst({
+        cacheName: 'rsc-responses',
+        networkTimeoutSeconds: 3, // fail fast instead of hanging 24s
+        plugins: [
+          new CacheableResponsePlugin({ statuses: [0, 200] }),
+          new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 }),
+        ],
+      }),
+    },
+
     // 1. Apply shell pages (core routes)
     {
       matcher: ({ request, url }) => {
