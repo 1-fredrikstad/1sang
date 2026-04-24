@@ -9,8 +9,8 @@ import { usePlaylists } from './useData';
 
 // Fetches songs from public and private playlists
 export function usePlaylistDetails(id: string) {
-  const [privateSongs, setPrivateSongs] = useState<Song[]>([]);
-  const [loadingPrivateSongs, setLoadingPrivateSongs] = useState(false);
+  const [dexieSongs, setDexieSongs] = useState<Song[]>([]);
+  const [loadingDexieSongs, setLoadingDexieSongs] = useState(false);
 
   // 1. Dexie useLiveQuery returns 'undefined' while fetching, then an array
   // const privatePlaylists = useLiveQuery(() => db.playlists.toArray(), []);
@@ -28,17 +28,24 @@ export function usePlaylistDetails(id: string) {
   const playlist = allPlaylists?.find(({ id: pId }) => pId === id);
 
   // Song fetching
-  const { data: publicSongs, isLoading: loadingPublicSongs } = usePlaylistSongs(id);
+  const { data: apiSongs, isLoading: loadingApiSongs } = usePlaylistSongs(
+    playlist?.is_public ? id : undefined
+  );
 
   useEffect(() => {
     // Only fetch private songs if we found a private playlist
-    if (!playlist || playlist.is_public) return;
+    // if (!playlist || playlist.is_public) return;
+    if (!id) return;
 
-    const loadPrivateSongs = async () => {
-      setLoadingPrivateSongs(true);
+    const loadFromDexie = async () => {
+      setLoadingDexieSongs(true);
       try {
         const items = await db.playlist_items.where('playlist_id').equals(id).sortBy('position');
         const songIds = items.map((i) => i.song_id);
+        if (songIds.length === 0) {
+          setDexieSongs([]);
+          return;
+        }
         const songsFromDb = await db.songs.where('id').anyOf(songIds).toArray();
         const sorted = items
           .map((item) => {
@@ -46,30 +53,36 @@ export function usePlaylistDetails(id: string) {
             return song ? { ...song, position: item.position } : null;
           })
           .filter(Boolean) as Song[];
-        setPrivateSongs(sorted);
+        setDexieSongs(sorted);
       } finally {
-        setLoadingPrivateSongs(false);
+        setLoadingDexieSongs(false);
       }
     };
-    loadPrivateSongs();
-  }, [id, playlist]);
+    loadFromDexie();
+  }, [id]);
 
   const songs = useMemo(() => {
-    if (playlist?.is_public) return publicSongs;
-    return privateSongs;
-  }, [playlist?.is_public, publicSongs, privateSongs]);
+    if (!playlist) return [];
+    // if (playlist?.is_public) return publicSongs;
+    // return privateSongs;
+    if (playlist.is_public) {
+      // Prefer API songs when online and loaded, fallback to Dexie
+      return apiSongs.length > 0 ? apiSongs : dexieSongs;
+    }
+  }, [playlist, apiSongs, dexieSongs]);
 
   // const isSearchingCatalogs = privatePlaylists === undefined || loadingPublicPlaylists;
 
-  const isLoadingContent = playlist
-    ? playlist.is_public
-      ? loadingPublicSongs
-      : loadingPrivateSongs
-    : false;
+  // const isLoadingContent = playlist
+  //   ? playlist.is_public
+  //     ? loadingPublicSongs
+  //     : loadingDexieSongs
+  //   : false;
 
-  // loadingPlaylists covers both Dexie init and the initial sync from Supabase
-  // Doesnt block loading on loadingPlaylists if we already have data
-  const isLoading = (loadingPlaylists && allPlaylists.length === 0) || isLoadingContent;
+  // Only block on loading if we have no data yet at all
+  const isLoading =
+    (loadingPlaylists && allPlaylists.length === 0) ||
+    (loadingDexieSongs && dexieSongs.length === 0);
 
   return { playlist, songs, isLoading };
 }
