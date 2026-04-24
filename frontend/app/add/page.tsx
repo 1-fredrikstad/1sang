@@ -6,11 +6,24 @@ import { useAuth } from '@/src/context/AuthContext';
 import { createClient } from '@/src/lib/supabase/client';
 import { syncService } from '@/src/lib/syncService';
 import { useRouter } from 'next/navigation';
+import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
+import Campfire from '@/src/components/Campfire';
+import Link from 'next/link';
 
 export default function AddSongPage() {
   const { isAdmin } = useAuth();
   const supabase = createClient();
   const router = useRouter();
+  const isOnline = useOnlineStatus();
+
+  if (!isOnline) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+        <Campfire message="Du er offline. Koble til internett for å legge til sanger." />
+        <Link href="/">Gå til hjemsiden</Link>
+      </div>
+    );
+  }
 
   if (isAdmin === null) {
     return <div>Henter skjema...</div>;

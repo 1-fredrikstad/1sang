@@ -17,6 +17,12 @@ export function usePublicPlaylists(): State {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Skip API call entirely if offline: avoids long timeout hang
+    if (!navigator.onLine) {
+      setIsLoading(false);
+      return;
+    }
+
     const fetchPlaylists = async () => {
       try {
         const res = await fetch('/api/playlists');

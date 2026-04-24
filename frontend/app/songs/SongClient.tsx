@@ -19,11 +19,13 @@ import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
 import { useSwipeable } from 'react-swipeable';
 import { Spinner } from '@/components/ui/spinner';
 import Campfire from '@/src/components/Campfire';
+import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
 
 export default function SongClient() {
   const searchParams = useSearchParams();
   const slug = searchParams.get('slug'); // Get slug from query instead of useParams()
   const playlistId = searchParams.get('playlistId');
+  const isOnline = useOnlineStatus();
 
   // Check whether current user is admin
   const { isAdmin } = useAuth();
@@ -139,7 +141,7 @@ export default function SongClient() {
           <BackButton href="/" />
           <div className="absolute right-0 flex items-center gap-2">
             <StarIcon songId={song.id} />
-            {isAdmin && (
+            {isAdmin && isOnline && (
               <div>
                 <Link href={`/songs/edit?slug=${slug}`}>
                   <PencilSquareIcon className="size-6 cursor-pointer" />

@@ -22,6 +22,7 @@ import {
 import { useAuth } from '@/src/context/AuthContext';
 import SongOrPlaylistBox from '../SongOrPlaylistBox';
 import { useSongSuggestions } from '@/src/hooks/useData';
+import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
 
 type NavItem = {
   id: string;
@@ -62,6 +63,7 @@ const navItems: NavItem[] = [
 export default function Navbar() {
   const pathname = usePathname();
   const { isAdmin } = useAuth();
+  const isOnline = useOnlineStatus();
 
   // Fetch all song suggestions
   const { data: suggestions } = useSongSuggestions();
@@ -128,8 +130,8 @@ export default function Navbar() {
                       isActive ? 'opacity-100' : 'opacity-70'
                     } group-hover:opacity-100`}
                   />
-                  {/* If suggestions and admin -> show red dot on settings (cog) */}
-                  {id === 'settings' && showSuggestionDot && (
+                  {/* If suggestions and admin and online -> show red dot on settings (cog) */}
+                  {id === 'settings' && showSuggestionDot && isOnline && (
                     <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500 ring-2 ring-background translate-x-1/3 -translate-y-1/3" />
                   )}
                 </div>
