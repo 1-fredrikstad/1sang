@@ -24,10 +24,11 @@ export function usePlaylistSongs(id?: string): State {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!navigator.onLine) {
-      setIsLoading(false);
-      return;
-    }
+    // TODO i uncommented this to check but unsure if it needs to be there still
+    // if (!navigator.onLine) {
+    //   setIsLoading(false);
+    //   return;
+    // }
 
     if (!id || id.length < 10 || id === 'undefined') {
       setIsLoading(false);

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { db, Song } from '@/src/lib/db';
 import { useLiveQuery } from 'dexie-react-hooks';
-// import { usePublicPlaylists } from './usePublicPlaylists';
+import { usePublicPlaylists } from './usePublicPlaylists';
 import { usePlaylistSongs } from './usePlaylistSongs';
 
 // Fetches songs from public and private playlists
@@ -12,19 +12,15 @@ export function usePlaylistDetails(id: string) {
   const [loadingPrivateSongs, setLoadingPrivateSongs] = useState(false);
 
   // 1. Dexie useLiveQuery returns 'undefined' while fetching, then an array
-  // const privatePlaylists = useLiveQuery(() => db.playlists.toArray(), []);
+  const privatePlaylists = useLiveQuery(() => db.playlists.toArray(), []);
 
-  // // 2. Public playlists
-  // const { data: publicPlaylists, isLoading: loadingPublicPlaylists } = usePublicPlaylists();
+  // 2. Public playlists
+  const { data: publicPlaylists, isLoading: loadingPublicPlaylists } = usePublicPlaylists();
 
-  // // Find the playlist in either source
-  // const privatePlaylist = privatePlaylists?.find(({ id: pId }) => pId === id);
-  // const publicPlaylist = publicPlaylists?.find(({ id: pId }) => pId === id);
-  // const playlist = privatePlaylist || publicPlaylist;
-
-  // All playlists are in Dexie — no API call needed
-  const allPlaylists = useLiveQuery(() => db.playlists.toArray(), []);
-  const playlist = allPlaylists?.find(({ id: pId }) => pId === id);
+  // Find the playlist in either source
+  const privatePlaylist = privatePlaylists?.find(({ id: pId }) => pId === id);
+  const publicPlaylist = publicPlaylists?.find(({ id: pId }) => pId === id);
+  const playlist = privatePlaylist || publicPlaylist;
 
   // Song fetching
   const { data: publicSongs, isLoading: loadingPublicSongs } = usePlaylistSongs(id);
@@ -58,7 +54,7 @@ export function usePlaylistDetails(id: string) {
     return privateSongs;
   }, [playlist?.is_public, publicSongs, privateSongs]);
 
-  // const isSearchingCatalogs = privatePlaylists === undefined || loadingPublicPlaylists;
+  const isSearchingCatalogs = privatePlaylists === undefined || loadingPublicPlaylists;
 
   const isLoadingContent = playlist
     ? playlist.is_public
@@ -66,8 +62,7 @@ export function usePlaylistDetails(id: string) {
       : loadingPrivateSongs
     : false;
 
-  // allPlaylists is undefined while Dexie is initalizing, then array
-  const isLoading = allPlaylists === undefined || isLoadingContent;
+  const isLoading = isSearchingCatalogs || isLoadingContent;
 
   return { playlist, songs, isLoading };
 }
