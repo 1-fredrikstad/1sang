@@ -114,58 +114,5 @@ const serwist = new Serwist({
   ],
 });
 
-// self.addEventListener('fetch', (event: FetchEvent) => {
-//   const url = new URL(event.request.url);
-//   // Ignore cross-origin requests
-//   if (url.origin !== self.location.origin) return;
-//   // Ignore Next.js internals and API routes
-//   if (url.pathname.startsWith('/_next/')) return;
-//   if (url.pathname.startsWith('/api/')) return;
-//   // Only handle GET requests
-//   if (event.request.method !== 'GET') return;
-
-//   // Detect RSC reqs (React Server Component)
-//   const isRSC =
-//     event.request.headers.get('RSC') === '1' ||
-//     url.searchParams.has('_rsc') ||
-//     event.request.headers.has('Next-Router-State-Tree');
-
-//   // Dynamic routes
-//   const isDynamicRoute =
-//     (url.pathname.startsWith('/songs/') && url.pathname !== '/songs/') ||
-//     (url.pathname.startsWith('/playlists/') && url.pathname !== '/playlists/');
-
-//   if (!isDynamicRoute) return;
-
-//   event.respondWith(
-//     (async () => {
-//       try {
-//         // Try network first
-//         const response = await fetch(event.request);
-//         if (response.ok) {
-//           // Store response in appropriate cache
-//           const cache = await caches.open(isRSC ? 'dynamic-rsc' : 'dynamic-pages');
-//           // Cache by exact pathname — RSC payloads contain slug-specific
-//           // router state so they must be matched exactly
-//           cache.put(url.pathname, response.clone());
-//         }
-//         return response;
-//       } catch {
-//         // Network failed -> fallback to cache
-//         const cache = await caches.open(isRSC ? 'dynamic-rsc' : 'dynamic-pages');
-//         // Try exact cached match first
-//         const cached = await cache.match(url.pathname);
-//         if (cached) return cached;
-
-//         // For RSC, failing is acceptable, Next.js handles it
-//         if (isRSC) return Response.error();
-
-//         // If it's HTML, show the offline page
-//         return (await caches.match('/offline')) ?? Response.error();
-//       }
-//     })()
-//   );
-// });
-
 // Attach all Serwist-managed event listeners
 serwist.addEventListeners();
