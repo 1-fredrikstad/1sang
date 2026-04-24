@@ -68,7 +68,8 @@ export function usePlaylistDetails(id: string) {
     : false;
 
   // loadingPlaylists covers both Dexie init and the initial sync from Supabase
-  const isLoading = loadingPlaylists || isLoadingContent;
+  // Doesnt block loading on loadingPlaylists if we already have data
+  const isLoading = (loadingPlaylists && allPlaylists.length === 0) || isLoadingContent;
 
   return { playlist, songs, isLoading };
 }

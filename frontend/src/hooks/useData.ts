@@ -25,7 +25,7 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
   const { maxAgeMins = 5, syncOnMount = true } = options;
 
   const isOnline = useOnlineStatus();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(syncOnMount); // true by default
   const [error, setError] = useState<Error | null>(null);
 
   const [stableData, setStableData] = useState<T[] | undefined>(undefined);
