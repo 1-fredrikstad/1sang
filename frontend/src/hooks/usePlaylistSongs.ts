@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { db } from '../lib/db';
 
 type Song = {
   id: string;
@@ -24,12 +25,6 @@ export function usePlaylistSongs(id?: string): State {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // TODO i uncommented this to check but unsure if it needs to be there still
-    // if (!navigator.onLine) {
-    //   setIsLoading(false);
-    //   return;
-    // }
-
     if (!id || id.length < 10 || id === 'undefined') {
       setIsLoading(false);
       setData([]);
@@ -37,9 +32,31 @@ export function usePlaylistSongs(id?: string): State {
     }
 
     const fetchSongs = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      // Helper to fetch songs mapped to playlist items from Dexie
+      const getFromDexie = async () => {
+        const items = await db.playlist_items.where('playlist_id').equals(id).sortBy('position');
+        const songIds = items.map((i) => i.song_id);
+        const songsFromDb = await db.songs.where('id').anyOf(songIds).toArray();
+        return items
+          .map((item) => {
+            const song = songsFromDb.find((s) => s.id === item.song_id);
+            return song ? { ...song, position: item.position } : null;
+          })
+          .filter(Boolean) as Song[];
+      };
+
       try {
-        setIsLoading(true);
-        setError(null);
+        // 1. Fallback to Dexie if we know we are offline
+        if (!navigator.onLine) {
+          const localSongs = await getFromDexie();
+          setData(localSongs);
+          return;
+        }
+
+        // 2. Try fetching from the API
 
         const res = await fetch(`/api/playlists/${id}/songs`);
         const json = await res.json();
@@ -52,8 +69,20 @@ export function usePlaylistSongs(id?: string): State {
         setData(json.data || []);
       } catch (err) {
         console.error(err);
-        setError(err instanceof Error ? err.message : 'Unknown error');
-        setData([]);
+
+        // 3. Fallback to Dexie if the fetch fails (e.g. poor connection)
+        try {
+          const localSongs = await getFromDexie();
+          if (localSongs.length > 0) {
+            setData(localSongs);
+          } else {
+            setError(err instanceof Error ? err.message : 'Unknown error');
+            setData([]);
+          }
+        } catch (dexieErr) {
+          setError(err instanceof Error ? err.message : 'Unknown error');
+          setData([]);
+        }
       } finally {
         setIsLoading(false);
       }

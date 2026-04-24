@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Playlist } from '../lib/db';
+import { db, Playlist } from '../lib/db';
 
 type State = {
   data: Playlist[];
@@ -17,14 +17,16 @@ export function usePublicPlaylists(): State {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Skip API call entirely if offline: avoids long timeout hang
-    if (!navigator.onLine) {
-      setIsLoading(false);
-      return;
-    }
-
     const fetchPlaylists = async () => {
       try {
+        // 1. Fallback to Dexie if offline
+        if (!navigator.onLine) {
+          const localPlaylists = await db.playlists.filter((p) => !!p.is_public).toArray();
+          setData(localPlaylists);
+          return;
+        }
+
+        // 2. Try fetching from the API
         const res = await fetch('/api/playlists');
         const json = await res.json();
 
@@ -34,7 +36,13 @@ export function usePublicPlaylists(): State {
 
         setData(json.data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
+        // 3. Fallback to Dexie if the fetch fails
+        try {
+          const localPlaylists = await db.playlists.filter((p) => !!p.is_public).toArray();
+          setData(localPlaylists);
+        } catch (dexieErr) {
+          setError(err instanceof Error ? err.message : 'Unknown error');
+        }
       } finally {
         setIsLoading(false);
       }
