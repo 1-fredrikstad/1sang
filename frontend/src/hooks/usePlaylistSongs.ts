@@ -57,8 +57,15 @@ export function usePlaylistSongs(id?: string): State {
         }
 
         // 2. Try fetching from the API
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
 
-        const res = await fetch(`/api/playlists/${id}/songs`);
+        const res = await fetch('/api/playlists', {
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
         const json = await res.json();
 
         if (!res.ok || !json.ok) {
