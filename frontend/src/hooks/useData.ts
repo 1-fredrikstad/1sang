@@ -35,22 +35,29 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
 
   const sync = useCallback(
     async (forceFresh = false) => {
-      const online = typeof navigator !== 'undefined' ? navigator.onLine : true;
-      if (!online && !forceFresh) return;
-
       try {
+        // 1. Start loading
         setIsLoading(true);
         setError(null);
 
+        // 2. Check online status
+        const online = typeof navigator !== 'undefined' ? navigator.onLine : true;
+
+        // If offline, return early. Because we are inside the 'try',
+        // it will immediately jump to 'finally' and turn off the loading skeleton
+        if (!online && !forceFresh) return;
+
+        // 3. Check if data is stale
         if (!forceFresh) {
           const stale = await syncService.isTableStale(tableName, maxAgeMins);
           if (!stale) return;
         }
-
+        // 4. Fetch new data
         await syncService.syncTable(tableName, { forceFresh });
       } catch (e) {
         setError(e instanceof Error ? e : new Error('Unknown error'));
       } finally {
+        // 5. Always stop loading
         setIsLoading(false);
       }
     },
