@@ -9,7 +9,6 @@ import { Separator } from '@/components/ui/separator';
 import PlaylistSettingsMenu from '@/src/components/playlist/PlaylistSettingsMenu';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/src/lib/supabase/client';
-import NotFound from '@/app/not-found';
 import Campfire from '@/src/components/Campfire';
 import Link from 'next/link';
 
@@ -66,10 +65,10 @@ export default function PlaylistClient() {
 
   if (!playlist) {
     return (
-      <>
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <Campfire message="Spillelisten finnes ikke" />
         <Link href="/">Gå til hjemsiden</Link>
-      </>
+      </div>
     );
   }
 

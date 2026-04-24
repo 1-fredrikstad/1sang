@@ -5,6 +5,7 @@ import { db, Song } from '@/src/lib/db';
 import { useLiveQuery } from 'dexie-react-hooks';
 // import { usePublicPlaylists } from './usePublicPlaylists';
 import { usePlaylistSongs } from './usePlaylistSongs';
+import { usePlaylists } from './useData';
 
 // Fetches songs from public and private playlists
 export function usePlaylistDetails(id: string) {
@@ -23,7 +24,7 @@ export function usePlaylistDetails(id: string) {
   // const playlist = privatePlaylist || publicPlaylist;
 
   // All playlists are in Dexie — no API call needed
-  const allPlaylists = useLiveQuery(() => db.playlists.toArray(), []);
+  const { data: allPlaylists, isLoading: loadingPlaylists } = usePlaylists();
   const playlist = allPlaylists?.find(({ id: pId }) => pId === id);
 
   // Song fetching
@@ -66,8 +67,8 @@ export function usePlaylistDetails(id: string) {
       : loadingPrivateSongs
     : false;
 
-  // allPlaylists is undefined while Dexie is initalizing, then array
-  const isLoading = allPlaylists === undefined || isLoadingContent;
+  // loadingPlaylists covers both Dexie init and the initial sync from Supabase
+  const isLoading = loadingPlaylists || isLoadingContent;
 
   return { playlist, songs, isLoading };
 }
