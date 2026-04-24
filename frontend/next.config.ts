@@ -13,9 +13,6 @@ const withSerwist = withSerwistInit({
     { url: '/', revision: null },
     { url: '/add', revision: null },
     { url: '/campfire', revision: null },
-    { url: '/campfire/only_fire.svg', revision: null },
-    { url: '/campfire/wood2.png', revision: null },
-    { url: '/favicon/favicon.svg', revision: null },
     { url: '/favorites', revision: null },
     { url: '/make_playlist', revision: null },
     { url: '/offline', revision: null },
@@ -23,6 +20,23 @@ const withSerwist = withSerwistInit({
     { url: '/playlists/playlist', revision: null },
     { url: '/settings', revision: null },
     { url: '/songs', revision: null },
+    // Fonts
+    { url: '/DINOT/DINOT-Black.otf', revision: null },
+    { url: '/DINOT/DINOT-Bold.otf', revision: null },
+    { url: '/DINOT/DINOT-Light.otf', revision: null },
+    { url: '/DINOT/DINOT-Medium.otf', revision: null },
+    { url: '/DINOT/DINOT-Regular.otf', revision: null },
+    { url: '/DINOT/DINOTBlack.pdf', revision: null },
+    { url: '/DINOT/DINOTBold.pdf', revision: null },
+    { url: '/DINOT/DINOTLight.pdf', revision: null },
+    { url: '/DINOT/DINOTMedium.pdf', revision: null },
+    { url: '/DINOT/DINOTRegular.pdf', revision: null },
+
+    // Campfire assets
+    { url: '/campfire/only_fire.svg', revision: null },
+    { url: '/campfire/wood2.png', revision: null },
+    //Logo
+    { url: '/favicon/favicon.svg', revision: null },
   ],
 });
 
