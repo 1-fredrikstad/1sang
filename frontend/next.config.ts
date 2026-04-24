@@ -15,6 +15,7 @@ const withSerwist = withSerwistInit({
     { url: '/campfire', revision: null },
     { url: '/campfire/only_fire.svg', revision: null },
     { url: '/campfire/wood2.png', revision: null },
+    { url: '/favicon/favicon.svg', revision: null },
     { url: '/favorites', revision: null },
     { url: '/make_playlist', revision: null },
     { url: '/offline', revision: null },
