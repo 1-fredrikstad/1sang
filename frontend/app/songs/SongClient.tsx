@@ -99,10 +99,10 @@ export default function SongClient() {
   // If song can't be fined
   if (song === null) {
     return (
-      <>
-        <Campfire message="Sangen finnes ikke" />
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+        <Campfire message="Du er offline. Koble til internett for å se denne siden." />
         <Link href="/">Gå til hjemsiden</Link>
-      </>
+      </div>
     );
   }
 

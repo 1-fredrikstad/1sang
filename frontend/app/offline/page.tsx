@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import Campfire from '@/src/components/Campfire';
-import { Link } from 'lucide-react';
+import Link from 'next/link';
 
 export const metadata = {
   title: 'Du er offline',
