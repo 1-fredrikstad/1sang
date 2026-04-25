@@ -20,6 +20,7 @@ import { useSwipeable } from 'react-swipeable';
 import { Spinner } from '@/components/ui/spinner';
 import Campfire from '@/src/components/Campfire';
 import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
+import NotFound from '../not-found';
 
 export default function SongClient() {
   const searchParams = useSearchParams();
@@ -100,12 +101,7 @@ export default function SongClient() {
 
   // If song can't be fined
   if (song === null) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <Campfire message="Du er offline. Koble til internett for å se denne siden." />
-        <Link href="/">Gå til hjemsiden</Link>
-      </div>
-    );
+    return <NotFound />;
   }
 
   // Detect platform from external song link

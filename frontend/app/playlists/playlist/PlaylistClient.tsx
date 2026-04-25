@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import Campfire from '@/src/components/Campfire';
 import Link from 'next/link';
 import { useAuth } from '@/src/context/AuthContext';
+import CampfirePage from '@/app/campfire/page';
 
 export default function PlaylistClient() {
   const searchParams = useSearchParams();
@@ -40,12 +41,7 @@ export default function PlaylistClient() {
     // Only show the error if the current id failed safety delay
     if (failedId !== id) return <Spinner message="Laster inn spilleliste" />;
 
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <Campfire message="Spillelisten finnes ikke" />
-        <Link href="/">Gå til hjemsiden</Link>
-      </div>
-    );
+    return <CampfirePage message="Spillelisten finnes ikke" />;
   }
 
   return (

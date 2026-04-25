@@ -1,15 +1,9 @@
-import Campfire from '@/src/components/Campfire';
-import Link from 'next/link';
+import CampfirePage from '../campfire/page';
 
 export const metadata = {
   title: 'Du er offline',
 };
 
 export default function OfflinePage() {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh]">
-      <Campfire message="Du er offline. Koble til internett for å se denne siden." />
-      <Link href="/">Gå til hjemsiden</Link>
-    </div>
-  );
+  return <CampfirePage message="Du er offline. Koble til internett for å se denne siden." />;
 }

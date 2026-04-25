@@ -1,5 +1,5 @@
-import Campfire from '@/src/components/Campfire';
+import CampfirePage from './campfire/page';
 
 export default function NotFound() {
-  return <Campfire message="Denne siden finnes ikke" />;
+  return <CampfirePage message="Denne siden finnes ikke." />;
 }
