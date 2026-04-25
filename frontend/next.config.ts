@@ -35,6 +35,8 @@ const withSerwist = withSerwistInit({
     // Campfire assets
     { url: '/campfire/only_fire.svg', revision: null },
     { url: '/campfire/wood2.png', revision: null },
+    { url: '/campfire/sounds/fire_crackling_75.mp3', revision: null },
+
     //Logo
     { url: '/favicon/favicon.svg', revision: null },
   ],
