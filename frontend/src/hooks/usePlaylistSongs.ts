@@ -60,7 +60,7 @@ export function usePlaylistSongs(id?: string): State {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000);
 
-        const res = await fetch('/api/playlists', {
+        const res = await fetch(`/api/playlists/${id}/songs`, {
           signal: controller.signal,
         });
 
