@@ -20,6 +20,7 @@ import { useSwipeable } from 'react-swipeable';
 import { Spinner } from '@/components/ui/spinner';
 import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
 import NotFound from '../not-found';
+import TagComponent from '@/src/components/TagComponent';
 
 export default function SongClient() {
   const searchParams = useSearchParams();
@@ -196,9 +197,7 @@ export default function SongClient() {
               <div className="flex flex-wrap justify-center gap-1 mt-5">
                 <span className="opacity-60 leading-tight">Tags: </span>
                 {tags.map((tag) => (
-                  <Badge key={tag.id || tag.name} variant="secondary" className="p-2.5 mr-1">
-                    {tag.name}
-                  </Badge>
+                  <TagComponent key={tag.id || tag.name} tag={tag} />
                 ))}
               </div>
             </>
