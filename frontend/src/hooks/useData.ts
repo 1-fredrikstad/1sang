@@ -52,12 +52,23 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
           const stale = await syncService.isTableStale(tableName, maxAgeMins);
           if (!stale) return;
         }
+
+        // Create a 3-second timeout promise
+        const timeoutPromise = new Promise<void>((_, reject) => {
+          setTimeout(() => reject(new Error('Sync timed out (Lie-Fi fallback)')), 3000);
+        });
+
         // 4. Fetch new data
-        await syncService.syncTable(tableName, { forceFresh });
+
+        // Race the sync against the 3-second timeout.
+        // If the internet is dead, this throws an error after 3s, instantly
+        // jumping to the 'catch' block and unlocking UI
+        await Promise.race([syncService.syncTable(tableName, { forceFresh }), timeoutPromise]);
       } catch (e) {
+        // Catch the timeout error silently
         setError(e instanceof Error ? e : new Error('Unknown error'));
       } finally {
-        // 5. Always stop loading
+        // 5. Always stop loading -> unlock UI
         setIsLoading(false);
       }
     },

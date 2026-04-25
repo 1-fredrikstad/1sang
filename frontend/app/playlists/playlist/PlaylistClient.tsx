@@ -26,8 +26,8 @@ export default function PlaylistClient() {
 
   useEffect(() => {
     if (!isLoading && !playlist && id) {
-      // Gives Dexie 150ms to pass the data to react
-      const timer = setTimeout(() => setFailedId(id), 150);
+      // Gives Dexie 400ms to pass the data to react
+      const timer = setTimeout(() => setFailedId(id), 400);
       return () => clearTimeout(timer);
     }
   }, [isLoading, playlist, id]);
