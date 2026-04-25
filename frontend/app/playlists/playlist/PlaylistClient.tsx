@@ -8,8 +8,6 @@ import { PlaylistSongItem } from '@/src/components/playlist/PlaylistSongItem';
 import { Separator } from '@/components/ui/separator';
 import PlaylistSettingsMenu from '@/src/components/playlist/PlaylistSettingsMenu';
 import { useEffect, useState } from 'react';
-import Campfire from '@/src/components/Campfire';
-import Link from 'next/link';
 import { useAuth } from '@/src/context/AuthContext';
 import CampfirePage from '@/app/campfire/page';
 

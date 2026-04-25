@@ -18,7 +18,6 @@ import { usePlaylistDetails } from '@/src/hooks/usePlaylistDetails';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
 import { useSwipeable } from 'react-swipeable';
 import { Spinner } from '@/components/ui/spinner';
-import Campfire from '@/src/components/Campfire';
 import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
 import NotFound from '../not-found';
 

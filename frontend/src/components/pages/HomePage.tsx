@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { db } from '@/src/lib/db';
 import { SongBox } from '../songs/SongBox';
 import { SongListProps } from '@/src/types/songList';

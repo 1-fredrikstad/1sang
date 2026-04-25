@@ -44,6 +44,7 @@ export function usePublicPlaylists(): State {
 
         setData(json.data);
       } catch (err) {
+        console.log(err);
         // 3. Fallback to Dexie if the fetch fails
         try {
           const localPlaylists = await db.playlists.filter((p) => !!p.is_public).toArray();

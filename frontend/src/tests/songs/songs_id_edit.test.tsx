@@ -281,6 +281,6 @@ describe('EditSongPage', () => {
       { song_id: '123', tag_id: 'tag3' },
     ]);
 
-    expect(mockReplace).toHaveBeenCalledWith('/songs/ny-tittel');
+    expect(mockReplace).toHaveBeenCalledWith('/songs?slug=ny-tittel');
   });
 });
