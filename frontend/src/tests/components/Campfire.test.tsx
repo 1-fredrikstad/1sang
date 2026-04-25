@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import Campfire from '@/src/components/Campfire';
+import Campfire from '@/src/components/campfire/Campfire';
 
 const playMock = vi.fn(() => Promise.resolve());
 class AudioMock {

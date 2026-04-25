@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useCampfire } from '../hooks/useCampfire';
+import { useCampfire } from '../../hooks/useCampfire';
 
 interface Props {
   message: string;

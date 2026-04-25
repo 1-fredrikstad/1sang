@@ -7,7 +7,7 @@ import { createClient } from '@/src/lib/supabase/client';
 import { syncService } from '@/src/lib/syncService';
 import { useRouter } from 'next/navigation';
 import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
-import CampfirePage from '../campfire/page';
+import CampfirePage from '../../src/components/campfire/CampfirePage';
 
 export default function AddSongPage() {
   const { isAdmin } = useAuth();

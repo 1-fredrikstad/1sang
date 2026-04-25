@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import PlaylistSettingsMenu from '@/src/components/playlist/PlaylistSettingsMenu';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/src/context/AuthContext';
-import CampfirePage from '@/app/campfire/page';
+import CampfirePage from '@/src/components/campfire/CampfirePage';
 
 export default function PlaylistClient() {
   const searchParams = useSearchParams();
