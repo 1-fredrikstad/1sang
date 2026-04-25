@@ -15,7 +15,6 @@ import { ScoredSong } from '@/src/types/scoredSong';
 import { useTagFilter } from '@/src/context/TagFilterContext';
 
 export function HomePage({ songs = [], isLoading, error }: SongListProps) {
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 

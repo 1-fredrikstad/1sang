@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import Campfire from '@/src/components/Campfire';
 import Link from 'next/link';
 

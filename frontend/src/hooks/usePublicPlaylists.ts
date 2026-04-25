@@ -49,7 +49,7 @@ export function usePublicPlaylists(): State {
           const localPlaylists = await db.playlists.filter((p) => !!p.is_public).toArray();
           setData(localPlaylists);
         } catch (dexieErr) {
-          setError(err instanceof Error ? err.message : 'Unknown error');
+          setError(dexieErr instanceof Error ? dexieErr.message : 'Unknown error');
         }
       } finally {
         setIsLoading(false);

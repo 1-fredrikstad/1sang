@@ -87,7 +87,7 @@ export function usePlaylistSongs(id?: string): State {
             setData([]);
           }
         } catch (dexieErr) {
-          setError(err instanceof Error ? err.message : 'Unknown error');
+          setError(dexieErr instanceof Error ? dexieErr.message : 'Unknown error');
           setData([]);
         }
       } finally {

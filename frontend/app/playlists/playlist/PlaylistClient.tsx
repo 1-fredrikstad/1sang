@@ -8,9 +8,9 @@ import { PlaylistSongItem } from '@/src/components/playlist/PlaylistSongItem';
 import { Separator } from '@/components/ui/separator';
 import PlaylistSettingsMenu from '@/src/components/playlist/PlaylistSettingsMenu';
 import { useEffect, useState } from 'react';
-import { createClient } from '@/src/lib/supabase/client';
 import Campfire from '@/src/components/Campfire';
 import Link from 'next/link';
+import { useAuth } from '@/src/context/AuthContext';
 
 export default function PlaylistClient() {
   const searchParams = useSearchParams();
@@ -18,52 +18,28 @@ export default function PlaylistClient() {
 
   const { playlist, songs, isLoading } = usePlaylistDetails(id || '');
 
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const { isAdmin } = useAuth();
+  const adminValue = isAdmin ?? false;
+
+  // Track ID of failed playlist
+  const [failedId, setFailedId] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadAdmin = async () => {
-      if (!navigator.onLine) {
-        setIsAdmin(false);
-        return;
-      }
-      try {
-        const supabase = createClient();
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
+    if (!isLoading && !playlist && id) {
+      // Gives Dexie 150ms to pass the data to react
+      const timer = setTimeout(() => setFailedId(id), 150);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, playlist, id]);
 
-        if (!session?.access_token) {
-          setIsAdmin(false);
-          return;
-        }
-
-        const res = await fetch('/api/users/me', {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        });
-
-        const json = await res.json();
-
-        if (json?.ok) {
-          setIsAdmin(!!json.isAdmin);
-        } else {
-          setIsAdmin(false);
-        }
-      } catch (err) {
-        console.error('Failed to load admin status', err);
-        setIsAdmin(false);
-      }
-    };
-
-    loadAdmin();
-  }, []);
-
-  if (isLoading || isAdmin === null) {
+  if (isLoading) {
     return <Spinner message="Laster inn spilleliste" />;
   }
 
   if (!playlist) {
+    // Only show the error if the current id failed safety delay
+    if (failedId !== id) return <Spinner message="Laster inn spilleliste" />;
+
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <Campfire message="Spillelisten finnes ikke" />
@@ -83,7 +59,7 @@ export default function PlaylistClient() {
             <PlaylistSettingsMenu
               playlist={playlist}
               editUrl={`/playlists/playlist/edit?id=${playlist.id}`}
-              isAdmin={isAdmin}
+              isAdmin={adminValue}
             />
           </div>
         </div>
