@@ -120,13 +120,13 @@ export default function Navbar() {
                 key={id}
                 href={href}
                 onClick={(e) => handleNavClick(e, isAdd)}
-                className="group relative flex flex-col items-center justify-center py-2 transition-opacity duration-200"
+                className="group relative flex flex-col items-center justify-center py-2"
                 aria-current={isActive ? 'page' : undefined}
               >
                 {/* Icon wrapper used for positioning notification dot */}
                 <div className="relative">
                   <Icon
-                    className={`h-7 w-7 text-foreground transition-all duration-200 ${
+                    className={`h-7 w-7 text-foreground ${
                       isActive ? 'opacity-100' : 'opacity-70'
                     } group-hover:opacity-100`}
                   />
@@ -138,7 +138,7 @@ export default function Navbar() {
 
                 {/* Label under icon */}
                 <span
-                  className={`text-[10px] mt-1 transition-all ${
+                  className={`text-[10px] mt-1 ${
                     isActive ? 'opacity-100' : 'opacity-70'
                   } group-hover:opacity-100`}
                 >

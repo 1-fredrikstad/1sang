@@ -54,7 +54,7 @@ export default function SongClient() {
     return await db.tags.where('id').anyOf(tagIds).toArray();
   }, [song?.id]);
 
-  // Navigation between songs in playlist
+  // --- Navigation between songs in playlist ---
   const { songs: playlistSongs } = usePlaylistDetails(playlistId || '');
   const safePlaylistSongs = playlistSongs ?? [];
 
@@ -84,50 +84,24 @@ export default function SongClient() {
     delta: 50,
   });
 
-  // Loading state while song is fetched
-  const isLoading = song === undefined;
-
+  // --- Loading logic ---
+  // useLiveQuery returns undefined while it's querying
+  const isQuerying = song === undefined;
   const [showBuffer, setShowBuffer] = useState(true);
 
   useEffect(() => {
-    if (!isLoading && song) {
+    if (!isQuerying && song) {
       const timeout = setTimeout(() => setShowBuffer(false), 300);
       return () => clearTimeout(timeout);
     }
-  }, [isLoading, song]);
+  }, [isQuerying, song]);
 
-  if (isLoading || showBuffer) {
-    return (
-      <main className="flex flex-col justify-center gap-4 touch-pan-y">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-3 relative">
-            <BackButton href="/" />
-          </div>
-        </div>
-
-        <section className="flex flex-col items-center justify-center min-h-[50vh]">
-          {/* If user is offline and the song isn't in DB yet, show error. Otherwise show spinner */}
-          {isOnline ? (
-            <Spinner message="Laster sang" />
-          ) : (
-            <p className="opacity-60 text-sm">Denne sangen er ikke lagret offline ennå</p>
-          )}
-        </section>
-      </main>
-    );
-  }
-
-  // useLiveQuery returns undefined while it's querying
-  const isQuerying = song === undefined;
-
-  if (isQuerying) {
+  if (isQuerying || showBuffer) {
     return (
       <main className="flex flex-col justify-center gap-4">
-        <div className="flex items-center gap-3">
-          <BackButton href="/" />
-        </div>
+        <BackButton href="/" />
         <section className="flex flex-col items-center justify-center min-h-[50vh]">
-          <Spinner message="Laster sang..." />
+          <Spinner message="Laster sang" />
         </section>
       </main>
     );
@@ -135,14 +109,15 @@ export default function SongClient() {
 
   // If song can't be found
   if (!song) {
-    return isOnline ? (
-      <NotFound />
-    ) : (
-      <main className="flex flex-col items-center justify-center min-h-[50vh]">
-        <p className="opacity-60 text-sm">Denne sangen er ikke lagret offline ennå</p>
-        <BackButton href="/" />
-      </main>
-    );
+    if (!isOnline) {
+      return (
+        <main className="flex flex-col items-center justify-center min-h-[50vh]">
+          <p className="opacity-60 text-sm">Denne sangen er ikke lagret offline ennå</p>
+          <BackButton href="/" />
+        </main>
+      );
+    }
+    return <NotFound />;
   }
 
   // Detect platform from external song link

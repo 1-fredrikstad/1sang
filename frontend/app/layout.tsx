@@ -60,7 +60,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               try {
                 var d = document.documentElement;
                 
-                // 1. Immediate Dark Mode
+                // 1. Immediate dark mode
                 var theme = localStorage.getItem('theme');
                 var supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 if (theme === 'dark' || (!theme && supportDarkMode)) {
@@ -69,7 +69,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   d.classList.remove('dark');
                 }
 
-                // 2. Immediate Header Color
+                // 2. Immediate header color
                 var match = document.cookie.match(/(?:^|;\\s*)headerColor=([^;]+)/);
                 var headerTheme = match ? match[1] : '${headerColor || ''}';
                 if (headerTheme) {
