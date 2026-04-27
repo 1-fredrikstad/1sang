@@ -87,15 +87,20 @@ export default function PlaylistsPage() {
         <h1>Spillelister</h1>
 
         {showSkeleton ? (
-          <div className="flex flex-col gap-4 mt-1">
-            {/* Skeletons */}
-            <div className="flex gap-2">
-              <Skeleton className="h-8 w-40 rounded-md" />
+          <div className="flex flex-col mt-1 w-full">
+            {/* Tabs skeleton  */}
+            <div className="flex items-center bg-muted p-1 rounded-md w-full h-10 mb-2">
+              <Skeleton className="h-full w-1/2 rounded-sm bg-background/50 mr-1" />
+              <Skeleton className="h-full w-1/2 rounded-sm bg-background/50" />
             </div>
 
-            <div className="flex flex-col gap-2 mt-2">
+            {/* Playlist row skeletons */}
+            <div className="flex flex-col divide-y divide-black/10 dark:divide-white/10">
               {[...Array(5)].map((_, idx) => (
-                <Skeleton key={idx} className="h-12 w-full rounded-md" />
+                <div key={idx} className="py-3 pl-1.5 flex flex-col gap-2">
+                  <Skeleton className="h-5 w-3/4 max-w-50 rounded-sm" />
+                  <Skeleton className="h-3 w-20 rounded-sm" />
+                </div>
               ))}
             </div>
           </div>

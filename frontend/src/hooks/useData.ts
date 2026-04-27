@@ -65,8 +65,11 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
         // jumping to the 'catch' block and unlocking UI
         await Promise.race([syncService.syncTable(tableName, { forceFresh }), timeoutPromise]);
       } catch (e) {
-        // Catch the timeout error silently
-        setError(e instanceof Error ? e : new Error('Unknown error'));
+        const errMsg = e instanceof Error ? e.message : '';
+        // If it's our deliberate timeout, fail silently
+        if (!errMsg.includes('Lie-Fi fallback')) {
+          setError(e instanceof Error ? e : new Error('Unknown error'));
+        }
       } finally {
         // 5. Always stop loading -> unlock UI
         setIsLoading(false);

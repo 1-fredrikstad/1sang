@@ -62,6 +62,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 if (theme) {
                   document.documentElement.setAttribute('data-theme', theme);
                 }
+                document.documentElement.classList.add('theme-ready');
               } catch (e) {}
             `,
           }}

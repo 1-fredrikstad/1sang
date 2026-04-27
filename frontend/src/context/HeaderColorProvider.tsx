@@ -41,11 +41,13 @@ export function HeaderColorProvider({ children }: { children: React.ReactNode })
 
     document.documentElement.setAttribute('data-theme', headerColor);
 
-    const timer = setTimeout(() => {
-      document.documentElement.classList.add('theme-ready');
-    }, 50);
+    // const timer = setTimeout(() => {
+    //   document.documentElement.classList.add('theme-ready');
+    // }, 50);
 
-    return () => clearTimeout(timer);
+    // return () => clearTimeout(timer);
+
+    document.documentElement.classList.add('theme-ready');
   }, [headerColor, mounted]);
 
   function setHeaderColor(color: HeaderColor | null) {
