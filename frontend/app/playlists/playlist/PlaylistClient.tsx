@@ -10,7 +10,6 @@ import PlaylistSettingsMenu from '@/src/components/playlist/PlaylistSettingsMenu
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/src/context/AuthContext';
 import CampfirePage from '@/src/components/campfire/CampfirePage';
-import { useDelayedLoading } from '@/src/hooks/useDelayedLoading';
 
 export default function PlaylistClient() {
   const searchParams = useSearchParams();
@@ -24,8 +23,14 @@ export default function PlaylistClient() {
   // Track ID of failed playlist
   const [failedId, setFailedId] = useState<string | null>(null);
 
-  // Add delayed loading hook to delay content until rendered (include delay for Dexie offline)
-  const showSpinner = useDelayedLoading(isLoading);
+  const [showBuffer, setShowBuffer] = useState(true);
+
+  useEffect(() => {
+    if (!isLoading && playlist) {
+      const timeout = setTimeout(() => setShowBuffer(false), 300);
+      return () => clearTimeout(timeout);
+    }
+  }, [isLoading, playlist]);
 
   useEffect(() => {
     if (!isLoading && !playlist && id) {
@@ -35,15 +40,11 @@ export default function PlaylistClient() {
     }
   }, [isLoading, playlist, id]);
 
-  if (isLoading) {
-    // Show empty space for a fraction of a second to prevent blinking
-    if (!showSpinner) return <div className="min-h-[60vh]"></div>;
+  if (isLoading || showBuffer) {
     return <Spinner message="Laster inn spilleliste" />;
   }
 
   if (!playlist) {
-    // Show empty space for a fraction of a second to prevent blinking
-    if (!showSpinner) return <div className="min-h-[60vh]"></div>;
     // Only show the error if the current id failed safety delay
     if (failedId !== id) return <Spinner message="Laster inn spilleliste" />;
 

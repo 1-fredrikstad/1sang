@@ -9,7 +9,7 @@ import { useAuth } from '@/src/context/AuthContext';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import { FaSpotify, FaYoutube } from 'react-icons/fa';
 import Lyrics from '@/src/components/songs/Lyrics';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { StarIcon } from '@/src/components/songs/StarIcon';
 import { useSearchParams } from 'next/navigation';
@@ -20,7 +20,6 @@ import { Spinner } from '@/components/ui/spinner';
 import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
 import NotFound from '../not-found';
 import TagComponent from '@/src/components/TagComponent';
-import { useDelayedLoading } from '@/src/hooks/useDelayedLoading';
 
 export default function SongClient() {
   const searchParams = useSearchParams();
@@ -88,20 +87,34 @@ export default function SongClient() {
 
   // Loading state while song is fetched
   const isLoading = song === undefined;
-  const showSpinner = useDelayedLoading(isLoading);
 
-  if (isLoading) {
-    // Show empty space for a fraction of a second to prevent blinking
-    if (!showSpinner) return <div className="min-h-screen"></div>;
+  const [showBuffer, setShowBuffer] = useState(true);
 
+  useEffect(() => {
+    if (!isLoading && song) {
+      const timeout = setTimeout(() => setShowBuffer(false), 300);
+      return () => clearTimeout(timeout);
+    }
+  }, [isLoading, song]);
+
+  if (isLoading || showBuffer) {
     return (
-      <div className="flex justify-center items-center min-h-screen text-center">
-        {navigator.onLine ? (
-          <Spinner message="Laster sang"></Spinner>
-        ) : (
-          <p>Denne sangen er ikke lagret offline ennå</p>
-        )}
-      </div>
+      <main className="flex flex-col justify-center gap-4 touch-pan-y">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-3 relative">
+            <BackButton href="/" />
+          </div>
+        </div>
+
+        <section className="flex flex-col items-center justify-center min-h-[50vh]">
+          {/* If user is offline and the song isn't in DB yet, show error. Otherwise show spinner */}
+          {isOnline ? (
+            <Spinner message="Laster sang" />
+          ) : (
+            <p className="opacity-60 text-sm">Denne sangen er ikke lagret offline ennå</p>
+          )}
+        </section>
+      </main>
     );
   }
 

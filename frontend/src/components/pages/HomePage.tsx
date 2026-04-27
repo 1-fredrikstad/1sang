@@ -12,8 +12,7 @@ import TagSelect from '@/src/components/TagSelect';
 import { searchSongs } from '@/src/lib/search/searchSongs';
 import { ScoredSong } from '@/src/types/scoredSong';
 import { useTagFilter } from '@/src/context/TagFilterContext';
-import { useDelayedLoading } from '@/src/hooks/useDelayedLoading';
-import { Spinner } from '@/components/ui/spinner';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   const pathname = usePathname();
@@ -26,8 +25,14 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
 
   const isFirstRender = useRef(true);
 
-  // Add delayed loading hook to delay content until rendered (include delay for Dexie offline)
-  const showSpinner = useDelayedLoading(isLoading);
+  const [showSkeleton, setShowSkeleton] = useState(true);
+
+  useEffect(() => {
+    if (!isLoading) {
+      const timeout = setTimeout(() => setShowSkeleton(false), 300);
+      return () => clearTimeout(timeout);
+    }
+  }, [isLoading]);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -95,16 +100,15 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
       <h1>Alle sanger</h1>
 
       {/* Logic for delayed spinner */}
-      {isLoading ? (
-        <div className="flex flex-col gap-4">
-          {/* Show empty space to prevent blink, or the Spinner if enough time has passed */}
-          {!showSpinner ? (
-            <div className="min-h-[50vh]"></div>
-          ) : (
-            <div className="flex justify-center items-center min-h-[50vh]">
-              <Spinner message="Laster sanger..." />
-            </div>
-          )}
+      {showSkeleton ? (
+        <div className="flex flex-col gap-4 mt-1">
+          <Skeleton className="h-10 w-full rounded-md" />
+          <Skeleton className="h-10 w-64 rounded-md" />
+          <div className="flex flex-col gap-2 mt-2">
+            {[...Array(5)].map((_, idx) => (
+              <Skeleton key={idx} className="h-16 w-full rounded-md" />
+            ))}
+          </div>
         </div>
       ) : (
         <>
