@@ -4,6 +4,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  color-scheme: light dark;
+
   --navbar-bg: #fffdfb;
   --navbar-title: #171717;
   --color-background: #fffdfb;
@@ -91,6 +93,13 @@
   --btn-hover: oklch(84.212% 0.0001 271.152);
 }
 
+html {
+  background-color: #fffdfb;
+}
+html.dark {
+  background-color: #2e2e2e;
+}
+
 /* --- Themes for header --- */
 [data-theme] {
   --navbar-bg: transparent;
@@ -132,8 +141,21 @@
   --navbar-title: #ffffff;
 }
 
-/* Tailwind theme tokens - default light mode*/
+/* General styling */
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: 'DINOT', georgia;
+  overscroll-behavior-x: none;
+}
 
+/* Only transition background colors after theme is settled */
+html.theme-ready body,
+html.theme-ready header {
+  transition: background-color 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tailwind theme tokens - default light mode*/
 @theme {
   --color-background: #fffdfb;
   --color-foreground: #171717;
@@ -151,14 +173,7 @@ html:not(.theme-ready) *:not(.allow-animation)::after {
   animation: none !important;
 }
 
-/* General styling */
-body {
-  background: var(--color-background);
-  color: var(--color-foreground);
-  font-family: 'DINOT', georgia;
-  overscroll-behavior-x: none;
-  transition: background-color 400ms cubic-bezier(0.4, 0, 0.2, 1);
-}
+/* --- General styling --- */
 
 h1 {
   font-size: 1.25rem;
