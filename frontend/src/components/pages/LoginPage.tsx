@@ -4,12 +4,19 @@ import GoogleLoginButton from '@/src/components/login/GoogleLoginButton';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuth } from '@/src/context/AuthContext';
 import Image from 'next/image';
+import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
+import CampfirePage from '../campfire/CampfirePage';
 
 export default function LoginPage() {
   const { user } = useAuth();
+  const isOnline = useOnlineStatus();
 
   if (user) {
     return <Spinner message="Laster inn" />; // Show spinner while checking or redirecting
+  }
+
+  if (!isOnline) {
+    return <CampfirePage message="Du er offline. Koble til internett for å logge inn som admin." />;
   }
 
   return (
