@@ -9,7 +9,6 @@ import { useAuth } from '@/src/context/AuthContext';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import { FaSpotify, FaYoutube } from 'react-icons/fa';
 import Lyrics from '@/src/components/songs/Lyrics';
-import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { StarIcon } from '@/src/components/songs/StarIcon';
@@ -21,6 +20,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
 import NotFound from '../not-found';
 import TagComponent from '@/src/components/TagComponent';
+import { useDelayedLoading } from '@/src/hooks/useDelayedLoading';
 
 export default function SongClient() {
   const searchParams = useSearchParams();
@@ -87,7 +87,13 @@ export default function SongClient() {
   });
 
   // Loading state while song is fetched
-  if (song === undefined) {
+  const isLoading = song === undefined;
+  const showSpinner = useDelayedLoading(isLoading);
+
+  if (isLoading) {
+    // Show empty space for a fraction of a second to prevent blinking
+    if (!showSpinner) return <div className="min-h-screen"></div>;
+
     return (
       <div className="flex justify-center items-center min-h-screen text-center">
         {navigator.onLine ? (

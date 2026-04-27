@@ -10,9 +10,10 @@ import { SearchField } from '../SearchField';
 import { useDebounce } from '@/src/hooks/useDebounce';
 import TagSelect from '@/src/components/TagSelect';
 import { searchSongs } from '@/src/lib/search/searchSongs';
-import { Skeleton } from '@/components/ui/skeleton';
 import { ScoredSong } from '@/src/types/scoredSong';
 import { useTagFilter } from '@/src/context/TagFilterContext';
+import { useDelayedLoading } from '@/src/hooks/useDelayedLoading';
+import { Spinner } from '@/components/ui/spinner';
 
 export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   const pathname = usePathname();
@@ -22,9 +23,11 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   const debouncedQuery = useDebounce(value, 300);
 
   const { selectedTags, setSelectedTags } = useTagFilter();
-  const [isOnline, setIsOnline] = useState(() => window.navigator.onLine);
 
   const isFirstRender = useRef(true);
+
+  // Add delayed loading hook to delay content until rendered (include delay for Dexie offline)
+  const showSpinner = useDelayedLoading(isLoading);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -45,20 +48,6 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
 
     window.history.replaceState(null, '', newUrl);
   }, [debouncedQuery, pathname]);
-
-  // Track online/offline state for UX feedback
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
 
   // Text search (debounced), for both title and lyrics
   const searchedSongs = useMemo(() => {
@@ -105,20 +94,17 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
     <main>
       <h1>Alle sanger</h1>
 
+      {/* Logic for delayed spinner */}
       {isLoading ? (
         <div className="flex flex-col gap-4">
-          {/* Only show sync message when online */}
-          {isOnline && <p className="text-sm text-neutral-500">Synkroniserer med Supabase...</p>}
-
-          {/* Skeletons */}
-          <Skeleton className="h-10 w-full rounded-md" />
-          <Skeleton className="h-10 w-64 rounded-md" />
-
-          <div className="flex flex-col gap-2 mt-2">
-            {[...Array(5)].map((_, idx) => (
-              <Skeleton key={idx} className="h-16 w-full rounded-md" />
-            ))}
-          </div>
+          {/* Show empty space to prevent blink, or the Spinner if enough time has passed */}
+          {!showSpinner ? (
+            <div className="min-h-[50vh]"></div>
+          ) : (
+            <div className="flex justify-center items-center min-h-[50vh]">
+              <Spinner message="Laster sanger..." />
+            </div>
+          )}
         </div>
       ) : (
         <>
@@ -133,11 +119,11 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
           </div>
 
           {value.trim() && (
-            <p className="mb-3 text-sm text-neutral-500">{filteredSongs.length} treff</p>
+            <p className="mb-3 text-sm text-opacity-80">{filteredSongs.length} treff</p>
           )}
 
           {sortedSongs.length === 0 ? (
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-opacity-80">
               {value.trim() && selectedTags.length > 0
                 ? 'Ingen sanger matcher søk og valgte tags.'
                 : value.trim()
