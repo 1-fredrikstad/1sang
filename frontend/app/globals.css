@@ -93,6 +93,8 @@
   --btn-hover: oklch(84.212% 0.0001 271.152);
 }
 
+/* --Ensure no transitions flash */
+
 html {
   background-color: #fffdfb;
 }
@@ -100,9 +102,26 @@ html.dark {
   background-color: #2e2e2e;
 }
 
+*,
+*::before,
+*::after {
+  transition: none !important;
+  animation: none !important;
+}
+
+html.animations-ready body,
+html.animations-ready header,
+html.animations-ready header span,
+html.animations-ready main,
+html.animations-ready .allow-animation {
+  transition:
+    background-color 400ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 400ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
 /* --- Themes for header --- */
 [data-theme] {
-  --navbar-bg: transparent;
+  --navbar-bg: var(--color-background);
   --navbar-title: #171717;
 }
 
@@ -149,10 +168,12 @@ body {
   overscroll-behavior-x: none;
 }
 
-/* Only transition background colors after theme is settled */
-html.theme-ready body,
-html.theme-ready header {
-  transition: background-color 400ms cubic-bezier(0.4, 0, 0.2, 1);
+header {
+  background-color: var(--navbar-bg) !important;
+}
+
+header span {
+  color: var(--navbar-title) !important;
 }
 
 /* Tailwind theme tokens - default light mode*/

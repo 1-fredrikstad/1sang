@@ -35,6 +35,7 @@ export function HeaderColorProvider({ children }: { children: React.ReactNode })
         ? 'light_yellow'
         : undefined);
 
+  // --- Correct DOM immediately on mount from the live cookie value---
   useLayoutEffect(() => {
     // We check typeof document to ensure this only runs on the client
     if (typeof document === 'undefined') return;
@@ -44,24 +45,14 @@ export function HeaderColorProvider({ children }: { children: React.ReactNode })
     }
 
     // Add theme-ready immediately so the background is visible
-    // but transitions are now enabled for user interactions
     document.documentElement.classList.add('theme-ready');
+
+    const timer = setTimeout(() => {
+      document.documentElement.classList.add('animations-ready');
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [headerColor]);
-
-  // --- Correct DOM immediately on mount from the live cookie value---
-  // useLayoutEffect(() => {
-  //   if (!mounted || headerColor === undefined) return;
-
-  //   document.documentElement.setAttribute('data-theme', headerColor);
-
-  //   // const timer = setTimeout(() => {
-  //   //   document.documentElement.classList.add('theme-ready');
-  //   // }, 50);
-
-  //   // return () => clearTimeout(timer);
-
-  //   document.documentElement.classList.add('theme-ready');
-  // }, [headerColor, mounted]);
 
   function setHeaderColor(color: HeaderColor | null) {
     if (color === null) {

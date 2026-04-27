@@ -58,22 +58,26 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             __html: `
             (function() {
               try {
-                // 1. Handle dark mode flash
+                var d = document.documentElement;
+                
+                // 1. Immediate Dark Mode
                 var theme = localStorage.getItem('theme');
                 var supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (theme === 'dark' || (theme === 'system' && supportDarkMode) || (!theme && supportDarkMode)) {
-                  document.documentElement.classList.add('dark');
+                if (theme === 'dark' || (!theme && supportDarkMode)) {
+                  d.classList.add('dark');
                 } else {
-                  document.documentElement.classList.remove('dark');
+                  d.classList.remove('dark');
                 }
 
-                // 2. Handle custom headerColor
+                // 2. Immediate Header Color
                 var match = document.cookie.match(/(?:^|;\\s*)headerColor=([^;]+)/);
                 var headerTheme = match ? match[1] : '${headerColor || ''}';
                 if (headerTheme) {
-                  document.documentElement.setAttribute('data-theme', headerTheme);
+                  d.setAttribute('data-theme', headerTheme);
                 }
-          
+                
+                // 3. Mark as ready
+                d.classList.add('theme-ready');
               } catch (e) {}
             })();
           `,
