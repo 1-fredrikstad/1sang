@@ -92,8 +92,7 @@ export default function Navbar() {
     <>
       <nav
         className="
-          sticky bottom-0 z-50 
-          bg-background
+          sticky bottom-0 z-50 bg-(--navbar-bottom-bg)
           shadow-[0_-1px_3px_rgba(0,0,0,0.12)]
           dark:shadow-[0_-1px_4px_rgba(255,255,255,0.12)]
           pb-[env(safe-area-inset-bottom)] md:pb-0
