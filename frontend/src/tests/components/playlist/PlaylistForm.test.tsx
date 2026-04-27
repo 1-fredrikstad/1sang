@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { vi, expect, describe, test } from 'vitest';
 import PlaylistForm from '@/src/components/playlist/PlaylistForm';
 import { Song } from '@/src/lib/db';
@@ -78,13 +78,20 @@ describe('PlaylistForm', () => {
     );
 
     await user.type(screen.getByRole('textbox', { name: /tittel/i }), 'Test playlist');
-    await user.type(screen.getByLabelText('Lag passord*'), '1234');
+    await user.type(screen.getByLabelText(/lag passord/i), '1234');
     await user.click(screen.getByRole('button', { name: /Velg sanger/i }));
     await user.click(screen.getByRole('button', { name: /toggle-song/i }));
 
     await user.click(screen.getByRole('button', { name: /opprett spilleliste/i }));
 
-    expect(onSubmit).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Test playlist',
+          password: '1234',
+        })
+      );
+    });
   });
 
   test('renders edit mode correctly', () => {
