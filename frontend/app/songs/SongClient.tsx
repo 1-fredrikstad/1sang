@@ -38,8 +38,7 @@ export default function SongClient() {
   const song = useLiveQuery(async () => {
     if (!slug) return null;
 
-    const found = await db.songs.where('slug').equals(slug).first();
-    return found ?? null;
+    return await db.songs.where('slug').equals(slug).first();
   }, [slug]);
 
   // Load tags connected to the song through relation table
@@ -118,9 +117,32 @@ export default function SongClient() {
     );
   }
 
-  // If song can't be fined
-  if (song === null) {
-    return <NotFound />;
+  // useLiveQuery returns undefined while it's querying
+  const isQuerying = song === undefined;
+
+  if (isQuerying) {
+    return (
+      <main className="flex flex-col justify-center gap-4">
+        <div className="flex items-center gap-3">
+          <BackButton href="/" />
+        </div>
+        <section className="flex flex-col items-center justify-center min-h-[50vh]">
+          <Spinner message="Laster sang..." />
+        </section>
+      </main>
+    );
+  }
+
+  // If song can't be found
+  if (!song) {
+    return isOnline ? (
+      <NotFound />
+    ) : (
+      <main className="flex flex-col items-center justify-center min-h-[50vh]">
+        <p className="opacity-60 text-sm">Denne sangen er ikke lagret offline ennå</p>
+        <BackButton href="/" />
+      </main>
+    );
   }
 
   // Detect platform from external song link
