@@ -97,40 +97,48 @@
 
 html:not(.theme-ready) body {
   opacity: 0;
-  transition: none !important;
 }
 
 html.theme-ready body {
   opacity: 1;
-  transition: opacity 100ms ease-in;
+  transition: opacity 150ms ease-in !important;
 }
 
 html {
   background-color: #fffdfb;
+  color-scheme: light dark;
 }
+
 html.dark {
   background-color: #2e2e2e;
 }
 
-*,
-*::before,
-*::after {
-  transition: none !important;
-  animation: none !important;
+html:not(.animations-ready) * {
+  transition-property: none !important;
+}
+
+html.animations-ready {
+  --theme-transition-bg: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --theme-transition-text: color 100ms linear;
+  --theme-transition-ui: all 200ms ease;
 }
 
 html.animations-ready body,
 html.animations-ready header,
 html.animations-ready header span,
 html.animations-ready main,
-html.animations-ready svg,
-html.animations-ready .allow-animation {
-  transition:
-    background-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
-    color 300ms cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 300ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+html.animations-ready nav,
+html.animations-ready section {
+  transition: var(--theme-transition-bg), var(--theme-transition-text) !important;
+}
+
+[class*='animate-'],
+[class*='transition-'],
+.allow-animation,
+.allow-transition,
+[role='status'] {
+  transition-property: all !important;
+  animation-play-state: running !important;
 }
 
 /* --- Themes for header --- */
