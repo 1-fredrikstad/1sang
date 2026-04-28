@@ -92,7 +92,7 @@ export default function SuggestionPage() {
       {suggestion.melody && <p className="opacity-60 mt-1">Melodi: {suggestion.melody}</p>}
       {/* Spotify/Youtube */}
       {suggestion.spotify_youtube && (
-        <p className="opacity-60 mt-1 flex items-center gap-2">
+        <p className="opacity-60 mt-1 flex items-center gap-2 justify-center">
           <span>Link:</span>
           <a
             href={suggestion.spotify_youtube}
