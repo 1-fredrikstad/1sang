@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type Song } from '@/src/lib/db';
 import SongForm from '@/src/components/songs/SongForm';
