@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import EditSongPage from '../../../app/songs/[slug]/edit/page';
+import EditSongPage from '../../../app/songs/edit/page';
 
 // samling av mock funksjoner
 const {
@@ -281,6 +281,6 @@ describe('EditSongPage', () => {
       { song_id: '123', tag_id: 'tag3' },
     ]);
 
-    expect(mockReplace).toHaveBeenCalledWith('/songs/ny-tittel');
+    expect(mockReplace).toHaveBeenCalledWith('/songs?slug=ny-tittel');
   });
 });

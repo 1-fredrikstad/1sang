@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import PlaylistForm from '@/src/components/playlist/PlaylistForm';
 import { PlaylistInputs } from '@/src/types/playlistInputs';
 import { Song, db } from '@/src/lib/db';
@@ -24,7 +24,8 @@ type PlaylistItemResponse = {
 };
 
 export default function EditPlaylistPage() {
-  const { id } = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id')!;
   const router = useRouter();
 
   const [initialValues, setInitialValues] = useState<PlaylistInputs | null>(null);

@@ -64,7 +64,7 @@ describe('SongBox', () => {
     render(<SongBox song={song} />);
 
     expect(screen.getByText('Test Song')).toBeInTheDocument();
-    expect(screen.getByRole('link')).toHaveAttribute('href', '/songs/test-song');
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/songs?slug=test-song');
     expect(screen.getByRole('button', { name: /legg til i favoritter/i })).toBeInTheDocument();
   });
 

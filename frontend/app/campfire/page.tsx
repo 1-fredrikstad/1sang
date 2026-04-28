@@ -1,7 +1,9 @@
-'use client';
+import CampfirePage from '@/src/components/campfire/CampfirePage';
 
-import Campfire from '@/src/components/Campfire';
+export const metadata = {
+  title: 'Campfire',
+};
 
-export default function CampfirePage() {
-  return <Campfire message="Og tent et bål for å holde deg varm" />;
+export default function CampfireRoute() {
+  return <CampfirePage />;
 }

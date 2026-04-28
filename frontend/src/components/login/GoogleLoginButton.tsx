@@ -19,7 +19,7 @@ export default function GoogleLoginButton() {
       onClick={handleLogin}
       className="flex items-center gap-2 bg-[#F2F2F2] rounded-3xl py-2 px-3 hover:cursor-pointer text-black"
     >
-      <Image src="/google_logo.png" alt="Google logo" width={20} height={20} />
+      <Image src="/google_logo.png" alt="Google logo" width={20} height={20} unoptimized />
       Logg inn med Google
     </button>
   );

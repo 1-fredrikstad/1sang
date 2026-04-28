@@ -39,7 +39,7 @@ export function SuggestionsCollapsible({ suggestions }: SuggestionsCollapsiblePr
               {suggestions.map((s) => (
                 <li key={s.id}>
                   <Link
-                    href={`/admin/suggestions/${s.id}`}
+                    href={`/admin/suggestions?id=${s.id}`}
                     className="group w-full block py-4 pr-10 pl-4 rounded-sm outline-1 dark:bg-list-bg outline-[#0000001a] dark:shadow-xs dark:shadow-black hover:shadow-sm active:scale-[0.99] allow-animation transition"
                   >
                     {s.title}

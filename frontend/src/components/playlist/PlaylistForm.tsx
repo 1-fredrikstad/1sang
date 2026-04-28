@@ -23,6 +23,7 @@ import PlaylistSongPickerModal from './PlaylistSongPickerModal';
 import { SongBox } from '../songs/SongBox';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { capitalizeFirst } from '@/src/lib/utils/capitalizeFormat';
+import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
 
 type PlaylistFormProps = {
   onSubmit: SubmitHandler<PlaylistInputs>;
@@ -56,6 +57,7 @@ export default function PlaylistForm({
   const isPublic = useWatch({ name: 'isPublic', control });
   const [open, setOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const isOnline = useOnlineStatus();
 
   const songsInPlaylist = useWatch({
     name: 'songsInPlaylist',
@@ -227,9 +229,14 @@ export default function PlaylistForm({
             size="lg"
             checked={isPublic}
             onCheckedChange={(val) => setValue('isPublic', val)}
-            disabled={isSubmitting}
+            disabled={!isOnline || isSubmitting}
             className="cursor-pointer"
           />
+          {!isOnline && (
+            <FieldDescription>
+              Du er offline. Gå online for å legge til offentlige spillelister.
+            </FieldDescription>
+          )}
         </Field>
 
         {/* Duration */}

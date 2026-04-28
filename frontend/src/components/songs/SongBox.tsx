@@ -56,7 +56,11 @@ export function SongBox({
 
   return (
     <Link
-      href={playlistId ? `/songs/${song.slug}?playlistId=${playlistId}` : `/songs/${song.slug}`}
+      href={
+        playlistId
+          ? `/songs?slug=${song.slug}&playlistId=${playlistId}`
+          : `/songs?slug=${song.slug}`
+      }
       className="block"
     >
       {content}

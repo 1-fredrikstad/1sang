@@ -25,32 +25,53 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
   const { maxAgeMins = 5, syncOnMount = true } = options;
 
   const isOnline = useOnlineStatus();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(syncOnMount); // true by default
   const [error, setError] = useState<Error | null>(null);
 
-  const [stableData, setStableData] = useState<T[]>([]);
+  const [stableData, setStableData] = useState<T[] | undefined>(undefined);
 
   // offline-first read (Dexie)
   const data = useLiveQuery(() => db.table(tableName).toArray(), [tableName]);
 
   const sync = useCallback(
     async (forceFresh = false) => {
-      const online = typeof navigator !== 'undefined' ? navigator.onLine : true;
-      if (!online && !forceFresh) return;
-
       try {
+        // 1. Start loading
         setIsLoading(true);
         setError(null);
 
+        // 2. Check online status
+        const online = typeof navigator !== 'undefined' ? navigator.onLine : true;
+
+        // If offline, return early. Because we are inside the 'try',
+        // it will immediately jump to 'finally' and turn off the loading skeleton
+        if (!online && !forceFresh) return;
+
+        // 3. Check if data is stale
         if (!forceFresh) {
           const stale = await syncService.isTableStale(tableName, maxAgeMins);
           if (!stale) return;
         }
 
-        await syncService.syncTable(tableName, { forceFresh });
+        // Create a 3-second timeout promise
+        const timeoutPromise = new Promise<void>((_, reject) => {
+          setTimeout(() => reject(new Error('Sync timed out (Lie-Fi fallback)')), 3000);
+        });
+
+        // 4. Fetch new data
+
+        // Race the sync against the 3-second timeout.
+        // If the internet is dead, this throws an error after 3s, instantly
+        // jumping to the 'catch' block and unlocking UI
+        await Promise.race([syncService.syncTable(tableName, { forceFresh }), timeoutPromise]);
       } catch (e) {
-        setError(e instanceof Error ? e : new Error('Unknown error'));
+        const errMsg = e instanceof Error ? e.message : '';
+        // If it's our deliberate timeout, fail silently
+        if (!errMsg.includes('Lie-Fi fallback')) {
+          setError(e instanceof Error ? e : new Error('Unknown error'));
+        }
       } finally {
+        // 5. Always stop loading -> unlock UI
         setIsLoading(false);
       }
     },
@@ -67,6 +88,10 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
     if (isOnline) sync(true);
   }, [isOnline, sync]);
 
+  useEffect(() => {
+    if (data !== undefined) setStableData(data);
+  }, [data]);
+
   // periodic sync while online
   useEffect(() => {
     if (!isOnline) return;
@@ -79,7 +104,12 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
     if (data) setStableData(data);
   }, [data]);
 
-  return { data: stableData, isLoading, error, isOnline };
+  return {
+    data: stableData ?? [],
+    isLoading: isLoading || stableData === undefined,
+    error,
+    isOnline,
+  };
 }
 
 // hooks for each table

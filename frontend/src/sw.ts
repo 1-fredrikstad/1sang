@@ -1,0 +1,118 @@
+/// <reference lib="webworker" />
+
+import { defaultCache } from '@serwist/next/worker';
+import type { PrecacheEntry, SerwistGlobalConfig } from 'serwist';
+import { Serwist, StaleWhileRevalidate, CacheFirst, NetworkFirst } from 'serwist';
+import { CacheableResponsePlugin, ExpirationPlugin } from 'serwist';
+
+// Extend the global scope to include the injected precache manifest
+declare global {
+  interface WorkerGlobalScope extends SerwistGlobalConfig {
+    __SW_MANIFEST: (PrecacheEntry | string)[] | undefined;
+  }
+}
+
+declare const self: ServiceWorkerGlobalScope;
+
+// Init Sewist service worker
+const serwist = new Serwist({
+  // Precache files injected at build time
+  precacheEntries: self.__SW_MANIFEST,
+  skipWaiting: true,
+  clientsClaim: true,
+  navigationPreload: false, // Disable nav preload (we handle fetch manually)
+  disableDevLogs: true,
+  precacheOptions: {
+    cleanupOutdatedCaches: true, // Remove old caches
+    ignoreURLParametersMatching: [/.*/], // Ignore URL query params when matching precached assets
+  },
+
+  // Fallback behavior offline mode
+  fallbacks: {
+    entries: [
+      {
+        url: '/offline',
+        matcher({ request }) {
+          // Apply fallback only to full page navs
+          return request.destination === 'document';
+        },
+      },
+    ],
+  },
+
+  runtimeCaching: [
+    // 0. RSC requests — short timeout so offline nav fails fast
+    {
+      matcher: ({ url, request }) =>
+        url.searchParams.has('_rsc') ||
+        request.headers.get('RSC') === '1' ||
+        request.headers.has('Next-Router-State-Tree'),
+      handler: new NetworkFirst({
+        cacheName: 'rsc-responses',
+        networkTimeoutSeconds: 3, // fail fast instead of hanging 24s
+        plugins: [
+          new CacheableResponsePlugin({ statuses: [0, 200] }),
+          new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 }),
+        ],
+      }),
+    },
+
+    // 1. Apply shell pages (core routes)
+    {
+      matcher: ({ request, url }) => {
+        const isDocument = request.destination === 'document';
+
+        // Define routes that should behave like an app shell
+        const isAppShellRoute =
+          url.pathname === '/' ||
+          url.pathname.startsWith('/songs') ||
+          url.pathname.startsWith('/playlists');
+
+        return isDocument && isAppShellRoute;
+      },
+      // Serve cached version first, update in background
+      handler: new StaleWhileRevalidate({
+        cacheName: 'app-html-shells',
+        matchOptions: {
+          ignoreSearch: true, // ignore query params
+        },
+        plugins: [new CacheableResponsePlugin({ statuses: [0, 200] })],
+      }),
+    },
+
+    // 2. Next.js static build assets (_next)
+    {
+      matcher: ({ url }) => url.pathname.startsWith('/_next/static/'),
+      handler: new StaleWhileRevalidate({
+        cacheName: 'next-static',
+        plugins: [
+          new CacheableResponsePlugin({ statuses: [0, 200] }),
+          // Limit cache size and lifetime (30 days)
+          new ExpirationPlugin({ maxEntries: 500, maxAgeSeconds: 60 * 60 * 24 * 30 }),
+        ],
+      }),
+    },
+    // 3. Public assets
+    {
+      matcher: ({ url }) =>
+        url.pathname.startsWith('/DINOT/') ||
+        url.pathname.startsWith('/favicon/') ||
+        url.pathname.startsWith('/campfire/') ||
+        // Match common static file extensions
+        url.pathname.match(/\.(otf|ttf|woff|woff2|svg|png|ico|mp3|jpg|jpeg|webp)$/) !== null,
+      // Cache-first strategy  - fastest for static assets)
+      handler: new CacheFirst({
+        cacheName: 'public-assets',
+        plugins: [
+          new CacheableResponsePlugin({ statuses: [0, 200] }),
+          // Assets lifetime up to one year
+          new ExpirationPlugin({ maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 365 }),
+        ],
+      }),
+    },
+    ...defaultCache,
+  ],
+});
+
+// Attach all Serwist-managed event listeners
+serwist.addEventListeners();

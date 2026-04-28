@@ -24,6 +24,7 @@ import { EllipsisVerticalIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Playlist } from '@/src/lib/db';
+import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
 
 type PlaylistSettingsMenuProps = {
   playlist: Playlist;
@@ -39,17 +40,18 @@ export default function PlaylistSettingsMenu({
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState('');
+  const isOnline = useOnlineStatus();
 
   const handleEdit = async () => {
     if (isAdmin || !playlist.is_public) {
-      router.push(editUrl ?? `/playlists/${playlist.id}/edit`);
+      router.push(editUrl ?? `/playlists/playlist/edit?id=${playlist.id}`);
       return;
     }
 
     const storedPassword = sessionStorage.getItem(`playlist-password-${playlist.id}`);
 
     if (storedPassword) {
-      router.push(editUrl ?? `/playlists/${playlist.id}/edit`);
+      router.push(editUrl ?? `/playlists/playlist/edit?id=${playlist.id}`);
       return;
     }
 
@@ -80,7 +82,7 @@ export default function PlaylistSettingsMenu({
     sessionStorage.setItem(`playlist-password-${playlist.id}`, password);
     setPassword('');
     setOpen(false);
-    router.push(editUrl ?? `/playlists/${playlist.id}/edit`);
+    router.push(editUrl ?? `/playlists/playlist/edit?id=${playlist.id}`);
   };
 
   return (
@@ -95,14 +97,21 @@ export default function PlaylistSettingsMenu({
         <DropdownMenuContent align="end" className="w-full dark:bg-list-bg">
           <DropdownMenuGroup>
             <DropdownMenuLabel>Innstillinger</DropdownMenuLabel>
-
-            <DropdownMenuItem
-              onClick={handleEdit}
-              className="flex items-center gap-2 cursor-pointer"
-            >
-              <PencilIcon className="h-4 w-4" />
-              Rediger spilleliste
-            </DropdownMenuItem>
+            {isOnline ? (
+              <DropdownMenuItem
+                onClick={handleEdit}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <PencilIcon className="h-4 w-4" />
+                Rediger spilleliste
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem disabled className="flex items-center gap-2 opacity-40">
+                <PencilIcon className="h-4 w-4" />
+                Rediger spilleliste
+                <span className="text-xs ml-auto">Offline</span>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
 
           <DropdownMenuSeparator />

@@ -22,6 +22,7 @@ import {
 import { useAuth } from '@/src/context/AuthContext';
 import SongOrPlaylistBox from '../SongOrPlaylistBox';
 import { useSongSuggestions } from '@/src/hooks/useData';
+import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
 
 type NavItem = {
   id: string;
@@ -62,6 +63,7 @@ const navItems: NavItem[] = [
 export default function Navbar() {
   const pathname = usePathname();
   const { isAdmin } = useAuth();
+  const isOnline = useOnlineStatus();
 
   // Fetch all song suggestions
   const { data: suggestions } = useSongSuggestions();
@@ -91,7 +93,7 @@ export default function Navbar() {
       <nav
         className="
           sticky bottom-0 z-50 
-          bg-background
+          bg-(--navbar-bottom-bg)
           shadow-[0_-1px_3px_rgba(0,0,0,0.12)]
           dark:shadow-[0_-1px_4px_rgba(255,255,255,0.12)]
           pb-[env(safe-area-inset-bottom)] md:pb-0
@@ -118,25 +120,25 @@ export default function Navbar() {
                 key={id}
                 href={href}
                 onClick={(e) => handleNavClick(e, isAdd)}
-                className="group relative flex flex-col items-center justify-center py-2 transition-opacity duration-200"
+                className="group relative flex flex-col items-center justify-center py-2"
                 aria-current={isActive ? 'page' : undefined}
               >
                 {/* Icon wrapper used for positioning notification dot */}
                 <div className="relative">
                   <Icon
-                    className={`h-7 w-7 text-foreground transition-all duration-200 ${
+                    className={`h-7 w-7 text-foreground ${
                       isActive ? 'opacity-100' : 'opacity-70'
                     } group-hover:opacity-100`}
                   />
-                  {/* If suggestions and admin -> show red dot on settings (cog) */}
-                  {id === 'settings' && showSuggestionDot && (
+                  {/* If suggestions and admin and online -> show red dot on settings (cog) */}
+                  {id === 'settings' && showSuggestionDot && isOnline && (
                     <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500 ring-2 ring-background translate-x-1/3 -translate-y-1/3" />
                   )}
                 </div>
 
                 {/* Label under icon */}
                 <span
-                  className={`text-[10px] mt-1 transition-all ${
+                  className={`text-[10px] mt-1 ${
                     isActive ? 'opacity-100' : 'opacity-70'
                   } group-hover:opacity-100`}
                 >

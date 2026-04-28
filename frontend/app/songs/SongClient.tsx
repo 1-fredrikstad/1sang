@@ -1,40 +1,45 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, type Song } from '@/src/lib/db';
+import { db } from '@/src/lib/db';
 import BackButton from '@/src/components/BackButton';
 import Link from 'next/link';
 import { useAuth } from '@/src/context/AuthContext';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import { FaSpotify, FaYoutube } from 'react-icons/fa';
 import Lyrics from '@/src/components/songs/Lyrics';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { StarIcon } from '@/src/components/songs/StarIcon';
 import { useSearchParams } from 'next/navigation';
 import { usePlaylistDetails } from '@/src/hooks/usePlaylistDetails';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
 import { useSwipeable } from 'react-swipeable';
+import { Spinner } from '@/components/ui/spinner';
+import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
+import NotFound from '../not-found';
 import TagComponent from '@/src/components/TagComponent';
 
-export default function SongPage() {
-  // Read dynamic route param: /songs/[slug]
-  const { slug } = useParams<{ slug: string }>();
+export default function SongClient() {
+  const searchParams = useSearchParams();
+  const slug = searchParams.get('slug'); // Get slug from query instead of useParams()
+  const playlistId = searchParams.get('playlistId');
+  const isOnline = useOnlineStatus();
+
   // Check whether current user is admin
   const { isAdmin } = useAuth();
   const router = useRouter();
 
-  const searchParams = useSearchParams();
-  const playlistId = searchParams.get('playlistId');
   // Toggle for showing/hiding chords in lyrics
   const [showChords, setShowChords] = useState(false);
 
   // Load song by slug from IndexedDB
-  const song = useLiveQuery<Song | undefined>(
-    () => (slug ? db.songs.where('slug').equals(slug).first() : undefined),
-    [slug]
-  );
+  const song = useLiveQuery(async () => {
+    if (!slug) return null;
+
+    return await db.songs.where('slug').equals(slug).first();
+  }, [slug]);
 
   // Load tags connected to the song through relation table
   const tags = useLiveQuery(async () => {
@@ -49,7 +54,7 @@ export default function SongPage() {
     return await db.tags.where('id').anyOf(tagIds).toArray();
   }, [song?.id]);
 
-  // Navigation between songs in playlist
+  // --- Navigation between songs in playlist ---
   const { songs: playlistSongs } = usePlaylistDetails(playlistId || '');
   const safePlaylistSongs = playlistSongs ?? [];
 
@@ -66,12 +71,12 @@ export default function SongPage() {
   const handlers = useSwipeable({
     onSwipedLeft: () => {
       if (nextSong) {
-        router.push(`/songs/${nextSong.slug}?playlistId=${playlistId}`);
+        router.push(`/songs?slug=${nextSong.slug}&playlistId=${playlistId}`);
       }
     },
     onSwipedRight: () => {
       if (prevSong) {
-        router.push(`/songs/${prevSong.slug}?playlistId=${playlistId}`);
+        router.push(`/songs?slug=${prevSong.slug}&playlistId=${playlistId}`);
       }
     },
     trackTouch: true,
@@ -79,13 +84,40 @@ export default function SongPage() {
     delta: 50,
   });
 
-  // Loading state while song is fetched
-  if (!song) {
+  // --- Loading logic ---
+  // useLiveQuery returns undefined while it's querying
+  const isQuerying = song === undefined;
+  const [showBuffer, setShowBuffer] = useState(true);
+
+  useEffect(() => {
+    if (!isQuerying && song) {
+      const timeout = setTimeout(() => setShowBuffer(false), 300);
+      return () => clearTimeout(timeout);
+    }
+  }, [isQuerying, song]);
+
+  if (isQuerying || showBuffer) {
     return (
-      <div className="flex justify-center items-center min-h-screen text-center">
-        Laster sang...
-      </div>
+      <main className="flex flex-col justify-center gap-4">
+        <BackButton href="/" />
+        <section className="flex flex-col items-center justify-center min-h-[50vh]">
+          <Spinner message="Laster sang" />
+        </section>
+      </main>
     );
+  }
+
+  // If song can't be found
+  if (!song) {
+    if (!isOnline) {
+      return (
+        <main className="flex flex-col items-center justify-center min-h-[50vh]">
+          <p className="opacity-60 text-sm">Denne sangen er ikke lagret offline ennå</p>
+          <BackButton href="/" />
+        </main>
+      );
+    }
+    return <NotFound />;
   }
 
   // Detect platform from external song link
@@ -118,12 +150,12 @@ export default function SongPage() {
       {/* Header */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3 relative">
-          <BackButton />
+          <BackButton href="/" />
           <div className="absolute right-0 flex items-center gap-2">
             <StarIcon songId={song.id} />
-            {isAdmin && (
+            {isAdmin && isOnline && (
               <div>
-                <Link href={`/songs/${slug}/edit`} replace>
+                <Link href={`/songs/edit?slug=${slug}`}>
                   <PencilSquareIcon className="size-6 cursor-pointer" />
                 </Link>
               </div>
@@ -194,7 +226,7 @@ export default function SongPage() {
             <button
               onClick={() => {
                 if (prevSong) {
-                  router.push(`/songs/${prevSong.slug}?playlistId=${playlistId}`);
+                  router.push(`/songs?slug=${prevSong.slug}&playlistId=${playlistId}`);
                 }
               }}
               disabled={!prevSong}
@@ -209,7 +241,7 @@ export default function SongPage() {
             <button
               onClick={() => {
                 if (nextSong) {
-                  router.push(`/songs/${nextSong.slug}?playlistId=${playlistId}`);
+                  router.push(`/songs?slug=${nextSong.slug}&playlistId=${playlistId}`);
                 }
               }}
               disabled={!nextSong}

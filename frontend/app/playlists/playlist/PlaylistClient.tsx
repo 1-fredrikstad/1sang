@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
 import BackButton from '@/src/components/BackButton';
 import { usePlaylistDetails } from '@/src/hooks/usePlaylistDetails';
@@ -8,62 +8,47 @@ import { PlaylistSongItem } from '@/src/components/playlist/PlaylistSongItem';
 import { Separator } from '@/components/ui/separator';
 import PlaylistSettingsMenu from '@/src/components/playlist/PlaylistSettingsMenu';
 import { useEffect, useState } from 'react';
-import { createClient } from '@/src/lib/supabase/client';
+import { useAuth } from '@/src/context/AuthContext';
+import CampfirePage from '@/src/components/campfire/CampfirePage';
 
-export default function PlaylistDetailPage() {
-  const params = useParams<{ id: string }>();
-  const id = params?.id as string | undefined;
+export default function PlaylistClient() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
 
   const { playlist, songs, isLoading } = usePlaylistDetails(id || '');
 
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const { isAdmin } = useAuth();
+  const adminValue = isAdmin ?? false;
+
+  // Track ID of failed playlist
+  const [failedId, setFailedId] = useState<string | null>(null);
+
+  const [showBuffer, setShowBuffer] = useState(true);
 
   useEffect(() => {
-    const loadAdmin = async () => {
-      try {
-        const supabase = createClient();
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
+    if (!isLoading && playlist) {
+      const timeout = setTimeout(() => setShowBuffer(false), 300);
+      return () => clearTimeout(timeout);
+    }
+  }, [isLoading, playlist]);
 
-        if (!session?.access_token) {
-          setIsAdmin(false);
-          return;
-        }
+  useEffect(() => {
+    if (!isLoading && !playlist && id) {
+      // Gives Dexie 400ms to pass the data to react
+      const timer = setTimeout(() => setFailedId(id), 400);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, playlist, id]);
 
-        const res = await fetch('/api/users/me', {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        });
-
-        const json = await res.json();
-
-        if (json?.ok) {
-          setIsAdmin(!!json.isAdmin);
-        } else {
-          setIsAdmin(false);
-        }
-      } catch (err) {
-        console.error('Failed to load admin status', err);
-        setIsAdmin(false);
-      }
-    };
-
-    loadAdmin();
-  }, []);
-
-  if (!id || isLoading || isAdmin === null) {
+  if (isLoading || showBuffer) {
     return <Spinner message="Laster inn spilleliste" />;
   }
 
   if (!playlist) {
-    return (
-      <div className="text-center py-12">
-        <p>Spilleliste ikke funnet</p>
-        <BackButton />
-      </div>
-    );
+    // Only show the error if the current id failed safety delay
+    if (failedId !== id) return <Spinner message="Laster inn spilleliste" />;
+
+    return <CampfirePage message="Spillelisten finnes ikke" />;
   }
 
   return (
@@ -76,8 +61,8 @@ export default function PlaylistDetailPage() {
           <div className="absolute right-0">
             <PlaylistSettingsMenu
               playlist={playlist}
-              editUrl={`/playlists/${playlist.id}/edit`}
-              isAdmin={isAdmin}
+              editUrl={`/playlists/playlist/edit?id=${playlist.id}`}
+              isAdmin={adminValue}
             />
           </div>
         </div>

@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useContext, useEffect, createContext } from 'react';
+import { useState, useContext, useLayoutEffect, createContext } from 'react';
 import { setCookie, deleteCookie } from 'cookies-next/client';
 import type { HeaderColor } from '../types/theme';
-import { useMounted } from '../hooks/useMounted';
+// import { useMounted } from '../hooks/useMounted';
 import { useTheme } from 'next-themes';
 
 type Context = {
@@ -13,37 +13,46 @@ type Context = {
 
 const HeaderColorContext = createContext<Context | null>(null);
 
-export function HeaderColorProvider({
-  children,
-  initialColor,
-}: {
-  children: React.ReactNode;
-  initialColor?: HeaderColor;
-}) {
-  const mounted = useMounted();
-  const [headerOverride, setHeaderOverride] = useState<HeaderColor | undefined>(() => initialColor);
+export function HeaderColorProvider({ children }: { children: React.ReactNode }) {
+  // const mounted = useMounted();
   const { resolvedTheme } = useTheme();
+
+  const [headerOverride, setHeaderOverride] = useState<HeaderColor | undefined>(() => {
+    // Read cookie client-side immediately
+    if (typeof document !== 'undefined') {
+      const match = document.cookie.match(/(?:^|;\s*)headerColor=([^;]+)/);
+      if (match) return match[1] as HeaderColor;
+    }
+    return undefined;
+  });
 
   // Derived header color
   const headerColor =
-    headerOverride ?? initialColor ?? (resolvedTheme === 'dark' ? 'dark_gray' : 'light_yellow');
+    headerOverride ??
+    (resolvedTheme === 'dark'
+      ? 'dark_gray'
+      : resolvedTheme === 'light'
+        ? 'light_yellow'
+        : undefined);
 
-  // --- Update DOM ---
-  useEffect(() => {
-    if (mounted && typeof document !== 'undefined') {
-      if (headerColor) {
-        document.documentElement.setAttribute('data-theme', headerColor);
-      } else {
-        document.documentElement.removeAttribute('data-theme');
-      }
+  // --- Correct DOM immediately on mount from the live cookie value---
+  useLayoutEffect(() => {
+    // We check typeof document to ensure this only runs on the client
+    if (typeof document === 'undefined') return;
 
-      const timer = setTimeout(() => {
-        document.documentElement.classList.add('theme-ready');
-      }, 50);
-
-      return () => clearTimeout(timer);
+    if (headerColor) {
+      document.documentElement.setAttribute('data-theme', headerColor);
     }
-  }, [headerColor, mounted]);
+
+    // Add theme-ready immediately so the background is visible
+    document.documentElement.classList.add('theme-ready');
+
+    const timer = setTimeout(() => {
+      document.documentElement.classList.add('animations-ready');
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [headerColor]);
 
   function setHeaderColor(color: HeaderColor | null) {
     if (color === null) {
