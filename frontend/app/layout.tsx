@@ -59,22 +59,27 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             (function() {
               try {
                 var d = document.documentElement;
+
+                d.classList.remove('theme-ready');
                 
                 // 1. Immediate dark mode
                 var theme = localStorage.getItem('theme');
-                var supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (theme === 'dark' || (!theme && supportDarkMode)) {
+                
+                if (theme === 'dark') {
                   d.classList.add('dark');
-                } else {
+                } else if (theme === 'light') {
                   d.classList.remove('dark');
+                } else {
+                  if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    d.classList.add('dark');
+                  }
                 }
 
                 // 2. Immediate header color
-                var match = document.cookie.match(/(?:^|;\\s*)headerColor=([^;]+)/);
-                var headerTheme = match ? match[1] : '${headerColor || ''}';
-                if (headerTheme) {
-                  d.setAttribute('data-theme', headerTheme);
-                }
+                 var match = document.cookie.match(/(?:^|;\\s*)headerColor=([^;]+)/);
+                  if (match && match[1]) {
+                    d.setAttribute('data-theme', match[1]);
+                  }
                 
                 // 3. Mark as ready
                 d.classList.add('theme-ready');
