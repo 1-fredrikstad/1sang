@@ -8,7 +8,6 @@ export interface Song {
   melody?: string;
   chorus?: string;
   verses: string[];
-  chords?: string;
   created_at?: string;
   updated_at?: string;
   deleted_at?: string | null;
@@ -46,12 +45,6 @@ export interface SongTag {
   tag_id: string;
 }
 
-export interface SongLink {
-  id: string;
-  song_id?: string;
-  url: string;
-}
-
 export interface SongSuggestion {
   id: string;
   title: string;
@@ -59,7 +52,6 @@ export interface SongSuggestion {
   melody?: string;
   chorus?: string;
   verses: string[];
-  chords?: string;
   status?: string;
   submitted_at?: string;
   reviewed_by?: string;
@@ -90,7 +82,6 @@ export class AppDatabase extends Dexie {
   playlist_items!: Table<PlaylistItem, [string, string]>;
   tags!: Table<Tag, string>;
   song_tags!: Table<SongTag, [string, string]>;
-  song_links!: Table<SongLink, string>;
   song_suggestions!: Table<SongSuggestion, string>;
   users!: Table<AdminUser, string>;
   sync_metadata!: Table<SyncMetadata, string>;
@@ -131,6 +122,18 @@ export class AppDatabase extends Dexie {
       tags: 'id, name',
       song_tags: '[song_id+tag_id], song_id, tag_id',
       song_links: 'id, song_id',
+      song_suggestions: 'id, status',
+      users: 'user_id',
+      sync_metadata: 'id, table_name',
+      favorites: 'song_id, created_at',
+    });
+
+    this.version(4).stores({
+      songs: 'id, slug',
+      playlists: 'id, &server_id, synced',
+      playlist_items: '[playlist_id+song_id], playlist_id, song_id, position',
+      tags: 'id, name',
+      song_tags: '[song_id+tag_id], song_id, tag_id',
       song_suggestions: 'id, status',
       users: 'user_id',
       sync_metadata: 'id, table_name',
