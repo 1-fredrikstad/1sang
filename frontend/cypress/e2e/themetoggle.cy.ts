@@ -8,19 +8,22 @@ describe('Theme toggle', () => {
 
     // Verify the initial label is correct for dark mode, wait until text appears
     cy.contains('Bytt til lys modus', { timeout: 10000 }).should('be.visible');
+    cy.get('html').should('have.class', 'dark');
 
     // Toggle to light
-    cy.get('input[type="checkbox"]').click();
+    cy.get('[role="switch"]').eq(1).click();
     cy.get('html.theme-ready', { timeout: 10000 }).should('exist');
 
     cy.contains('Bytt til mørk modus').should('be.visible');
     cy.window().its('localStorage.theme').should('eq', 'light');
+    cy.get('html').should('not.have.class', 'dark');
 
     // Toggle back to dark
-    cy.get('input[type="checkbox"]').click();
+    cy.get('[role="switch"]').eq(1).click();
     cy.get('html.theme-ready', { timeout: 10000 }).should('exist');
     cy.contains('Bytt til lys modus').should('be.visible');
     cy.window().its('localStorage.theme').should('eq', 'dark');
+    cy.get('html').should('not.have.class', 'light');
   });
 });
 
@@ -33,7 +36,7 @@ describe('Theme persistence', () => {
     });
 
     // Switch to light and reload page
-    cy.get('input[type="checkbox"]').click();
+    cy.get('[role="switch"]').eq(1).click();
     cy.reload();
 
     // Check if still is light mode
