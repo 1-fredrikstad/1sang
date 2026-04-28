@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type Song } from '@/src/lib/db';
 import SongForm from '@/src/components/songs/SongForm';
@@ -12,7 +12,8 @@ import { useState } from 'react';
 import { Spinner } from '@/components/ui/spinner';
 
 export default function EditSongPage() {
-  const { slug } = useParams<{ slug: string }>();
+  const searchParams = useSearchParams();
+  const slug = searchParams.get('slug');
   const router = useRouter();
   const { isAdmin } = useAuth();
   const [isDeletingSong, setIsDeletingSong] = useState(false);
@@ -37,6 +38,9 @@ export default function EditSongPage() {
     return resolvedTags;
   }, [song?.id]);
 
+  const isLoading = song === undefined || songTags === undefined;
+  const notFound = song === null;
+
   // Guard admin-only page
   if (!isAdmin) {
     return <p className="text-center mt-10">Ingen tilgang.</p>;
@@ -46,12 +50,14 @@ export default function EditSongPage() {
   if (isDeletingSong) return null;
 
   // Wait until both song + tags are loaded
-  if (!song) {
-    return <p className="text-center mt-10">Fant ikke sang.</p>;
+  if (isLoading) {
+    return <Spinner message="Laster inn redigeringsside" />;
   }
 
   // Wait until both song + tags are loaded
-  if (!song || songTags === undefined) return <Spinner message="Laster inn redigeringsside" />;
+  if (notFound) {
+    return <p className="text-center mt-10">Fant ikke sang.</p>;
+  }
 
   const handleSubmit = async (data: {
     title: string;
