@@ -44,7 +44,7 @@ describe('SectionInput', () => {
     expect(screen.getByText('Required')).toBeInTheDocument();
   });
 
-  it('calls onRemove when remove button clicked', async () => {
+  test('calls onRemove when remove button clicked', async () => {
     const user = userEvent.setup();
     const onRemove = vi.fn();
 

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 
 // Mocks
 const db = vi.hoisted(() => ({
@@ -46,7 +46,7 @@ beforeEach(() => {
 });
 
 describe('syncPlaylists', () => {
-  it('skips sync when offline', async () => {
+  test('skips sync when offline', async () => {
     Object.defineProperty(globalThis, 'navigator', {
       value: { onLine: false },
       configurable: true,
@@ -57,14 +57,14 @@ describe('syncPlaylists', () => {
     expect(db.playlists.where).not.toHaveBeenCalled();
     expect(supabaseMock.from).not.toHaveBeenCalled();
   });
-  it('syncs local playlist to server and marks it synced', async () => {
+  test('syncs local playlist to server and marks it synced', async () => {
     db.playlists.where.mockReturnValue({
       equals: () => ({
         and: () => ({
           toArray: () =>
             Promise.resolve([
               {
-                id: 'local-1',
+                id: 'l1',
                 title: 'Test',
                 is_public: true,
                 synced: 0,

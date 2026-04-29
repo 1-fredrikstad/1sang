@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ExportLatexModal from '@/src/components/latex/ExportLatexModal';
@@ -46,7 +46,7 @@ describe('ExportLatexModal', () => {
     });
   });
 
-  it('renders when open is true', () => {
+  test('renders when open is true', () => {
     render(
       <ExportLatexModal
         open={true}
@@ -59,7 +59,7 @@ describe('ExportLatexModal', () => {
     expect(screen.getByText(/eksporter til latex/i)).toBeInTheDocument();
   });
 
-  it('does not render when closed', () => {
+  test('does not render when closed', () => {
     render(
       <ExportLatexModal
         open={false}
@@ -72,7 +72,7 @@ describe('ExportLatexModal', () => {
     expect(screen.queryByText(/eksporter til latex/i)).not.toBeInTheDocument();
   });
 
-  it('calls GenerateLatex when clicking export', async () => {
+  test('calls GenerateLatex when clicking export', async () => {
     const user = userEvent.setup();
 
     render(
@@ -89,7 +89,7 @@ describe('ExportLatexModal', () => {
     expect(mockGenerateLatex).toHaveBeenCalledWith(expect.any(Array), mockSongs.length);
   });
 
-  it('disables export button when no songs selected', () => {
+  test('disables export button when no songs selected', () => {
     mockUseSongPicker.mockReturnValue({
       search: '',
       setSearch: vi.fn(),

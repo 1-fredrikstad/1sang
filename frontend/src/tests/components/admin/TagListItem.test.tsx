@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 import { TagListItem } from '@/src/components/admin/TagListItem';
 
 const baseProps = {
@@ -15,24 +15,24 @@ const baseProps = {
 };
 
 describe('TagListItem', () => {
-  it('renders tag name', () => {
+  test('renders tag name', () => {
     render(<TagListItem {...baseProps} />);
     expect(screen.getByText('Rock')).toBeInTheDocument();
   });
 
-  it('calls onEditStart when edit button is clicked', () => {
+  test('calls onEditStart when edit button is clicked', () => {
     render(<TagListItem {...baseProps} />);
     fireEvent.click(screen.getByLabelText('Rediger Rock'));
     expect(baseProps.onEditStart).toHaveBeenCalled();
   });
 
-  it('calls onDelete when delete button is clicked', () => {
+  test('calls onDelete when delete button is clicked', () => {
     render(<TagListItem {...baseProps} />);
     fireEvent.click(screen.getByLabelText('Slett Rock'));
     expect(baseProps.onDelete).toHaveBeenCalled();
   });
 
-  it('shows input when editing', () => {
+  test('shows input when editing', () => {
     render(<TagListItem {...baseProps} isEditing editValue="Pop" />);
     expect(screen.getByDisplayValue('Pop')).toBeInTheDocument();
   });

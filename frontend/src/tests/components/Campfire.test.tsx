@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, expect, vi, beforeEach, afterEach, test } from 'vitest';
 import Campfire from '@/src/components/campfire/Campfire';
 
 const playMock = vi.fn(() => Promise.resolve());

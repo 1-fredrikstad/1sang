@@ -68,7 +68,7 @@ describe('PlaylistForm', () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn().mockResolvedValue({
       type: 'private',
-      localId: 'local-1',
+      localId: 'l1',
     });
 
     render(
@@ -77,7 +77,7 @@ describe('PlaylistForm', () => {
       </TooltipProvider>
     );
 
-    await user.type(screen.getByRole('textbox', { name: /tittel/i }), 'Test playlist');
+    await user.type(screen.getByRole('textbox', { name: /tittel/i }), 'Testspilleliste');
     await user.type(screen.getByLabelText(/lag passord/i), '1234');
     await user.click(screen.getByRole('button', { name: /Velg sanger/i }));
     await user.click(screen.getByRole('button', { name: /toggle-song/i }));
@@ -87,7 +87,7 @@ describe('PlaylistForm', () => {
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
         expect.objectContaining({
-          title: 'Test playlist',
+          title: 'Testspilleliste',
           password: '1234',
         })
       );
@@ -175,7 +175,7 @@ describe('PlaylistForm', () => {
       </TooltipProvider>
     );
 
-    await user.type(screen.getByRole('textbox', { name: /tittel/i }), 'Test playlist');
+    await user.type(screen.getByRole('textbox', { name: /tittel/i }), 'Testspilleliste');
     await user.type(screen.getByLabelText('Lag passord*'), '1234');
 
     await user.click(screen.getByRole('button', { name: /Velg sanger/i }));
@@ -193,7 +193,7 @@ describe('PlaylistForm', () => {
     expect(onSubmit).toHaveBeenCalledTimes(1);
 
     await act(async () => {
-      resolveSubmit({ type: 'private', localId: 'local-1' });
+      resolveSubmit({ type: 'private', localId: 'l1' });
       await slowPromise;
     });
   });

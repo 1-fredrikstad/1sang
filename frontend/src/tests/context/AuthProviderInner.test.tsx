@@ -83,9 +83,9 @@ describe('AuthProviderInner', () => {
         session: {
           access_token: 'token-123',
           user: {
-            email: 'user@example.com',
+            email: 'bruker@eksempel.com',
             user_metadata: {
-              full_name: 'Jane Doe',
+              full_name: 'Kari Nilsen',
             },
           },
         },
@@ -103,8 +103,8 @@ describe('AuthProviderInner', () => {
     renderProvider();
 
     await waitFor(() => {
-      expect(screen.getByTestId('name').textContent).toBe('Jane Doe');
-      expect(screen.getByTestId('email').textContent).toBe('user@example.com');
+      expect(screen.getByTestId('name').textContent).toBe('Kari Nilsen');
+      expect(screen.getByTestId('email').textContent).toBe('bruker@eksempel.com');
       expect(screen.getByTestId('role').textContent).toBe('superuser');
       expect(screen.getByTestId('isAdmin').textContent).toBe('true');
       expect(screen.getByTestId('isSuperuser').textContent).toBe('true');
@@ -117,9 +117,9 @@ describe('AuthProviderInner', () => {
         session: {
           access_token: 'token-123',
           user: {
-            email: 'user@example.com',
+            email: 'bruker@eksempel.com',
             user_metadata: {
-              full_name: 'Jane Doe',
+              full_name: 'Kari Nilsen',
             },
           },
         },
@@ -137,8 +137,8 @@ describe('AuthProviderInner', () => {
     renderProvider();
 
     await waitFor(() => {
-      expect(screen.getByTestId('name').textContent).toBe('Jane Doe');
-      expect(screen.getByTestId('email').textContent).toBe('user@example.com');
+      expect(screen.getByTestId('name').textContent).toBe('Kari Nilsen');
+      expect(screen.getByTestId('email').textContent).toBe('bruker@eksempel.com');
       expect(screen.getByTestId('role').textContent).toBe('regular');
       expect(screen.getByTestId('isAdmin').textContent).toBe('false');
       expect(screen.getByTestId('isSuperuser').textContent).toBe('false');
@@ -153,9 +153,9 @@ describe('AuthProviderInner', () => {
         session: {
           access_token: 'token-123',
           user: {
-            email: 'user@example.com',
+            email: 'bruker@eksempel.com',
             user_metadata: {
-              full_name: 'Jane Doe',
+              full_name: 'Kari Nilsen',
             },
           },
         },
@@ -175,7 +175,7 @@ describe('AuthProviderInner', () => {
     renderProvider();
 
     await waitFor(() => {
-      expect(screen.getByTestId('name').textContent).toBe('Jane Doe');
+      expect(screen.getByTestId('name').textContent).toBe('Kari Nilsen');
       expect(screen.getByTestId('role').textContent).toBe('superuser');
     });
 

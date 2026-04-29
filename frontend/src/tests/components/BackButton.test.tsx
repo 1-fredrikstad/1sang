@@ -1,6 +1,6 @@
 import BackButton from '@/src/components/BackButton';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { expect, vi } from 'vitest';
+import { expect, vi, test } from 'vitest';
 
 const mockRouter = {
   push: vi.fn(),
