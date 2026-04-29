@@ -8,6 +8,7 @@ import { syncService } from '@/src/lib/syncService';
 import { useRouter } from 'next/navigation';
 import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
 import CampfirePage from '../../src/components/campfire/CampfirePage';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function AddSongPage() {
   const { isAdmin } = useAuth();
@@ -20,7 +21,7 @@ export default function AddSongPage() {
   }
 
   if (isAdmin === null) {
-    return <div>Henter skjema...</div>;
+    return <Spinner message="Henter skjema" />;
   }
 
   const heading = isAdmin ? 'Publiser sang' : 'Send inn sangforslag';
@@ -28,7 +29,7 @@ export default function AddSongPage() {
   const toastMessage = isAdmin ? 'Sang lagt inn' : 'Sangforslag sendt';
 
   return (
-    <Suspense fallback={<div>Henter skjema...</div>}>
+    <Suspense fallback={<Spinner message="Henter skjema" />}>
       <SongForm
         heading={heading}
         submitLabel={submitLabel}
@@ -66,7 +67,11 @@ export default function AddSongPage() {
             throw new Error('Kunne ikke legge til sang');
           }
 
-          router.push('/');
+          if (isAdmin && body?.data?.slug) {
+            router.push(`/songs?slug=${body.data.slug}`);
+          } else {
+            router.push('/');
+          }
         }}
       />
     </Suspense>

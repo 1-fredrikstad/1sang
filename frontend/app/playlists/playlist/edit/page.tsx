@@ -290,7 +290,7 @@ export default function EditPlaylistPage() {
 
         sessionStorage.setItem(`playlist-password-${newPlaylistId}`, passwordToUse);
         toast.success('Spilleliste gjort offentlig');
-        router.push('/playlists');
+        router.push(`/playlists?id=${newPlaylistId}`);
         return;
       }
 
@@ -319,7 +319,7 @@ export default function EditPlaylistPage() {
         await replaceLocalPlaylistItems(id, data.songsInPlaylist);
 
         toast.success('Spilleliste oppdatert');
-        router.push('/playlists');
+        router.push(`/playlists/playlist?id=${id}`);
         return;
       }
 
@@ -369,7 +369,7 @@ export default function EditPlaylistPage() {
 
         sessionStorage.removeItem(`playlist-password-${id}`);
         toast.success('Spilleliste gjort privat og lagret lokalt');
-        router.push('/playlists');
+        router.push(`/playlists/playlist?id=${id}`);
         return;
       }
 
@@ -454,7 +454,7 @@ export default function EditPlaylistPage() {
       if (!isAdmin) {
         sessionStorage.removeItem(`playlist-password-${id}`);
       }
-      router.push('/playlists');
+      router.push(`/playlists/playlist?id=${id}`);
     } catch (err) {
       console.error('Update playlist error:', err);
       toast.error(err instanceof Error ? err.message : 'Kunne ikke oppdatere spilleliste');
