@@ -1,4 +1,5 @@
 'use client';
+
 import HeaderColorForm from '@/src/components/HeaderColorForm';
 import ThemeToggleButton from '@/src/components/ThemeToggleButton';
 import WakeLockToggle from '@/src/components/songs/WakeLockToggle';

@@ -86,58 +86,62 @@ export default function AdminContent() {
   if (!user) {
     return (
       <div className="text-center mt-10">
-        <p>You are not logged in</p>
+        <p>Du er ikke logget inn</p>
       </div>
     );
   }
 
   return (
-    <main className="mb-5 flex flex-col justify-between">
+    <main>
       {/* Top bar: user info + logout */}
-      <div className="flex flex-row justify-between mb-10">
+      <div className="flex flex-row justify-between mb-6">
         <div>
-          <p>Logged in as:</p>
+          <p>Logget inn som:</p>
           <b>{user.name || 'admin'}</b>
         </div>
         <LogoutButton />
       </div>
 
-      {/* Export songs to LaTeX */}
-      <section className="flex flex-row justify-between items-center">
-        <p>Export all songs to LaTeX format</p>
-
-        <Button
-          variant="secondary"
-          onClick={() => setOpen(true)}
-          className="text-md cursor-pointer"
-        >
-          Export
-        </Button>
-
-        <ExportLatexModal
-          open={open}
-          onOpenChange={setOpen}
-          songs={songs || []}
-          generateLatex={generateLatex}
-        />
-      </section>
-
-      {/* Admin-only song suggestions review */}
-      <article className="allow-animation mt-5">
-        {isAdmin && <SuggestionsCollapsible suggestions={suggestions || []} />}
-      </article>
-
-      {/* Superadmin-only user management */}
-      <section className="flex flex-col items-center mt-5">
-        {isSuperuser && (
-          <UserRoleManager users={users} loading={usersLoading} onReload={loadUsers} />
+      <ul className="flex flex-col">
+        {/* Admin-only song suggestions review */}
+        {isAdmin && (
+          <li className="allow-animation settings-list-item">
+            <SuggestionsCollapsible suggestions={suggestions || []} />
+          </li>
         )}
-      </section>
 
-      {/* Tag management (available to admins) */}
-      <article className="allow-animation mt-5">
-        <TagManager />
-      </article>
+        {/* Tag management (available to admins) */}
+        <li className="allow-animation settings-list-item">
+          <TagManager />
+        </li>
+
+        {/* Export songs to LaTeX */}
+        <li className="settings-list-item flex  justify-between items-center">
+          <p>Eksporter sanger til LaTeX</p>
+
+          <Button
+            variant="secondary"
+            onClick={() => setOpen(true)}
+            className="text-md cursor-pointer"
+          >
+            Export
+          </Button>
+
+          <ExportLatexModal
+            open={open}
+            onOpenChange={setOpen}
+            songs={songs || []}
+            generateLatex={generateLatex}
+          />
+        </li>
+
+        {/* Superadmin-only user management */}
+        {isSuperuser && (
+          <li className="settings-list-item">
+            <UserRoleManager users={users} loading={usersLoading} onReload={loadUsers} />
+          </li>
+        )}
+      </ul>
     </main>
   );
 }
