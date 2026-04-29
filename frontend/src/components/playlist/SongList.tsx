@@ -61,7 +61,7 @@ export default function SongList({
 
   return (
     <main>
-      {isLoading && <Spinner message="Synkroniserer med databasen" />}
+      {isLoading && <Spinner message="Henter sanger" />}
 
       <Tabs defaultValue="all">
         {/* Tabs navigation */}
