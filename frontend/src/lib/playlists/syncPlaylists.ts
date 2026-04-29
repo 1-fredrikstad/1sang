@@ -4,72 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 const supabase = createClient();
 
-export async function syncLocalToServer() {
-  if (typeof navigator !== 'undefined' && !navigator.onLine) return;
-
-  // Get all unsynced public playlists
-  const unsynced = await db.playlists
-    .where('synced')
-    .equals(0)
-    .and((p) => p.is_public)
-    .toArray();
-
-  for (const playlist of unsynced) {
-    try {
-      // SUPABASE - Create playlist on server
-
-      // Add expires_at field for Supabase
-      const expires_at = playlist.expires_at || new Date(Date.now() + 604800 * 1000).toISOString();
-
-      // Create playlist
-      const { data, error } = await supabase
-        .from('playlists')
-        .insert({
-          title: playlist.title,
-          playlist_password: playlist.playlist_password,
-          is_public: true,
-          expires_at,
-        })
-        .select()
-        .single();
-
-      if (error || !data?.id) {
-        throw error || new Error('Kunne ikke laget spilleliste på server');
-      }
-
-      const serverId = data.id;
-
-      // Get local items
-      const songsInPlaylist = await db.playlist_items
-        .where('playlist_id')
-        .equals(playlist.id)
-        .sortBy('position');
-
-      if (songsInPlaylist.length > 0) {
-        const { error: itemsError } = await supabase.from('playlist_items').insert(
-          songsInPlaylist.map((song) => ({
-            playlist_id: serverId,
-            song_id: song.song_id,
-            position: song.position,
-          }))
-        );
-
-        if (itemsError) throw itemsError;
-      }
-
-      // Mark local playlist as synced
-      await db.playlists.update(playlist.id, {
-        server_id: serverId,
-        synced: 1,
-        updated_at: new Date().toISOString(),
-      });
-    } catch (err) {
-      console.error('Sync feilet for lokal spilleliste', playlist.id, err);
-      // Keep as unsynced → retry later
-    }
-  }
-}
-
 export async function syncServerToLocal() {
   if (typeof navigator !== 'undefined' && !navigator.onLine) return;
 
@@ -147,6 +81,5 @@ export async function syncServerToLocal() {
 export async function syncPlaylists() {
   if (typeof navigator !== 'undefined' && !navigator.onLine) return;
 
-  await syncLocalToServer();
   await syncServerToLocal();
 }
