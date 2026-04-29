@@ -28,21 +28,20 @@ export default function FavoritesPage() {
   // If songs haven't been loaded show spinner
   if (!songs) return <Spinner message="Laster inn favoritter" />;
 
-  // If there are no favorite songs, show message
-  if (songs.length === 0) {
-    return <p className="p-4">Ingen favorittsanger</p>;
-  }
-
-  // TODO: add searchbar and filtering on this page
   return (
     <div>
       <h1>Dine favorittsanger</h1>
-      <ul className="space-y-2">
-        {/* Display all favorite songs */}
-        {sortedSongs.map((song) => (
-          <SongBox key={song.id} song={song} />
-        ))}
-      </ul>
+      {/* If there are no favorite songs, show message*/}
+      {songs.length === 0 ? (
+        <p>Du har ingen favorittsanger ennå</p>
+      ) : (
+        <ul className="space-y-2">
+          {/* Display all favorite songs */}
+          {sortedSongs.map((song) => (
+            <SongBox key={song.id} song={song} />
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
