@@ -34,8 +34,13 @@ export function SearchField({ value, onChange, isLoading = false }: SearchFieldP
           ref={inputRef}
           type="search"
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => {
+            const raw = e.target.value.slice(0, 50);
+            const trimmed = raw.trimStart();
+            onChange(trimmed);
+          }}
           placeholder="Søk etter sanger..."
+          maxLength={100}
           className="h-11 pl-9 pr-10 [&::-webkit-search-cancel-button]:appearance-none"
         />
 
@@ -54,7 +59,7 @@ export function SearchField({ value, onChange, isLoading = false }: SearchFieldP
               className="text-muted-foreground focus-visible:ring-ring/50 inset-y-0 right-0 rounded-l-none hover:bg-transparent"
             >
               <CircleXIcon className="h-4 w-4" />
-              <span className="sr-only">Clear search</span>
+              <span className="sr-only">Nullstill søk</span>
             </Button>
           ) : null}
         </div>
