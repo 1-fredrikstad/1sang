@@ -1,6 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, test, expect, vi } from 'vitest';
 import { TagListItem } from '@/src/components/admin/TagListItem';
+import userEvent from '@testing-library/user-event';
 
 const baseProps = {
   tag: { id: '1', name: 'Rock' },
@@ -20,15 +21,23 @@ describe('TagListItem', () => {
     expect(screen.getByText('Rock')).toBeInTheDocument();
   });
 
-  test('calls onEditStart when edit button is clicked', () => {
+  test('calls onEditStart when edit button is clicked', async () => {
+    const user = userEvent.setup();
+
     render(<TagListItem {...baseProps} />);
-    fireEvent.click(screen.getByLabelText('Rediger Rock'));
+
+    await user.click(screen.getByLabelText('Rediger Rock'));
+
     expect(baseProps.onEditStart).toHaveBeenCalled();
   });
 
-  test('calls onDelete when delete button is clicked', () => {
+  test('calls onDelete when delete button is clicked', async () => {
+    const user = userEvent.setup();
+
     render(<TagListItem {...baseProps} />);
-    fireEvent.click(screen.getByLabelText('Slett Rock'));
+
+    await user.click(screen.getByLabelText('Slett Rock'));
+
     expect(baseProps.onDelete).toHaveBeenCalled();
   });
 
