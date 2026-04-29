@@ -16,11 +16,9 @@ export default function MakePlaylistPage() {
 
       const result = await savePlaylist(data);
 
-      // Success message if playlist was made successfully, else warning if not synced correctly
+      // Success message if playlist was made successfully
       if (result.type === 'public') {
         toast.success('Offentlig spilleliste opprettet!');
-        // } else if (result.type === 'pending') {
-        //   toast.warning('Lagret lokalt – vil synkroniseres når du er online');
       } else {
         toast.success('Privat spilleliste lagret lokalt!');
       }
