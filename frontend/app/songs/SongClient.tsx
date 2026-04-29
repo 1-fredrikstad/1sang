@@ -203,7 +203,7 @@ export default function SongClient() {
         {/* --- Song content --- */}
 
         {/* Lyrics and chorus */}
-        <pre className="mt-3 flex justify-center text-center whitespace-pre-wrap">
+        <pre className="mt-3 flex justify-center text-center whitespace-pre-wrap w-full max-w-xl">
           <Lyrics song={song} showChords={showChords} />{' '}
         </pre>
 
