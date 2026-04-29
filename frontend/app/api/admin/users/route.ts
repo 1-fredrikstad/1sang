@@ -37,11 +37,7 @@ export async function GET(req: NextRequest) {
     const usersBody = await usersRes.json().catch(() => null);
 
     if (!usersRes.ok) {
-      throw new Error(
-        typeof usersBody === 'object' && usersBody !== null
-          ? JSON.stringify(usersBody)
-          : 'Kunne ikke hente brukere'
-      );
+      throw new Error('Kunne ikke hente brukere');
     }
 
     return NextResponse.json({

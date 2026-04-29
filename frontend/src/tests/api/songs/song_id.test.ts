@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { DELETE, GET, PATCH } from '../../../app/api/songs/[id]/route';
+import { DELETE, GET, PATCH } from '@/app/api/songs/[id]/route';
 import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 
 vi.mock('@/src/lib/supabase/isAdmin', () => ({
@@ -36,9 +36,10 @@ describe('songs [id] route', () => {
     expect(body.data.id).toBe(songId);
   });
 
-  test('PATCH returns 403 when user is not admin', async () => {
+  test('PATCH returns 403 when user is not admin or superuser', async () => {
     vi.mocked(checkAdminAccess).mockResolvedValue({
       isAdmin: false,
+      isSuperuser: false,
       userId: null,
       role: null,
     });
@@ -63,6 +64,7 @@ describe('songs [id] route', () => {
   test('DELETE returns 404 when nothing is deleted', async () => {
     vi.mocked(checkAdminAccess).mockResolvedValue({
       isAdmin: true,
+      isSuperuser: false,
       userId: 'user-1',
       role: 'admin',
     });
