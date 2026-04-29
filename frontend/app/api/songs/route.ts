@@ -3,6 +3,7 @@ import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 import { withDefaultSongTags } from '@/src/lib/constants/tags';
 import { capitalizeFirst } from '@/src/lib/utils/capitalizeFormat';
 
+// Public credentials for read access (RLS applies)
 function getPublicEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -14,6 +15,7 @@ function getPublicEnv() {
   return { supabaseUrl, anonKey };
 }
 
+// Service role credentials for write operations (bypass RLS)
 function getServiceEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -75,8 +77,10 @@ export async function POST(req: Request) {
     const tagIds: string[] = Array.isArray(json.tags)
       ? json.tags.filter((tag: unknown): tag is string => typeof tag === 'string')
       : [];
+    // Ensure every song has baseline tag set
     const finalTagIds = withDefaultSongTags(tagIds);
 
+    // Normalize and sanitize song input before insert
     const payload = {
       title: typeof json.title === 'string' ? capitalizeFirst(json.title.trim()) : '',
       melody: typeof json.melody === 'string' ? capitalizeFirst(json.melody.trim()) || null : null,
@@ -97,6 +101,7 @@ export async function POST(req: Request) {
       isAdmin = access.isAdmin;
     }
 
+    // Admins create real songs, regular users create song suggestions
     const table = isAdmin ? 'songs' : 'song_suggestions';
     const errorMessage = isAdmin ? 'Kunne ikke opprette sang' : 'Kunne ikke sende sangforslag';
 
@@ -131,6 +136,7 @@ export async function POST(req: Request) {
       );
     }
 
+    // Attach tag relations only for admin-created songs
     if (isAdmin && table === 'songs' && finalTagIds.length > 0) {
       const songId = insertBody[0].id;
 

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 import { capitalizeFirst } from '@/src/lib/utils/capitalizeFormat';
 
+// Centralized env validation to avoid runtime Supabase misconfiguration
 function getEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -73,6 +74,7 @@ export async function PATCH(req: Request, { params }: RouteContext) {
     const payload = await req.json();
     const isAdmin = await getIsAdmin(req);
 
+    // Admins bypass password requirements by using privileged RPC function
     const rpcName = isAdmin ? 'playlists_admin_update' : 'playlists_update';
 
     const rpcBody = isAdmin
@@ -123,6 +125,7 @@ export async function DELETE(req: Request, { params }: RouteContext) {
     const payload = await req.json();
     const isAdmin = await getIsAdmin(req);
 
+    // Use admin RPC when authentication via password is not required
     const rpcName = isAdmin ? 'playlists_admin_delete' : 'playlists_delete';
 
     const rpcBody = isAdmin

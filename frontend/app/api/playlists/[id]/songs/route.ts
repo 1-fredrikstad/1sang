@@ -6,6 +6,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
+    // Fail fast if Supabase configuration is missing
     if (!supabaseUrl || !anonKey) {
       return NextResponse.json({ ok: false, error: 'Missing env vars' }, { status: 500 });
     }
@@ -13,12 +14,14 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
     const params = await ctx.params;
     const id = params.id;
 
+    // Prevent invalid or uninitialized route params from hitting Supabase
     if (!id || typeof id !== 'string' || id.length < 10 || id === 'undefined') {
       return NextResponse.json(
         { ok: false, error: 'Missing or invalid playlist id' },
         { status: 400 }
       );
     }
+    // Fetch playlist items with song data and ensure correct ordering
     const target = `${supabaseUrl}/rest/v1/playlist_items?playlist_id=eq.${encodeURIComponent(
       id
     )}&select=position,songs(*)&order=position.asc`;
@@ -44,6 +47,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
       songs: Song;
     };
 
+    // Flatten joined song data into a client-friendly structure
     const items = body
       .filter((item: PlaylistItemResponse) => item.songs)
       .map((item: PlaylistItemResponse) => ({

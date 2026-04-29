@@ -15,6 +15,7 @@ export async function GET(req: Request) {
       );
     }
 
+    // Fetch users list (optionally limited for pagination)
     const target = `${supabaseUrl}/rest/v1/users?select=*${limit ? `&limit=${limit}` : ''}`;
 
     const res = await fetch(target, {

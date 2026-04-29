@@ -12,6 +12,7 @@ export default function Admin() {
   const params = useSearchParams();
   const error = params.get('error');
 
+  // Redirect authenticated users away from login page
   useEffect(() => {
     if (user) {
       router.replace('/admin/dashboard');

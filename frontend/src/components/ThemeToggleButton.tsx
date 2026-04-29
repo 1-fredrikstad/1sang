@@ -10,15 +10,19 @@ export default function ThemeToggleButton() {
   const { resolvedTheme, setTheme } = useTheme();
   const mounted = useMounted();
 
+  // Avoid mismatch between server and client theme rendering
   if (!mounted) return null;
 
   const isDark = resolvedTheme === 'dark';
 
   return (
     <section className="flex flex-row justify-between">
+      {/* Dynamic label based on current theme */}
       <label className="whitespace-nowrap">
         {isDark ? 'Bytt til lys modus' : 'Bytt til mørk modus'}
       </label>
+
+      {/* Theme switch toggle */}
       <Switch
         size="lg"
         checked={isDark}
@@ -27,7 +31,7 @@ export default function ThemeToggleButton() {
           isDark ? (
             <MoonIcon className="text-white p-0.5 opacity-90" />
           ) : (
-            <SunIcon className=" text-black p-0.5 opacity-90" />
+            <SunIcon className="text-black p-0.5 opacity-90" />
           )
         }
       />

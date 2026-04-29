@@ -31,6 +31,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ ok: false, error: 'Ugyldig rolle' }, { status: 400 });
     }
 
+    // Prevent users from changing their own role via this endpoint
     if (targetUserId === access.userId) {
       return NextResponse.json(
         { ok: false, error: 'Du kan ikke endre din egen rolle her' },
@@ -71,6 +72,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ ok: false, error: 'Fant ikke bruker' }, { status: 404 });
     }
 
+    // Protect highest privilege account from modification through admin API
     if (targetUser.role === 'superuser') {
       return NextResponse.json(
         { ok: false, error: 'Superuser kan ikke endres her' },

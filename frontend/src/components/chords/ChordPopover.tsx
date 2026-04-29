@@ -16,31 +16,39 @@ type ChordPopoverProps = {
 
 export function ChordPopover({ isOpen, token, onClose, onChordSelect }: ChordPopoverProps) {
   const popoverRef = useRef<HTMLDivElement>(null);
+
   const [customChord, setCustomChord] = useState('');
   const [openAbove, setOpenAbove] = useState(false);
   const [maxHeight, setMaxHeight] = useState<number>(320);
 
+  // Dynamically decides whether the popover should open upwards or downwards
+  // based on available viewport space, and limits max height accordingly
   useEffect(() => {
     if (!isOpen) return;
 
     const updatePlacement = () => {
       if (!popoverRef.current) return;
+
       const anchorRect = popoverRef.current.parentElement?.getBoundingClientRect();
       if (!anchorRect) return;
 
       const gap = 8;
+
       const spaceBelow = window.innerHeight - anchorRect.bottom - gap;
       const spaceAbove = anchorRect.top - gap;
 
+      // Open upward if there's not enough space below
       const shouldOpenAbove = spaceBelow < 260 && spaceAbove > spaceBelow;
       setOpenAbove(shouldOpenAbove);
 
       const availableSpace = shouldOpenAbove ? spaceAbove : spaceBelow;
 
+      // Prevent overly tall popover
       setMaxHeight(Math.max(140, Math.floor(availableSpace)));
     };
 
     requestAnimationFrame(updatePlacement);
+
     window.addEventListener('resize', updatePlacement);
     window.addEventListener('scroll', updatePlacement, true);
 
@@ -72,7 +80,7 @@ export function ChordPopover({ isOpen, token, onClose, onChordSelect }: ChordPop
   return (
     <div
       ref={popoverRef}
-      onClick={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()} // Prevent clicks inside from closing parent UI
       className="rounded-lg border bg-background p-2.5 shadow-lg"
       style={{
         position: 'absolute',
@@ -87,6 +95,7 @@ export function ChordPopover({ isOpen, token, onClose, onChordSelect }: ChordPop
         overflowY: 'auto',
       }}
     >
+      {/* Common chord grid */}
       <div className="mb-2 grid grid-cols-4 gap-1">
         {COMMON_CHORDS.map((chord) => {
           const active = token.chords?.includes(chord);
@@ -109,6 +118,7 @@ export function ChordPopover({ isOpen, token, onClose, onChordSelect }: ChordPop
         })}
       </div>
 
+      {/* Custom chord input */}
       <div className="mb-2 flex gap-1.5">
         <Input
           type="text"
@@ -124,6 +134,7 @@ export function ChordPopover({ isOpen, token, onClose, onChordSelect }: ChordPop
           }}
           className="h-7 text-xs"
         />
+
         <Button
           type="button"
           onClick={handleCustomChord}
@@ -135,6 +146,7 @@ export function ChordPopover({ isOpen, token, onClose, onChordSelect }: ChordPop
         </Button>
       </div>
 
+      {/* Only show remove button if chords exist */}
       {token.chords?.length && (
         <Button
           type="button"

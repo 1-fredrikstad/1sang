@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 import { capitalizeFirst } from '@/src/lib/utils/capitalizeFormat';
 
+// Public key for read operations (RLS applies)
 function getPublicEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -13,6 +14,7 @@ function getPublicEnv() {
   return { supabaseUrl, anonKey };
 }
 
+// Service role key for admin mutations (bypasses RLS)
 function getServiceEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -96,6 +98,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
 
     const { isAdmin } = await checkAdminAccess(token);
 
+    // Only admins are allowed to modify songs
     if (!isAdmin) {
       return NextResponse.json(
         { ok: false, error: 'Du har ikke tilgang til å redigere sanger' },
@@ -128,7 +131,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
       return NextResponse.json({ ok: false, error: 'Ingen rad ble oppdatert' }, { status: 404 });
     }
 
-    // 2. Fjern gamle tags sangen har for å legge på nye
+    // Fjern gamle tags sangen har for å legge på nye
     const deleteTagsRes = await fetch(
       `${supabaseUrl}/rest/v1/song_tags?song_id=eq.${encodeURIComponent(id)}`,
       {
@@ -150,7 +153,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
       );
     }
 
-    // 3. Legg inn nye tag-relasjoner
+    // Legg inn nye tag-relasjoner
     if (finalTags.length > 0) {
       const tagRows = finalTags.map((tagId: string) => ({
         song_id: id,
@@ -200,6 +203,7 @@ export async function DELETE(req: Request, ctx: Ctx) {
 
     const { isAdmin } = await checkAdminAccess(token);
 
+    // Only admins are allowed to delete songs
     if (!isAdmin) {
       return NextResponse.json(
         { ok: false, error: 'Du har ikke tilgang til å slette sanger' },
@@ -215,6 +219,7 @@ export async function DELETE(req: Request, ctx: Ctx) {
         apikey: serviceRoleKey,
         Authorization: `Bearer ${serviceRoleKey}`,
         Accept: 'application/json',
+        // Return deleted row for confirmation
         Prefer: 'return=representation',
       },
     });

@@ -15,17 +15,22 @@ type ChordPreviewProps = {
 };
 
 export default function ChordPreview({ sections }: ChordPreviewProps) {
+  // Tracks which token currently has an open chord popover
   const [openKey, setOpenKey] = useState<string | null>(null);
 
+  // Close any open popover when clicking outside of a token area
   useEffect(() => {
     const onMouseDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
+
+      // Only keep popover open if click is inside a chord token container
       if (!target.closest('[data-chord-popover]')) {
         setOpenKey(null);
       }
     };
 
     document.addEventListener('mousedown', onMouseDown);
+
     return () => document.removeEventListener('mousedown', onMouseDown);
   }, []);
 
@@ -36,6 +41,7 @@ export default function ChordPreview({ sections }: ChordPreviewProps) {
       </span>
 
       {sections.map((section, si) => {
+        // Split raw text into tokens (words + metadata like chords)
         const tokens = parseChordText(section.value);
 
         return (
@@ -45,6 +51,8 @@ export default function ChordPreview({ sections }: ChordPreviewProps) {
             <div className="flex flex-wrap gap-0.5 leading-[2.4]">
               {tokens.map((token, ti) => {
                 const key = `${si}-${ti}`;
+
+                // Controls whether this specific token's popover is open
                 const isOpen = openKey === key;
 
                 return (
@@ -54,6 +62,7 @@ export default function ChordPreview({ sections }: ChordPreviewProps) {
                       isOpen={isOpen}
                       onToggle={() => setOpenKey(isOpen ? null : key)}
                       onChordSelect={(chord) => {
+                        // Updates only the affected token inside the section text
                         section.onChange(setChordOnToken(section.value, ti, chord));
                       }}
                     />
