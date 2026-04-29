@@ -2,8 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 
-// hook to prevent screen from turning off based on the Wake Lock API
-// code from: https://stackoverflow.com/questions/76539285/problems-trying-to-prevent-sleeping-of-display-on-my-web-app
+// Hook to prevent device screen from sleeping using the Wake Lock API
 export function useWakeLock(enabled: boolean) {
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
 
@@ -12,6 +11,7 @@ export function useWakeLock(enabled: boolean) {
 
     let mounted = true;
 
+    // Request wake lock (keeps screen awake)
     const acquire = async () => {
       try {
         if (!mounted) return;
@@ -25,6 +25,7 @@ export function useWakeLock(enabled: boolean) {
       }
     };
 
+    // Release wake lock when no longer needed
     const release = async () => {
       try {
         if (wakeLockRef.current && !wakeLockRef.current.released) {
@@ -34,6 +35,7 @@ export function useWakeLock(enabled: boolean) {
       wakeLockRef.current = null;
     };
 
+    // Re-acquire or release depending on tab visibility
     const onVisibilityChange = async () => {
       if (document.visibilityState === 'visible') {
         await acquire();
@@ -42,7 +44,9 @@ export function useWakeLock(enabled: boolean) {
       }
     };
 
+    // Initial request
     acquire();
+
     document.addEventListener('visibilitychange', onVisibilityChange);
 
     return () => {

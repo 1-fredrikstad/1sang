@@ -9,33 +9,42 @@ import ChevronDownIcon from '@heroicons/react/24/solid/ChevronDownIcon';
 import { TagListItem } from './TagListItem';
 import { useTags } from '@/src/hooks/useTags';
 
-// component for managing tags in the admin dashboard
+// Admin component for creating, editing, and deleting tags
 export default function TagManager() {
+  // UI state
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
   const [newTagName, setNewTagName] = useState('');
   const [isAdding, setIsAdding] = useState(false);
 
+  // Data + actions from custom hook
   const { tags, isLoading, isPending, createTag, updateTag, deleteTag } = useTags();
 
+  // Create a new tag
   const handleCreate = async () => {
     if (!newTagName.trim()) return;
+
     const success = await createTag(newTagName);
+
     if (success) {
       setNewTagName('');
       setIsAdding(false);
     }
   };
 
+  // Update an existing tag
   const handleUpdate = async () => {
     if (!editValue.trim() || !editingId) return;
+
     const success = await updateTag(editingId, editValue);
+
     if (success) setEditingId(null);
   };
 
   return (
     <Collapsible open={open} onOpenChange={setOpen} className="w-full">
+      {/* Header / toggle for opening tag manager */}
       <CollapsibleTrigger asChild>
         <div className="group w-full flex items-center justify-between cursor-pointer">
           <span>Administrer tags</span>
@@ -45,6 +54,7 @@ export default function TagManager() {
 
       <CollapsibleContent>
         <div className="px-0 pb-4 mt-2 pt-1 allow-animation">
+          {/* Add new tag button */}
           <div className="flex justify-end mb-3">
             {!isAdding && (
               <Button
@@ -59,6 +69,7 @@ export default function TagManager() {
             )}
           </div>
 
+          {/* Inline "create tag" input */}
           {isAdding && (
             <div className="flex items-center gap-2 mb-3 p-2 border rounded-md bg-muted/30">
               <Input
@@ -75,6 +86,8 @@ export default function TagManager() {
                 placeholder="Skriv inn navnet på den nye taggen"
                 className="h-8 text-sm"
               />
+
+              {/* Confirm create */}
               <Button
                 size="sm"
                 variant="ghost"
@@ -84,6 +97,8 @@ export default function TagManager() {
               >
                 <Check size={15} className="text-green-600" />
               </Button>
+
+              {/* Cancel create */}
               <Button
                 size="sm"
                 variant="ghost"
@@ -98,6 +113,7 @@ export default function TagManager() {
             </div>
           )}
 
+          {/* Loading / empty / list states */}
           {isLoading ? (
             <p className="text-sm text-muted-foreground opacity-80">Laster inn tags...</p>
           ) : tags.length === 0 ? (

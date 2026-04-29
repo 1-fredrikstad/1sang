@@ -17,7 +17,7 @@ export default function EditSuggestionPage() {
   const mounted = useMounted();
 
   const dexieSuggestion = useLiveQuery(() => {
-    // Prevent Dexie query before client mount / SSR
+    // Ensure Dexie query only runs on client after hydration
     if (typeof window === 'undefined' || !mounted || !id) {
       return undefined;
     }
@@ -26,7 +26,7 @@ export default function EditSuggestionPage() {
 
   const suggestion = dexieSuggestion ?? null;
 
-  // Loading state while mounted/query resolves
+  // Wait for hydration + Dexie resolution before rendering form
   if (!mounted || dexieSuggestion === undefined) {
     return <Spinner message="Laster inn" />;
   }
@@ -56,6 +56,7 @@ export default function EditSuggestionPage() {
         onSubmit={async (data) => {
           const old = suggestion;
 
+          // Manually sync Dexie cache after server update to avoid stale UI
           try {
             await updateSuggestion(id, {
               title: data.title,
@@ -69,13 +70,13 @@ export default function EditSuggestionPage() {
 
             // Keep Dexie cache in sync immdiately after update
             if (typeof window !== 'undefined' && db && old) {
+              // Merge existing cached row with updated form data
               const updatedRow = { ...old, ...data };
               await db.song_suggestions.put(updatedRow);
               console.log('Dexie updated manually:', updatedRow.title);
             }
 
             router.push(`/admin/suggestions?id=${id}`);
-            // router.refresh();
           } catch (err: unknown) {
             console.error(err);
             const message = err instanceof Error ? err.message : 'Ukjent feil';

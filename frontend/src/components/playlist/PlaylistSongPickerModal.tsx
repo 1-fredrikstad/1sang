@@ -1,3 +1,6 @@
+// PlaylistSongPickerModal
+// Modal used to add/remove songs from a playlist
+
 'use client';
 
 import {
@@ -30,10 +33,12 @@ export default function PlaylistSongPickerModal({
   songsInPlaylist: Song[];
   setSongsInPlaylist: (songs: Song[]) => void;
 }) {
+  // local copy so changes can be discarded when closing modal
   const [localSongs, setLocalSongs] = useState<Song[]>(() =>
     songsInPlaylist ? [...songsInPlaylist] : []
   );
 
+  // shared song picker logic (search, selection, filtering)
   const songPicker = useSongPicker(songs, localSongs, setLocalSongs, open);
 
   const {
@@ -49,6 +54,7 @@ export default function PlaylistSongPickerModal({
     selectedCount,
   } = songPicker;
 
+  // sync local state when modal is opened/closed
   const handleOpenChange = (nextOpen: boolean) => {
     if (nextOpen) {
       setLocalSongs(songsInPlaylist ? [...songsInPlaylist] : []);
@@ -57,6 +63,7 @@ export default function PlaylistSongPickerModal({
     onOpenChange(nextOpen);
   };
 
+  // save selection back to parent state
   const handleSave = () => {
     setSongsInPlaylist(localSongs);
     onOpenChange(false);
@@ -65,18 +72,19 @@ export default function PlaylistSongPickerModal({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-xl flex flex-col gap-3 h-[90vh]">
-        {/* Header */}
+        {/* modal header */}
         <DialogHeader>
           <DialogTitle>Velg sanger</DialogTitle>
           <DialogDescription>Legg til i spillelisten:</DialogDescription>
         </DialogHeader>
 
-        {/* Toolbar */}
+        {/* search + bulk actions */}
         <div className="flex flex-col border-b pb-3">
           <SearchField value={search} onChange={setSearch} />
 
           <div className="flex justify-between items-center">
             <div className="flex gap-3">
+              {/* select all songs */}
               <Button
                 size="sm"
                 variant="secondary"
@@ -86,6 +94,8 @@ export default function PlaylistSongPickerModal({
               >
                 Velg alle
               </Button>
+
+              {/* clear selection */}
               <Button
                 size="sm"
                 variant="secondary"
@@ -96,11 +106,13 @@ export default function PlaylistSongPickerModal({
                 Fjern alle
               </Button>
             </div>
+
+            {/* selected count */}
             <span className="text-xs text-muted-foreground">{selectedCount} valgt</span>
           </div>
         </div>
 
-        {/* List */}
+        {/* song list */}
         <div className="flex-1 overflow-y-auto pr-2 mt-1">
           <SongList
             songs={filteredSongs}
@@ -111,14 +123,16 @@ export default function PlaylistSongPickerModal({
           />
         </div>
 
-        {/* Footer */}
+        {/* footer actions */}
         <DialogFooter className="flex flex-row justify-end">
+          {/* close without saving */}
           <DialogClose asChild>
             <Button variant="destructive" onClick={() => onOpenChange(false)}>
               Avbryt
             </Button>
           </DialogClose>
 
+          {/* save selection */}
           <Button onClick={handleSave} disabled={selectedCount === 0}>
             {songsInPlaylist.length === 0
               ? `Legg til sanger (${selectedCount})`

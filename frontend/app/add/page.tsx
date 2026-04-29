@@ -15,6 +15,7 @@ export default function AddSongPage() {
   const router = useRouter();
   const isOnline = useOnlineStatus();
 
+  // Block song submission when offline (PWA constraint)
   if (!isOnline) {
     return <CampfirePage message="Du er offline. Koble til internett for å legge til sanger." />;
   }
@@ -23,6 +24,7 @@ export default function AddSongPage() {
     return <div>Henter skjema...</div>;
   }
 
+  // Admins publish songs directly; regular users submit suggestions
   const heading = isAdmin ? 'Publiser sang' : 'Send inn sangforslag';
   const submitLabel = isAdmin ? 'Publiser' : 'Send inn';
   const toastMessage = isAdmin ? 'Sang lagt inn' : 'Sangforslag sendt';
@@ -35,6 +37,7 @@ export default function AddSongPage() {
         toastSuccessMessage={toastMessage}
         showTags={isAdmin}
         onSubmit={async (data) => {
+          // Ensure tags are sent as a clean array (avoid undefined refs)
           const payload = {
             ...data,
             tags: [...(data.tags ?? [])],
@@ -48,6 +51,7 @@ export default function AddSongPage() {
             'Content-Type': 'application/json',
           };
 
+          // Attach session token for API authentication when available
           if (session?.access_token) {
             headers.Authorization = `Bearer ${session.access_token}`;
           }
@@ -57,15 +61,23 @@ export default function AddSongPage() {
             headers,
             body: JSON.stringify(payload),
           });
+          // Force refresh of related cached tables after mutation
           await syncService.syncTable('songs', { forceFresh: true });
           await syncService.syncTable('song_tags', { forceFresh: true });
           await syncService.syncTable('tags', { forceFresh: true });
           const body = await res.json().catch(() => null);
 
-          if (!res.ok || body?.error) {
-            throw new Error('Kunne ikke legge til sang');
-          }
+          if (!res.ok) {
+            const errorMessage =
+              typeof body?.error === 'string' ? body.error : (body?.error?.message ?? '');
 
+            // Map Supabase constraint errors to user-friendly messages
+            throw new Error(
+              errorMessage.includes('songs_title_key') || errorMessage.includes('songs_slug_key')
+                ? 'Det finnes allerede en sang med denne tittelen'
+                : 'Kunne ikke legge til sangen'
+            );
+          }
           router.push('/');
         }}
       />

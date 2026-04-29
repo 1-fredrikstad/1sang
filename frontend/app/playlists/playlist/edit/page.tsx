@@ -23,6 +23,8 @@ type PlaylistItemResponse = {
   position: number;
 };
 
+const ONE_WEEK_SECONDS = 60 * 60 * 24 * 7;
+
 export default function EditPlaylistPage() {
   const searchParams = useSearchParams();
   const id = searchParams.get('id')!;
@@ -34,6 +36,7 @@ export default function EditPlaylistPage() {
   const [isPublicPlaylist, setIsPublicPlaylist] = useState(false);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
+  // Extract Supabase session token for authenticated requests
   const getAuthHeaders = async (): Promise<Record<string, string>> => {
     const supabase = createClient();
     const {
@@ -47,13 +50,16 @@ export default function EditPlaylistPage() {
     };
   };
 
+  // Rewrites local IndexedDB playlist items to match current song order
   const replaceLocalPlaylistItems = async (playlistId: string, songs: Song[]) => {
     const existingItems = await db.playlist_items.where('playlist_id').equals(playlistId).toArray();
 
+    // Remove old items
     for (const item of existingItems) {
       await db.playlist_items.delete([item.playlist_id, item.song_id]);
     }
 
+    // Insert updated order
     for (const [index, song] of songs.entries()) {
       await db.playlist_items.put({
         playlist_id: playlistId,
@@ -68,6 +74,7 @@ export default function EditPlaylistPage() {
       try {
         const authHeaders = await getAuthHeaders();
 
+        // Check current user role (admin or not)
         const meRes = await fetch('/api/users/me', {
           headers: authHeaders,
         });
@@ -76,6 +83,7 @@ export default function EditPlaylistPage() {
         const admin = !!meJson?.ok && !!meJson?.isAdmin;
         setIsAdmin(admin);
 
+        // Check if playlist exists locally (offline support)
         const localPlaylist = await db.playlists.get(id);
 
         // Private/local playlist: no password required to enter edit page
@@ -105,7 +113,7 @@ export default function EditPlaylistPage() {
                   0,
                   Math.floor((new Date(localPlaylist.expires_at).getTime() - Date.now()) / 1000)
                 )
-              : 604800,
+              : ONE_WEEK_SECONDS,
           });
 
           return;
@@ -115,6 +123,7 @@ export default function EditPlaylistPage() {
         const authPassword =
           typeof window !== 'undefined' ? sessionStorage.getItem(`playlist-password-${id}`) : null;
 
+        // If not admin, enforce password check
         if (!admin) {
           if (!authPassword) {
             toast.error('Du må oppgi passord først', {
@@ -148,6 +157,7 @@ export default function EditPlaylistPage() {
           }
         }
 
+        // Load playlist + items + songs in parallel
         const [playlistRes, itemsRes, songsRes] = await Promise.all([
           fetch(`/api/playlists/${id}`, {
             headers: authHeaders,
@@ -176,6 +186,7 @@ export default function EditPlaylistPage() {
 
         setIsPublicPlaylist(true);
 
+        // Rebuild ordered song list
         const songsInPlaylist = items
           .sort((a, b) => a.position - b.position)
           .map((item) => allSongs.find((song) => song.id === item.song_id))
@@ -217,6 +228,7 @@ export default function EditPlaylistPage() {
         throw new Error('Velg minst én sang');
       }
 
+      // Compare original vs updated songs
       const originalSongIds = originalSongs.map((song) => song.id);
       const updatedSongIds = data.songsInPlaylist.map((song) => song.id);
 
@@ -259,6 +271,7 @@ export default function EditPlaylistPage() {
 
         const newPlaylistId = createJson.data.id as string;
 
+        // Copy songs to new playlist
         for (const song of data.songsInPlaylist) {
           const addRes = await fetch('/api/playlist_items', {
             method: 'POST',
@@ -280,6 +293,7 @@ export default function EditPlaylistPage() {
           }
         }
 
+        // Cleanup local playlist after migration
         await db.playlists.delete(id);
 
         const localItems = await db.playlist_items.where('playlist_id').equals(id).toArray();
@@ -293,7 +307,7 @@ export default function EditPlaylistPage() {
         return;
       }
 
-      // PRIVATE -> PRIVATE
+      // PRIVATE -> PRIVATE update (local only)
       if (!isPublicPlaylist) {
         const playlist = await db.playlists.get(id);
 
@@ -337,7 +351,7 @@ export default function EditPlaylistPage() {
             data.newPassword && data.newPassword.trim() !== ''
               ? data.newPassword.trim()
               : authPassword,
-          synced: 0,
+          synced: 1,
           is_public: false,
           expires_at: null,
           created_at: new Date().toISOString(),

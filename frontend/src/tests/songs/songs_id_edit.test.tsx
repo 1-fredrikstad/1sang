@@ -51,8 +51,13 @@ type SongFormProps = {
 };
 
 vi.mock('next/navigation', () => ({
-  useParams: () => ({ slug: 'min-sang' }),
   useRouter: () => ({ replace: mockReplace }),
+  useSearchParams: () => ({
+    get: (key: string) => {
+      if (key === 'slug') return 'min-sang';
+      return null;
+    },
+  }),
 }));
 
 vi.mock('dexie-react-hooks', () => ({

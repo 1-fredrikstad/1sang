@@ -45,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Inline script runs BEFORE React hydration for instant theme application */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -88,22 +89,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden h-screen flex flex-col`}
       >
+        {/* Registers service worker early for offline support */}
         <ServiceWorkerRegister />
 
         <AuthProvider>
+          {/* Keeps backend/frontend state in sync */}
           <GlobalSync />
           <TooltipProvider>
+            {/* Handles dark/light/system theme switching */}
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem enableColorScheme>
               <HeaderColorProvider>
+                {/* Top navigation (conditional based on route/auth) */}
                 <ConditionalHeader />
                 <TagFilterProvider>
+                  {/* Main scrollable content area */}
                   <main className="flex-1 overflow-y-auto">
                     <section className="pb-[calc(80px+env(safe-area-inset-bottom))] md:pb-20 m-5 max-w-4xl mx-auto px-5">
                       {children}
                     </section>
                   </main>
                 </TagFilterProvider>
+                {/* Bottom navigation (mobile-focused) */}
                 <ConditionalNavbar />
+                {/* Global toast notifications */}
                 <Toaster position="top-center" richColors duration={3000} />
               </HeaderColorProvider>
             </ThemeProvider>

@@ -12,11 +12,13 @@ export async function GET(req: NextRequest) {
 
     const access = await checkAdminAccess(token);
 
+    // Ensure only superusers can access full user list
     if (!access.userId || !access.isSuperuser) {
       return NextResponse.json({ ok: false, error: 'Ikke tilgang' }, { status: 403 });
     }
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    // Service role key is required to bypass RLS for admin-only user listing
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !serviceRoleKey) {
@@ -24,6 +26,7 @@ export async function GET(req: NextRequest) {
     }
 
     const usersRes = await fetch(
+      // Most recent users first
       `${supabaseUrl}/rest/v1/users?select=user_id,name,email,role,created_at&order=created_at.desc`,
       {
         headers: {
@@ -37,11 +40,7 @@ export async function GET(req: NextRequest) {
     const usersBody = await usersRes.json().catch(() => null);
 
     if (!usersRes.ok) {
-      throw new Error(
-        typeof usersBody === 'object' && usersBody !== null
-          ? JSON.stringify(usersBody)
-          : 'Kunne ikke hente brukere'
-      );
+      throw new Error('Kunne ikke hente brukere');
     }
 
     return NextResponse.json({

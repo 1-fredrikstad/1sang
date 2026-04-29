@@ -1,6 +1,6 @@
 import { capitalizeFirst } from '../utils/capitalizeFormat';
 
-export const TEXT_PATTERN = /^[a-zA-ZæøåÆØÅ0-9\s.\-/:;,'’*!?()"…–]+$/;
+export const TEXT_PATTERN = /^[a-zA-ZæøåöÖÆØÅ0-9\s.\-/:;,'’*!?()"…–]+$/;
 export const LYRICS_PATTERN = /^[\s\S]+$/;
 
 export const songSuggestionSchema = {

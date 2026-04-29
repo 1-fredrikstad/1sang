@@ -12,29 +12,39 @@ interface SuggestionsCollapsibleProps {
 }
 
 export function SuggestionsCollapsible({ suggestions }: SuggestionsCollapsibleProps) {
+  // Controls open/closed state of the collapsible
+  // Defaults to open if there are any suggestions
   const [open, setOpen] = useState(suggestions.length > 0);
+
   const noOfSuggestions = suggestions.length;
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger asChild>
+        {/* Header row that toggles collapsible */}
         <div className="group w-full flex items-center justify-between cursor-pointer">
           <span>
             Inkomne sangforslag
+            {/* Show count badge only if there are suggestions */}
             {noOfSuggestions > 0 && (
               <Badge variant="destructive" className="font-bold ml-2">
                 {noOfSuggestions}
               </Badge>
             )}
           </span>
+
+          {/* Rotating chevron indicator */}
           <ChevronDownIcon className="h-5 w-5 allow-animation transition-transform duration-500 group-data-[state=open]:rotate-180" />
         </div>
       </CollapsibleTrigger>
+
       <CollapsibleContent className="overflow-hidden collapsible-content data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp">
         <div className="px-0 pb-4 mt-2 pt-1 allow-animation">
+          {/* Empty state */}
           {suggestions.length === 0 ? (
             <div className="opacity-80 overflow-hidden">Ingen ventende forslag</div>
           ) : (
+            // List of suggestion links
             <ul className="space-y-2 mx-1">
               {suggestions.map((s) => (
                 <li key={s.id}>

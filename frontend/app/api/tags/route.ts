@@ -52,6 +52,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: 'name of tag required' }, { status: 400 });
     }
 
+    // Create new tag
     const res = await fetch(`${supabaseUrl}/rest/v1/tags`, {
       method: 'POST',
       headers: {
@@ -87,6 +88,7 @@ export async function DELETE(req: Request) {
     const { id } = await req.json().catch(() => ({}));
     if (!id) return NextResponse.json({ ok: false, error: 'id required' }, { status: 400 });
 
+    // Delete tag by id (RLS may block depending on permissions)
     const target = `${supabaseUrl}/rest/v1/tags?id=eq.${encodeURIComponent(id)}`;
 
     const res = await fetch(target, {
@@ -135,6 +137,7 @@ export async function PATCH(req: Request) {
     if (!id) return NextResponse.json({ ok: false, error: 'id required' }, { status: 400 });
     if (!name) return NextResponse.json({ ok: false, error: 'name required' }, { status: 400 });
 
+    // Update tag name (admin-level operation via service role)
     const target = `${supabaseUrl}/rest/v1/tags?id=eq.${encodeURIComponent(id)}`;
 
     const res = await fetch(target, {

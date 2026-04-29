@@ -19,7 +19,7 @@ interface TagListItemProps {
   onDelete: () => void;
 }
 
-// component for single tag item in the tag list (with edit and delete functionality)
+// Single tag row component with inline edit + delete support
 export function TagListItem({
   tag,
   isEditing,
@@ -33,6 +33,7 @@ export function TagListItem({
 }: TagListItemProps) {
   return (
     <li className="flex items-center justify-between gap-2 py-3 pr-3 pl-4 rounded-sm outline-1 dark:bg-list-bg outline-[#0000001a] dark:shadow-xs dark:shadow-black allow-animation transition">
+      {/* EDIT MODE */}
       {isEditing ? (
         <>
           <Input
@@ -46,7 +47,9 @@ export function TagListItem({
             }}
             className="h-7 text-sm"
           />
+
           <div className="flex gap-1 shrink-0">
+            {/* Confirm edit */}
             <Button
               size="sm"
               variant="ghost"
@@ -56,6 +59,8 @@ export function TagListItem({
             >
               <Check size={14} className="text-green-600" />
             </Button>
+
+            {/* Cancel edit */}
             <Button
               size="sm"
               variant="ghost"
@@ -68,8 +73,11 @@ export function TagListItem({
         </>
       ) : (
         <>
+          {/* DISPLAY MODE */}
           <span className="text-sm truncate capitalize-first">{tag.name}</span>
+
           <div className="flex gap-1 shrink-0">
+            {/* Start editing */}
             <Button
               size="sm"
               variant="ghost"
@@ -79,6 +87,8 @@ export function TagListItem({
             >
               <Pencil size={13} className="text-muted-foreground" />
             </Button>
+
+            {/* Delete tag */}
             <Button
               size="sm"
               variant="ghost"

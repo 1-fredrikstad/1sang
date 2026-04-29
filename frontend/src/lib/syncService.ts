@@ -8,7 +8,6 @@ type TableName =
   | 'tags'
   | 'playlist_items'
   | 'song_tags'
-  | 'song_links'
   | 'song_suggestions'
   | 'users';
 
@@ -93,14 +92,7 @@ class SyncService {
 
   // Auto sync every 3 minutes
   startAutoSync(intervalMs = 180000) {
-    const tables: TableName[] = [
-      'songs',
-      'tags',
-      'song_tags',
-      'song_links',
-      'song_suggestions',
-      'users',
-    ];
+    const tables: TableName[] = ['songs', 'tags', 'song_tags', 'song_suggestions', 'users'];
 
     const run = async () => {
       if (!navigator.onLine) return;

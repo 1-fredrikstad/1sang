@@ -13,6 +13,7 @@ export function useTags() {
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, setIsPending] = useState(false);
 
+  // Fetch all tags from API
   const fetchTags = async () => {
     const res = await fetch('/api/tags');
     const body = await res.json();
@@ -20,17 +21,18 @@ export function useTags() {
     setIsLoading(false);
   };
 
-  // syncs Dexie so the rest of the app (song page, tag select) sees the change
+  // Sync Dexie so offline/local cache stays consistent
   const syncDexieTags = () => syncService.syncTable('tags', { forceFresh: true });
 
   useEffect(() => {
     fetchTags();
   }, []);
 
-  // checks if tag name already exists in the database
+  // Check if tag name already exists (case-insensitive)
   const isDuplicate = (name: string, excludeId?: string) =>
     tags.some((t) => t.name.toLowerCase() === name.trim().toLowerCase() && t.id !== excludeId);
 
+  // Validate tag input before sending to API
   const validate = (name: string, excludeId?: string): boolean => {
     if (isDuplicate(name, excludeId)) {
       toast.error('En tag med dette navnet finnes allerede');
@@ -39,8 +41,10 @@ export function useTags() {
     return true;
   };
 
+  // Create new tag
   const createTag = async (name: string) => {
     if (!validate(name)) return false;
+
     setIsPending(true);
     try {
       const res = await fetch('/api/tags', {
@@ -48,9 +52,13 @@ export function useTags() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: name.trim() }),
       });
+
       const body = await res.json();
       if (!res.ok) throw new Error(body?.error ?? 'Opprettelse feilet');
+
       toast.success('Tag opprettet');
+
+      // Refresh local + offline cache
       await Promise.all([fetchTags(), syncDexieTags()]);
       return true;
     } catch (e) {
@@ -61,8 +69,10 @@ export function useTags() {
     }
   };
 
+  // Update existing tag
   const updateTag = async (id: string, name: string) => {
     if (!validate(name, id)) return false;
+
     setIsPending(true);
     try {
       const res = await fetch('/api/tags', {
@@ -70,9 +80,12 @@ export function useTags() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, name: name.trim() }),
       });
+
       const body = await res.json();
       if (!res.ok) throw new Error(body?.error ?? 'Oppdatering feilet');
+
       toast.success('Tag oppdatert');
+
       await Promise.all([fetchTags(), syncDexieTags()]);
       return true;
     } catch (e) {
@@ -83,8 +96,10 @@ export function useTags() {
     }
   };
 
+  // Delete tag after confirmation
   const deleteTag = async (tag: Tag) => {
     if (!confirm(`Er du sikker på at du vil slette taggen "${tag.name}"?`)) return false;
+
     setIsPending(true);
     try {
       const res = await fetch('/api/tags', {
@@ -92,9 +107,12 @@ export function useTags() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: tag.id }),
       });
+
       const body = await res.json().catch(() => null);
       if (!res.ok) throw new Error(body?.error ?? 'Sletting feilet');
+
       toast.success('Tag slettet');
+
       await Promise.all([fetchTags(), syncDexieTags()]);
       return true;
     } catch (e) {
