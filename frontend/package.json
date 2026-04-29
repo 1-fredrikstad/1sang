@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "rm -rf .next && next build --webpack",
+    "dev:cypress": "NEXT_PUBLIC_CYPRESS=true next dev --webpack",
+    "dev:cypress:admin": "CYPRESS_E2E=true NEXT_PUBLIC_CYPRESS=true NEXT_PUBLIC_CYPRESS_ADMIN=true next dev --webpack",
     "start": "next start",
     "seed:songs": "node --env-file=.env.local ./scripts/seed-songs.mjs",
     "lint": "eslint",
@@ -13,7 +14,7 @@
     "prepare": "node -e \"if (process.env.VERCEL !== '1') { require('child_process').execSync('husky', {stdio: 'inherit'}) }\"",
     "test": "vitest",
     "cypress": "cypress open",
-    "test:e2e": "start-server-and-test dev http://localhost:3000 cypress"
+    "test:e2e": "start-server-and-test dev:cypress http://localhost:3000 cypress"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

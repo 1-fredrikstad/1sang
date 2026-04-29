@@ -51,41 +51,46 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const headerColor = HEADERCOLOR_OPTIONS.map((o) => o.value).includes(cookie as HeaderColor)
     ? (cookie as HeaderColor)
     : undefined;
+  // Avoid hydration mismatch when cypress runs
+  const isCypress = process.env.NEXT_PUBLIC_CYPRESS === 'true';
 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Inline script runs BEFORE React hydration for instant theme application */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-            (function() {
-              try {
-                var d = document.documentElement;
-                
-                // 1. Immediate dark mode
-                var theme = localStorage.getItem('theme');
-                var supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (theme === 'dark' || (!theme && supportDarkMode)) {
-                  d.classList.add('dark');
-                } else {
-                  d.classList.remove('dark');
-                }
+        {!isCypress && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+              (function() {
+                try {
+                  var d = document.documentElement;
+                  
+                  // 1. Immediate dark mode
+                  var theme = localStorage.getItem('theme');
+                  var supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (theme === 'dark' || (!theme && supportDarkMode)) {
+                    d.classList.add('dark');
+                  } else {
+                    d.classList.remove('dark');
+                  }
 
-                // 2. Immediate header color
-                var match = document.cookie.match(/(?:^|;\\s*)headerColor=([^;]+)/);
-                var headerTheme = match ? match[1] : '${headerColor || ''}';
-                if (headerTheme) {
-                  d.setAttribute('data-theme', headerTheme);
-                }
-                
-                // 3. Mark as ready
-                d.classList.add('theme-ready');
-              } catch (e) {}
-            })();
-          `,
-          }}
-        />
+                  // 2. Immediate header color
+                  var match = document.cookie.match(/(?:^|;\\s*)headerColor=([^;]+)/);
+                  var headerTheme = match ? match[1] : '${headerColor || ''}';
+                  if (headerTheme) {
+                    d.setAttribute('data-theme', headerTheme);
+                  }
+                  
+                  // 3. Mark as ready
+                  d.classList.add('theme-ready');
+                } catch (e) {}
+              })();
+            `,
+            }}
+          />
+        )}
+
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
