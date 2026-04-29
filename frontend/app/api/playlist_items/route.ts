@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 
+// Centralized env validation to fail fast if Supabase config is missing
 function getEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -18,6 +19,7 @@ function getBearerToken(req: Request): string | null {
   return token || null;
 }
 
+// Lightweight admin check used to switch between RPC permissions
 async function getIsAdmin(req: Request) {
   const token = getBearerToken(req);
   if (!token) return false;
@@ -75,6 +77,7 @@ export async function POST(req: Request) {
     const payload = await req.json();
     const isAdmin = await getIsAdmin(req);
 
+    // Admins bypass password requirement via separate RPC function
     const rpcName = isAdmin ? 'playlists_admin_add_item' : 'playlists_add_item';
 
     const rpcBody = isAdmin
@@ -118,6 +121,7 @@ export async function DELETE(req: Request) {
     const payload = await req.json();
     const isAdmin = await getIsAdmin(req);
 
+    // Use different stored procedure depending on permission level
     const rpcName = isAdmin ? 'playlists_admin_remove_item' : 'playlists_remove_item';
 
     const rpcBody = isAdmin

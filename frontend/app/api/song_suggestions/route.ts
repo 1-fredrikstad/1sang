@@ -16,6 +16,7 @@ function getEnv() {
 
 export async function GET(req: Request) {
   try {
+    // Only admins are allowed to access song suggestions list
     await requireAdmin();
   } catch {
     return NextResponse.json(
@@ -57,14 +58,17 @@ export async function POST(req: Request) {
     const { supabaseUrl, publishableKey } = getEnv();
     const json = await req.json();
 
+    // Normalize input before running schema validation
     const data = normalizeSongInput(json);
     const errors = validateSongInput(data);
 
     const firstError = Object.values(errors)[0];
+    // Return first validation error (fail fast)
     if (firstError) {
       return NextResponse.json({ ok: false, error: firstError }, { status: 400 });
     }
 
+    // Convert empty optional fields to null for database consistency
     const payload = {
       title: data.title,
       melody: data.melody || null,
@@ -81,6 +85,7 @@ export async function POST(req: Request) {
         apikey: publishableKey,
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        // Insert-only request; no response body needed
         Prefer: 'return=minimal',
       },
       body: JSON.stringify(payload),

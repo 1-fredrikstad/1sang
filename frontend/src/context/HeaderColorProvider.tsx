@@ -3,7 +3,6 @@
 import { useState, useContext, useLayoutEffect, createContext } from 'react';
 import { setCookie, deleteCookie } from 'cookies-next/client';
 import type { HeaderColor } from '../types/theme';
-// import { useMounted } from '../hooks/useMounted';
 import { useTheme } from 'next-themes';
 
 type Context = {
@@ -14,11 +13,10 @@ type Context = {
 const HeaderColorContext = createContext<Context | null>(null);
 
 export function HeaderColorProvider({ children }: { children: React.ReactNode }) {
-  // const mounted = useMounted();
   const { resolvedTheme } = useTheme();
 
+  // Read initial header override from cookie on first render
   const [headerOverride, setHeaderOverride] = useState<HeaderColor | undefined>(() => {
-    // Read cookie client-side immediately
     if (typeof document !== 'undefined') {
       const match = document.cookie.match(/(?:^|;\s*)headerColor=([^;]+)/);
       if (match) return match[1] as HeaderColor;
@@ -26,7 +24,7 @@ export function HeaderColorProvider({ children }: { children: React.ReactNode })
     return undefined;
   });
 
-  // Derived header color
+  // Resolve final header color (cookie override > theme fallback)
   const headerColor =
     headerOverride ??
     (resolvedTheme === 'dark'
@@ -35,16 +33,14 @@ export function HeaderColorProvider({ children }: { children: React.ReactNode })
         ? 'light_yellow'
         : undefined);
 
-  // --- Correct DOM immediately on mount from the live cookie value---
+  // Apply header color + CSS readiness classes as early as possible
   useLayoutEffect(() => {
-    // We check typeof document to ensure this only runs on the client
     if (typeof document === 'undefined') return;
 
     if (headerColor) {
       document.documentElement.setAttribute('data-theme', headerColor);
     }
 
-    // Add theme-ready immediately so the background is visible
     document.documentElement.classList.add('theme-ready');
 
     const timer = setTimeout(() => {
@@ -54,6 +50,7 @@ export function HeaderColorProvider({ children }: { children: React.ReactNode })
     return () => clearTimeout(timer);
   }, [headerColor]);
 
+  // Update cookie + state when user selects a new header color
   function setHeaderColor(color: HeaderColor | null) {
     if (color === null) {
       deleteCookie('headerColor');
@@ -76,7 +73,7 @@ export function HeaderColorProvider({ children }: { children: React.ReactNode })
   );
 }
 
-// Hook to use context safely
+// Safe hook for consuming header color context
 export function useHeaderColor() {
   const ctx = useContext(HeaderColorContext);
   if (!ctx) throw new Error('useHeaderColor must be used inside HeaderColorProvider');

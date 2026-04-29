@@ -2,8 +2,8 @@
 
 import { Song } from '../../lib/db';
 
-// Songs that should end with a verse instead of a final chorus
-// (based on customers earlier songs)
+// Songs that should end with a verse instead of repeating final chorus
+// (special-case behavior based on historical formatting rules)
 const SPECIAL_LAST_VERSE_SONGS = new Set([
   'Nelaug, 1990',
   'Helt vilt, 2017 landsleir Bodø',
@@ -12,10 +12,13 @@ const SPECIAL_LAST_VERSE_SONGS = new Set([
   'Country Roads',
 ]);
 
+// Matches chord blocks like [C], [G7], etc.
 const CHORD_REGEX = /\[([^\]]+)\]/g;
+
+// Separator used when stacking multiple chords on same position
 const STACKED_CHORD_SEPARATOR = '/_';
 
-// Escapes special LaTeX characters in regular song text
+// Escapes LaTeX special characters in normal lyrics text
 function escapeLatexText(text: string): string {
   if (!text) return '';
 
@@ -32,7 +35,7 @@ function escapeLatexText(text: string): string {
     .replace(/\^/g, '\\textasciicircum{}');
 }
 
-// Escapes special LaTeX characters inside chords
+// Escapes LaTeX special characters inside chord labels
 function escapeLatexChord(chord: string): string {
   if (!chord) return '';
 
@@ -47,15 +50,19 @@ function escapeLatexChord(chord: string): string {
     .replace(/}/g, '\\}');
 }
 
-// Formats chords. If multiple: ^{Bm/_D/_G7}
+// Formats one or more chords into LaTeX superscript format
+// Single chord: ^{C}
+// Multiple chords: ^{C/_G/_Am}
 function formatChordGroup(chords: string[]): string {
   const cleaned = chords.map(escapeLatexChord).filter(Boolean);
+
   if (cleaned.length === 0) return '';
   if (cleaned.length === 1) return `^{${cleaned[0]}}`;
+
   return `^{${cleaned.join(STACKED_CHORD_SEPARATOR)}}`;
 }
 
-// Converts line to chord latex
+// Converts a single line of text with embedded [chords] into LaTeX
 function convertChordLine(line: string): string {
   if (!line) return '';
 
@@ -63,10 +70,12 @@ function convertChordLine(line: string): string {
   let pendingChords: string[] = [];
   let lastIndex = 0;
 
+  // Iterate through all chord markers in the line
   for (const match of line.matchAll(CHORD_REGEX)) {
     const matchIndex = match.index!;
     const textBetween = line.slice(lastIndex, matchIndex);
 
+    // If we hit real text, flush pending chords before it
     if (textBetween && textBetween.trim() !== '') {
       result += `${formatChordGroup(pendingChords)}${escapeLatexText(textBetween)}`;
       pendingChords = [];
@@ -74,17 +83,19 @@ function convertChordLine(line: string): string {
       result += escapeLatexText(textBetween);
     }
 
+    // Collect chord(s) for next text segment
     pendingChords.push(match[1]);
     lastIndex = matchIndex + match[0].length;
   }
 
+  // Handle remaining tail after last chord
   const tail = line.slice(lastIndex);
   result += `${formatChordGroup(pendingChords)}${escapeLatexText(tail)}`;
 
   return result;
 }
 
-// Formats a verse or chorus to latex
+// Formats a full section (verse or chorus) into LaTeX blocks
 function formatSection(section: string | null | undefined): string {
   if (!section) return '';
 
@@ -99,10 +110,13 @@ function formatSection(section: string | null | undefined): string {
     .join('\\\\[0.7em]\n');
 }
 
-// Convers a song to a latex song
+// Converts a single song into LaTeX format
 function songToLatex(song: Song): string {
   const verses = song.verses ?? [];
+
+  // Some songs should not repeat final chorus
   const isSpecialSong = SPECIAL_LAST_VERSE_SONGS.has(song.title || '');
+
   const title = escapeLatexText((song.title || '').toLocaleUpperCase('nb-NO'));
   const melody = song.melody ? escapeLatexText(song.melody) : '';
   const chorus = formatSection(song.chorus);
@@ -113,18 +127,21 @@ function songToLatex(song: Song): string {
   parts.push(`\\begin{song}{title={${title}}}`);
   parts.push('');
 
+  // Optional melody line
   if (melody) {
     parts.push(`{\\itshape Mel: ${melody}}`);
     parts.push('\\vspace{0.5em}');
     parts.push('');
   }
 
+  // Render verses and optional intermediate choruses
   verses.forEach((verse, index) => {
     parts.push('\\begin{verse}');
     parts.push(formatSection(verse));
     parts.push('\\end{verse}');
     parts.push('');
 
+    // Insert chorus between verses (except last verse)
     if (chorus && index < verses.length - 1) {
       parts.push('\\begin{chorus}');
       parts.push(chorus);
@@ -133,6 +150,7 @@ function songToLatex(song: Song): string {
     }
   });
 
+  // Final chorus (unless song is marked special-case)
   if (!isSpecialSong && chorus) {
     parts.push('\\begin{chorus}');
     parts.push(chorus);
@@ -140,6 +158,7 @@ function songToLatex(song: Song): string {
     parts.push('');
   }
 
+  // Credit or spacing fallback
   if (credit) {
     parts.push(`\\songcredit{${escapeLatexText(credit)}}`);
   } else {
@@ -152,7 +171,7 @@ function songToLatex(song: Song): string {
   return parts.join('\n');
 }
 
-// Main export function: generate a full latex document and triggers download
+// Generates full LaTeX document and triggers download
 export function generateLatex(songs: Song[], totalAvailableSongs?: number) {
   const latex = [
     '\\documentclass{article}',
@@ -161,7 +180,7 @@ export function generateLatex(songs: Song[], totalAvailableSongs?: number) {
     '',
     '\\setmainfont{Times New Roman}',
     '',
-    '% --- Innstillinger for leadsheets ---',
+    '% --- leadsheets config ---',
     '\\setleadsheets{',
     '  chords/format = \\bfseries\\fontsize{12}{12}\\selectfont,',
     '  align-chords = c,',
@@ -174,12 +193,12 @@ export function generateLatex(songs: Song[], totalAvailableSongs?: number) {
     '  chorus/after-label = {},',
     '}',
     '',
-    '% --- Layout ---',
+    '% --- layout tweaks ---',
     '\\setlength{\\parindent}{0pt}',
     '\\setlength{\\leftmargini}{0.4em}',
     '\\setlength{\\leftmarginii}{0.4em}',
     '',
-    '% --- Kommando for låtskriver ---',
+    '% --- song credit command ---',
     '\\newcommand{\\songcredit}[1]{%',
     '  \\vspace{1.8em}%',
     '  {\\raggedleft \\itshape #1 \\par}%',
@@ -193,6 +212,7 @@ export function generateLatex(songs: Song[], totalAvailableSongs?: number) {
     '\\end{document}',
   ].join('\n');
 
+  // Dynamic filename based on selection size
   let filename = 'sanger';
   if (totalAvailableSongs && songs.length === totalAvailableSongs) {
     filename = 'sanger_alle';
@@ -200,11 +220,14 @@ export function generateLatex(songs: Song[], totalAvailableSongs?: number) {
     filename = `sanger_${songs.length}`;
   }
 
+  // Create downloadable .tex file
   const blob = new Blob([latex], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
+
   const a = document.createElement('a');
   a.href = url;
   a.download = `${filename}.tex`;
   a.click();
+
   URL.revokeObjectURL(url);
 }

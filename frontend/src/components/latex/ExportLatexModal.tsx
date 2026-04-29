@@ -30,6 +30,8 @@ export default function ExportLatexModal({
   generateLatex: (songs: Song[], total?: number) => void;
 }) {
   const [selectedSongs, setSelectedSongs] = useState<Song[]>([]);
+
+  // Encapsulates filtering, selection state, and helpers for the song picker UI
   const songPicker = useSongPicker(songs, selectedSongs, setSelectedSongs, open);
 
   const {
@@ -54,12 +56,13 @@ export default function ExportLatexModal({
           <DialogDescription>Velg hvilke sanger du vil eksportere:</DialogDescription>
         </DialogHeader>
 
-        {/* Toolbar */}
+        {/* Search + bulk actions */}
         <div className="flex flex-col border-b pb-3">
           <SearchField value={search} onChange={setSearch} />
 
           <div className="flex justify-between items-center">
             <div className="flex gap-3">
+              {/* Bulk select actions */}
               <Button
                 size="sm"
                 variant="secondary"
@@ -69,6 +72,7 @@ export default function ExportLatexModal({
               >
                 Velg alle
               </Button>
+
               <Button
                 size="sm"
                 variant="secondary"
@@ -79,11 +83,13 @@ export default function ExportLatexModal({
                 Fjern alle
               </Button>
             </div>
+
+            {/* Live selection counter */}
             <span className="text-xs text-muted-foreground">{selectedCount} valgt</span>
           </div>
         </div>
 
-        {/* List */}
+        {/* Scrollable song list */}
         <div className="flex-1 overflow-y-auto pr-2 mt-1">
           <SongList
             songs={filteredSongs}
@@ -94,7 +100,7 @@ export default function ExportLatexModal({
           />
         </div>
 
-        {/* Footer */}
+        {/* Footer actions */}
         <DialogFooter className="flex flex-row justify-end">
           <DialogClose asChild>
             <Button variant="destructive" onClick={() => onOpenChange(false)}>
@@ -105,7 +111,10 @@ export default function ExportLatexModal({
           <Button
             onClick={() => {
               generateLatex(selectedSongs, songs.length);
+
               onOpenChange(false);
+
+              // Feedback depends on selection size for better UX clarity
               toast.success(
                 selectedCount === 1
                   ? 'Eksporterte 1 sang'

@@ -13,22 +13,28 @@ export default function Settings() {
   return (
     <main>
       <h1>Innstillinger</h1>
+      {/* Prevent screen sleep while using app */}
       <ul className="flex flex-col">
         <li className="settings-list-item">
           <WakeLockToggle />
         </li>
+
+        {/* Light/dark mode toggle */}
         <li className="settings-list-item">
           <ThemeToggleButton />
         </li>
 
+        {/* UI customization (header color selection) */}
         <li className="hover:bg-secondary/60 active:bg-none settings-list-item">
           <HeaderColorForm />
         </li>
 
+        {/* Navigation shortcut to offline "campfire" mode */}
         <Link href="/campfire" className="hover:bg-secondary/60 settings-list-item">
           Gå en tur i skogen?
         </Link>
 
+        {/* Admin-only navigation (only shown when online + admin verified) */}
         {isAdmin && isOnline && (
           <Link href="/admin/dashboard" className="hover:bg-secondary/60 settings-list-item">
             Til admin-dashboard
