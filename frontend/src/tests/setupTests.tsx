@@ -8,7 +8,7 @@ import { vi } from 'vitest';
 
 //Mock next/image
 vi.mock('next/image', () => ({
-  default: (props: any) => {
+  default: ({ unoptimized, priority, fill, ...props }: any) => {
     return <img {...props} />;
   },
 }));

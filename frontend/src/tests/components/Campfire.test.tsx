@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, vi, beforeEach, afterEach } from 'vitest';
 import Campfire from '@/src/components/campfire/Campfire';
 
 const playMock = vi.fn(() => Promise.resolve());
@@ -29,28 +29,31 @@ afterEach(() => {
 });
 
 describe('Campfire', () => {
-  it('plays sound and adds boost class on click', async () => {
+  test('plays sound and adds boost class on click', async () => {
     render(<Campfire message="" />);
 
     const fireImage = screen.getByAltText('Fire');
     const container = fireImage.closest('section') as HTMLElement;
 
-    await container.click();
+    fireEvent.click(container);
 
     expect(playMock).toHaveBeenCalled();
     expect(fireImage.className).toContain('fire-boost');
   });
 
-  it('resets after 7.5 seconds', async () => {
+  test('resets after 7.5 seconds', async () => {
     render(<Campfire message="" />);
 
     const fireImage = screen.getByAltText('Fire');
     const container = fireImage.closest('section') as HTMLElement;
 
-    await container.click();
+    fireEvent.click(container);
 
-    vi.advanceTimersByTime(7500);
+    act(() => {
+      vi.advanceTimersByTime(7500);
+    });
 
-    expect(fireImage.className).not.toContain('fire-idle');
+    expect(screen.getByAltText('Fire')).toHaveClass('fire-idle');
+    expect(screen.getByAltText('Fire')).not.toHaveClass('fire-boost');
   });
 });

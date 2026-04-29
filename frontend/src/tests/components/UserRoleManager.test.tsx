@@ -171,6 +171,7 @@ describe('UserRoleManager', () => {
 
   it('shows error when updating role fails', async () => {
     const user = userEvent.setup();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
 
     vi.mocked(global.fetch).mockResolvedValueOnce({
       ok: false,

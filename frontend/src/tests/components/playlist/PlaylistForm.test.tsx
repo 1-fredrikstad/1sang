@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { vi, expect, describe, test } from 'vitest';
 import PlaylistForm from '@/src/components/playlist/PlaylistForm';
 import { Song } from '@/src/lib/db';
@@ -192,6 +192,9 @@ describe('PlaylistForm', () => {
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
 
-    resolveSubmit({ type: 'private', localId: 'local-1' });
+    await act(async () => {
+      resolveSubmit({ type: 'private', localId: 'local-1' });
+      await slowPromise;
+    });
   });
 });

@@ -104,6 +104,7 @@ describe('LogoutButton', () => {
 
   test('still redirects even if logout fails', async () => {
     const user = userEvent.setup();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
 
     // Logout fails
     mockLogout.mockRejectedValueOnce(new Error('Logout failed'));
