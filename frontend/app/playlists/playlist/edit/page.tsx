@@ -351,7 +351,7 @@ export default function EditPlaylistPage() {
             data.newPassword && data.newPassword.trim() !== ''
               ? data.newPassword.trim()
               : authPassword,
-          synced: 0,
+          synced: 1,
           is_public: false,
           expires_at: null,
           created_at: new Date().toISOString(),

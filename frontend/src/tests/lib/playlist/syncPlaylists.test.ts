@@ -23,7 +23,7 @@ vi.mock('@/src/lib/supabase/client', () => ({
   createClient: () => supabaseMock,
 }));
 
-import { syncLocalToServer, syncPlaylists } from '@/src/lib/playlists/syncPlaylists';
+import { syncPlaylists } from '@/src/lib/playlists/syncPlaylists';
 
 // ----------------------
 // Helpers
@@ -56,45 +56,5 @@ describe('syncPlaylists', () => {
 
     expect(db.playlists.where).not.toHaveBeenCalled();
     expect(supabaseMock.from).not.toHaveBeenCalled();
-  });
-  it('syncs local playlist to server and marks it synced', async () => {
-    db.playlists.where.mockReturnValue({
-      equals: () => ({
-        and: () => ({
-          toArray: () =>
-            Promise.resolve([
-              {
-                id: 'local-1',
-                title: 'Test',
-                is_public: true,
-                synced: 0,
-                expires_at: null,
-              },
-            ]),
-        }),
-      }),
-    });
-
-    db.playlist_items.where.mockReturnValue({
-      equals: () => ({
-        sortBy: () => Promise.resolve([]),
-      }),
-    });
-
-    supabaseMock.from.mockReturnValue({
-      insert: () => ({
-        select: () => ({
-          single: () =>
-            Promise.resolve({
-              data: { id: 'server-1' },
-              error: null,
-            }),
-        }),
-      }),
-    });
-
-    await syncLocalToServer();
-
-    expect(db.playlists.update).toHaveBeenCalled();
   });
 });
