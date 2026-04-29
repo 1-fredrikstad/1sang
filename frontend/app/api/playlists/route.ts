@@ -38,6 +38,7 @@ export async function GET(req: Request) {
 
     let res: Response;
 
+    // If id is provided, fetch playlist detail; otherwise return public playlist list
     if (id) {
       res = await fetch(`${supabaseUrl}/rest/v1/rpc/playlists_get_detail`, {
         method: 'POST',
@@ -86,6 +87,7 @@ export async function POST(req: Request) {
     let rpcName = '';
     let rpcBody: unknown = {};
 
+    // Single endpoint handling multiple playlist actions via RPC mapping
     switch (action) {
       case 'create':
         rpcName = 'playlists_create';
@@ -98,6 +100,7 @@ export async function POST(req: Request) {
         break;
 
       case 'add_item':
+        // Admins bypass password-based RPC variants
         rpcName = isAdmin ? 'playlists_admin_add_item' : 'playlists_add_item';
         rpcBody = isAdmin
           ? {

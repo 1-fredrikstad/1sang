@@ -1,3 +1,6 @@
+// PlaylistSongPickerModal
+// Modal used to select which songs to export in latex
+
 'use client';
 
 import { Song } from '@/src/lib/db';
@@ -27,6 +30,7 @@ export default function ExportLatexModal({
       description="Velg hvilke sanger du vil eksportere:"
       onSave={handleExport}
       showToastOnSave={true}
+      // Feedback depends on selection size for better UX clarity
       toastMessages={{
         one: 'Eksporterte 1 sang',
         all: 'Eksporterte alle sanger',

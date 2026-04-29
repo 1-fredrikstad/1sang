@@ -28,11 +28,15 @@ export default function SectionInput({
   charCount,
   limit,
 }: SectionInputProps) {
+  // Highlight character counter when close to limit
   const isNearLimit = charCount > limit - 100;
 
   return (
     <Field data-invalid={!!error}>
+      {/* Optional label */}
       {label && <FieldLabel className="text-sm text-gray-400">{label}</FieldLabel>}
+
+      {/* Textarea input wrapper */}
       <InputGroup>
         <InputGroupTextarea
           {...register}
@@ -40,6 +44,8 @@ export default function SectionInput({
           aria-invalid={!!error}
           className="focus-visible:ring-1 text-sm"
         />
+
+        {/* Character counter */}
         <span
           className={`absolute bottom-1 right-2 text-sm ${
             isNearLimit ? 'text-red-500' : 'text-gray-400'
@@ -48,7 +54,11 @@ export default function SectionInput({
           {charCount} / {limit}
         </span>
       </InputGroup>
+
+      {/* Validation error */}
       {error && <FieldError errors={[{ message: error }]} />}
+
+      {/* Optional remove button */}
       {removable && onRemove && (
         <div className="flex flex-row">
           <Button

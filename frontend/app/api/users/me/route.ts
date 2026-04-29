@@ -6,6 +6,7 @@ export async function GET(req: Request) {
     const authHeader = req.headers.get('authorization');
     const token = authHeader?.replace(/^Bearer\s+/i, '');
 
+    // No token provided → treat as anonymous user instead of error
     if (!token) {
       return NextResponse.json(
         {

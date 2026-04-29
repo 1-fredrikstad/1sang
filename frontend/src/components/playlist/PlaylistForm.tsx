@@ -36,6 +36,7 @@ export default function PlaylistForm({
   initialValues,
   mode = 'create',
 }: PlaylistFormProps) {
+  // form setup with react-hook-form
   const {
     register,
     handleSubmit,
@@ -54,11 +55,19 @@ export default function PlaylistForm({
     },
   });
 
+  // watch public/private toggle
   const isPublic = useWatch({ name: 'isPublic', control });
+
+  // modal state for selecting songs
   const [open, setOpen] = useState(false);
+
+  // password visibility toggle
   const [showPassword, setShowPassword] = useState(false);
+
+  // online status (used to disable public playlists offline)
   const isOnline = useOnlineStatus();
 
+  // watch selected songs in playlist
   const songsInPlaylist = useWatch({
     name: 'songsInPlaylist',
     control,
@@ -66,11 +75,13 @@ export default function PlaylistForm({
 
   const hasSongs = songsInPlaylist.length > 0;
 
+  // fetch songs for picker modal
   const { data: songs } = useSongs({
     maxAgeMins: 5,
     syncOnMount: true,
   });
 
+  // normalize + submit handler
   const handleFormSubmit: SubmitHandler<PlaylistInputs> = async (data) => {
     const normalized = {
       ...data,
@@ -86,12 +97,13 @@ export default function PlaylistForm({
       onSubmit={handleSubmit(handleFormSubmit)}
       className="flex flex-col m-4 mx-auto gap-1 max-w-2xl mb-0"
     >
+      {/* header */}
       <h1 className="text-xl mb-2">
         {mode === 'edit' ? 'Rediger spilleliste' : 'Lag ny spilleliste'}
       </h1>
 
       <FieldGroup className="mb-5">
-        {/* Title */}
+        {/* title input */}
         <Field data-invalid={!!errors.title}>
           <FieldLabel htmlFor="playlist-title">Tittel*</FieldLabel>
           <Input
@@ -105,7 +117,7 @@ export default function PlaylistForm({
           {errors.title && <FieldError errors={[errors.title]} />}
         </Field>
 
-        {/* Password fields */}
+        {/* password fields (create vs edit mode) */}
         {mode === 'create' ? (
           <>
             <Field data-invalid={!!errors.password}>
@@ -119,10 +131,12 @@ export default function PlaylistForm({
                   </MobileTooltip>
                 </span>
               </FieldLabel>
+
               <FieldDescription>
-                NB! Husk passordet. Du kommer til å trenge det senere for å redigere og slette
-                spillelisten.
+                NB! Husk passordet. Det trengs for å redigere eller slette spillelisten senere.
               </FieldDescription>
+
+              {/* password input with toggle visibility */}
               <div className="relative">
                 <Input
                   id="playlist-password"
@@ -149,8 +163,10 @@ export default function PlaylistForm({
             </Field>
           </>
         ) : (
+          // edit mode: optional new password
           <Field data-invalid={!!errors.newPassword}>
             <FieldLabel htmlFor="playlist-new-password">Nytt passord (valgfritt)</FieldLabel>
+
             <div className="relative">
               <Input
                 id="playlist-new-password"
@@ -169,11 +185,12 @@ export default function PlaylistForm({
                 )}
               </button>
             </div>
+
             {errors.newPassword && <FieldError errors={[errors.newPassword]} />}
           </Field>
         )}
 
-        {/* Songlist */}
+        {/* song selection section */}
         <Field>
           <FieldLabel>
             <span className="flex items-center gap-2">
@@ -181,11 +198,12 @@ export default function PlaylistForm({
               <MobileTooltip
                 trigger={<QuestionMarkCircleIcon className="h-6 w-6 text-foreground" />}
               >
-                Du må legge til minst én sang
+                Minst én sang må velges
               </MobileTooltip>
             </span>
           </FieldLabel>
 
+          {/* preview selected songs */}
           {songsInPlaylist.length > 0 && (
             <ul className="flex flex-col gap-2 mt-2">
               {songsInPlaylist.map((song) => (
@@ -196,12 +214,14 @@ export default function PlaylistForm({
             </ul>
           )}
 
+          {/* open song picker modal */}
           <div className="mt-2">
             <Button type="button" onClick={() => setOpen(true)}>
               {hasSongs ? 'Endre sanger' : 'Velg sanger'}
             </Button>
           </div>
 
+          {/* modal for selecting songs */}
           <PlaylistSongPickerModal
             songs={songs ?? []}
             open={open}
@@ -211,7 +231,7 @@ export default function PlaylistForm({
           />
         </Field>
 
-        {/* Public switch */}
+        {/* public/private toggle */}
         <Field className="flex flex-row">
           <FieldLabel>
             <span className="flex items-center gap-2">
@@ -219,8 +239,7 @@ export default function PlaylistForm({
               <MobileTooltip
                 trigger={<QuestionMarkCircleIcon className="h-6 w-6 text-foreground" />}
               >
-                Velg om du vil gjøre spillelisten privat eller offentlig. Bare du kan se den om den
-                er privat
+                Offentlig = synlig for andre, privat = kun deg
               </MobileTooltip>
             </span>
           </FieldLabel>
@@ -232,14 +251,16 @@ export default function PlaylistForm({
             disabled={!isOnline || isSubmitting}
             className="cursor-pointer"
           />
+
+          {/* offline warning */}
           {!isOnline && (
             <FieldDescription>
-              Du er offline. Gå online for å legge til offentlige spillelister.
+              Du er offline. Koble til internett for å lage offentlige spillelister.
             </FieldDescription>
           )}
         </Field>
 
-        {/* Duration */}
+        {/* duration only for public playlists */}
         {isPublic && (
           <Field>
             <FieldLabel>
@@ -248,10 +269,11 @@ export default function PlaylistForm({
                 <MobileTooltip
                   trigger={<QuestionMarkCircleIcon className="h-6 w-6 text-foreground" />}
                 >
-                  Hvor lenge spillelisten skal eksistere før den slettes automatisk
+                  Hvor lenge spillelisten er tilgjengelig før automatisk sletting
                 </MobileTooltip>
               </span>
             </FieldLabel>
+
             <Select
               defaultValue="604800"
               onValueChange={(value) => setValue('duration', Number(value))}
@@ -270,7 +292,7 @@ export default function PlaylistForm({
         )}
       </FieldGroup>
 
-      {/* Submit and reset */}
+      {/* submit/reset actions */}
       <div className="flex gap-4 mt-4">
         <SubmitButton
           submitLabel={mode === 'edit' ? 'Lagre endringer' : 'Opprett spilleliste'}

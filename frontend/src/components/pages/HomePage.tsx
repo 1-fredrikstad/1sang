@@ -18,16 +18,23 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  // Local input state for search field
   const [value, setValue] = useState(searchParams.get('q') ?? '');
+
+  // Debounced version to avoid recalculating search on every keystroke
   const debouncedQuery = useDebounce(value, 300);
 
+  // Global tag filter state
   const { selectedTags, setSelectedTags } = useTagFilter();
 
+  // Used to avoid rewriting URL on initial render
   const isFirstRender = useRef(true);
 
+  // Controls skeleton visibility delay
   const [showSkeleton, setShowSkeleton] = useState(true);
 
   useEffect(() => {
+    // Delay removing skeleton slightly for smoother UX
     if (!isLoading) {
       const timeout = setTimeout(() => setShowSkeleton(false), 300);
       return () => clearTimeout(timeout);
@@ -35,6 +42,7 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
   }, [isLoading]);
 
   useEffect(() => {
+    // Skip updating URL on first render
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
@@ -42,10 +50,9 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
 
     const params = new URLSearchParams();
 
+    // Sync search query to URL (?q=...)
     if (debouncedQuery.trim()) {
       params.set('q', debouncedQuery.trim());
-    } else {
-      params.delete('q');
     }
 
     const qs = params.toString();
@@ -54,19 +61,22 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
     window.history.replaceState(null, '', newUrl);
   }, [debouncedQuery, pathname]);
 
-  // Text search (debounced), for both title and lyrics
+  // Full-text search across title + lyrics (client-side)
   const searchedSongs = useMemo(() => {
     return searchSongs(songs, debouncedQuery);
   }, [songs, debouncedQuery]);
 
-  // Get songs matching selected tags from IndexedDB (Dexie)
+  // Lookup matching song IDs from IndexedDB based on selected tags
   const matchingSongIds =
     useLiveQuery(async () => {
       if (selectedTags.length === 0) return [];
 
       const selectedTagIds = selectedTags.map((tag) => tag.id);
+
+      // Get all song-tag relations for selected tags
       const relations = await db.song_tags.where('tag_id').anyOf(selectedTagIds).toArray();
 
+      // Deduplicate song IDs
       return [...new Set(relations.map((relation) => relation.song_id))];
     }, [selectedTags]) ?? [];
 
@@ -76,16 +86,14 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
       ? searchedSongs
       : searchedSongs.filter((item) => matchingSongIds.includes(item.song.id));
 
-  // Sort songs
+  // Sort by score first, then Norwegian alphabetical order
   const sortedSongs = useMemo(() => {
     return [...filteredSongs].sort((a, b) => {
-      // 1. Score first
+      // Primary sort: relevance score
       const scoreDiff = b.score - a.score;
       if (scoreDiff !== 0) return scoreDiff;
 
-      // 2. fallback: alphabetical sort
-      // 'no' - gives correct norwegian sorting (æ, ø, å)
-      // sensitivity 'base' - lowercase and uppercase doesn't affect sorting
+      // Secondary sort: stable alphabetical ordering
       return (a.song.title ?? '').trim().localeCompare((b.song.title ?? '').trim(), 'no', {
         sensitivity: 'base',
         numeric: true,
@@ -99,11 +107,13 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
     <main>
       <h1>Alle sanger</h1>
 
-      {/* Logic for delayed spinner */}
+      {/* Skeleton shown while initial loading state is active */}
       {showSkeleton ? (
         <div className="flex flex-col gap-4 mt-1">
           <Skeleton className="h-10 w-full rounded-md" />
           <Skeleton className="h-10 w-64 rounded-md" />
+
+          {/* List skeleton placeholders */}
           <div className="flex flex-col gap-2 mt-2">
             {[...Array(5)].map((_, idx) => (
               <Skeleton key={idx} className="h-16 w-full rounded-md" />
@@ -112,8 +122,10 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
         </div>
       ) : (
         <>
+          {/* Search input */}
           <SearchField value={value} onChange={setValue} />
 
+          {/* Tag filter dropdown */}
           <div className="mb-10 w-fit">
             <TagSelect
               value={selectedTags}
@@ -122,10 +134,12 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
             />
           </div>
 
+          {/* Result count (only shown when searching) */}
           {value.trim() && (
             <p className="mb-3 text-sm text-opacity-80">{filteredSongs.length} treff</p>
           )}
 
+          {/* Empty state handling */}
           {sortedSongs.length === 0 ? (
             <p className="text-sm text-opacity-80">
               {value.trim() && selectedTags.length > 0
@@ -137,6 +151,7 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
                     : 'Ingen sanger funnet.'}
             </p>
           ) : (
+            // Song list
             <ul className="flex flex-col gap-2">
               {sortedSongs.map((item: ScoredSong) => (
                 <li key={item.song.id}>

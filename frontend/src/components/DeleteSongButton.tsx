@@ -36,16 +36,24 @@ export function DeleteSongButton({
   onDeletingChange,
 }: Props) {
   const router = useRouter();
+
+  // Tracks delete state to prevent duplicate requests and disable UI
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Used to block deletion when offline
   const isOnline = useOnlineStatus();
+
   const supabase = createClient();
 
+  // Performs actual delete request (server + local DB cleanup)
   const performDelete = async () => {
+    // Prevent deletion when offline
     if (!isOnline) {
       toast.error('Du er offline. Gå online for å slette sangen.');
       return;
     }
 
+    // Guard against invalid input
     if (!songId) {
       toast.error('Mangler sang-ID');
       return;
@@ -55,6 +63,7 @@ export function DeleteSongButton({
       setIsDeleting(true);
       onDeletingChange?.(true);
 
+      // Get auth session for API authorization
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -65,6 +74,7 @@ export function DeleteSongButton({
         headers.Authorization = `Bearer ${session.access_token}`;
       }
 
+      // Call backend delete endpoint
       const res = await fetch(`/api/songs/${encodeURIComponent(songId)}`, {
         method: 'DELETE',
         headers,
@@ -72,12 +82,17 @@ export function DeleteSongButton({
 
       const body = await res.json().catch(() => null);
 
+      // Handle server-side errors
       if (!res.ok) {
         throw new Error(body?.error ?? 'Sletting feilet');
       }
 
+      // Remove song locally from IndexedDB cache
       await db.songs.delete(songId);
+
       toast.success('Sangen ble slettet');
+
+      // Redirect after deletion
       router.replace(redirectTo);
     } catch (e) {
       console.error(e);
@@ -90,6 +105,7 @@ export function DeleteSongButton({
 
   return (
     <AlertDialog>
+      {/* Trigger button that opens confirmation dialog */}
       <AlertDialogTrigger asChild>
         <Button
           disabled={isDeleting}
@@ -104,13 +120,17 @@ export function DeleteSongButton({
       <AlertDialogPortal>
         <AlertDialogContent size="sm">
           <AlertDialogHeader>
+            {/* Confirmation title */}
             <AlertDialogTitle>{confirmText}</AlertDialogTitle>
           </AlertDialogHeader>
 
           <AlertDialogFooter>
+            {/* Cancel action */}
             <AlertDialogCancel variant="outline" aria-label="Avbryt" disabled={isDeleting}>
               Avbryt
             </AlertDialogCancel>
+
+            {/* Confirm destructive action */}
             <AlertDialogAction
               variant="destructive"
               onClick={performDelete}

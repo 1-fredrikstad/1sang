@@ -1,5 +1,5 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest';
-import { POST } from '../../../app/api/song_suggestions/route';
+import { POST } from '@/app/api/song_suggestions/route';
 
 describe('POST /api/song_suggestions', () => {
   beforeEach(() => {

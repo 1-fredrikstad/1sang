@@ -1,3 +1,6 @@
+// PlaylistSongPickerModal
+// Modal used to add/remove songs from a playlist
+
 'use client';
 
 import { Song } from '@/src/lib/db';
@@ -16,10 +19,12 @@ export default function PlaylistSongPickerModal({
   currentSongsInPlaylist: Song[];
   setSongsInPlaylist: (songs: Song[]) => void;
 }) {
+  // save selection back to parent state
   const handleSave = (selectedSongs: Song[]) => {
     setSongsInPlaylist(selectedSongs);
   };
 
+  // Track editing mode for text selection
   const isEditing = currentSongsInPlaylist.length > 0;
 
   return (

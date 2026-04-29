@@ -1,3 +1,6 @@
+// SongPickerModal
+// Common modal used for PlaylistSongPickerModal and ExportLatexModal
+
 'use client';
 
 import {
@@ -15,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import SongList from './playlist/SongList';
 import { useSongPicker } from '@/src/hooks/useSongPicker';
 import { SearchField } from './SearchField';
-import { ReactNode, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 type SongPickerModalProps = {
@@ -25,7 +28,6 @@ type SongPickerModalProps = {
   onOpenChange: (open: boolean) => void;
   title: string;
   description: string;
-  children?: ReactNode;
   onSave?: (selectedSongs: Song[]) => void;
   saveButtonLabel?: string | ((selectedCount: number) => string);
   showToastOnSave?: boolean;
@@ -44,15 +46,15 @@ export default function SongPickerModal({
   onOpenChange,
   title,
   description,
-  children,
   onSave,
   saveButtonLabel,
   showToastOnSave = false,
   toastMessages,
   defaultTab,
 }: SongPickerModalProps) {
-  const [selectedSongs, setSelectedSongs] = useState<Song[]>(initialSongs);
+  const [selectedSongs, setSelectedSongs] = useState<Song[]>(initialSongs ?? []);
 
+  // Encapsulates filtering, selection state, and helpers for the song picker UI
   const songPicker = useSongPicker(songs, selectedSongs, setSelectedSongs, open);
 
   const {
@@ -69,8 +71,9 @@ export default function SongPickerModal({
   } = songPicker;
 
   const handleOpenChange = (newOpen: boolean) => {
-    if (!newOpen) setSelectedSongs([]);
-    if (newOpen) setSelectedSongs(initialSongs);
+    if (newOpen) {
+      setSelectedSongs(initialSongs ?? []);
+    }
     onOpenChange(newOpen);
   };
 
@@ -107,7 +110,7 @@ export default function SongPickerModal({
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
-        {/* Toolbar */}
+        {/* Toolbar - search + bulk actions */}
         <div className="flex flex-col border-b pb-3">
           <SearchField value={search} onChange={setSearch} />
 
@@ -132,11 +135,13 @@ export default function SongPickerModal({
                 Fjern alle
               </Button>
             </div>
+
+            {/* Live selection counter */}
             <span className="text-xs text-muted-foreground">{selectedCount} valgt</span>
           </div>
         </div>
 
-        {/* Song list */}
+        {/* Scrollable song list */}
         <div className="flex-1 overflow-y-auto pr-2 mt-1">
           <SongList
             songs={filteredSongs}
@@ -148,7 +153,7 @@ export default function SongPickerModal({
           />
         </div>
 
-        {/* Footer */}
+        {/* Footer actions*/}
         <DialogFooter className="flex flex-row justify-end">
           <DialogClose asChild>
             <Button variant="destructive" onClick={handleCancel}>

@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { GET } from '../../../app/api/users/me/route';
+import { GET } from '@/app/api/users/me/route';
 import { checkAdminAccess } from '@/src/lib/supabase/isAdmin';
 
 vi.mock('@/src/lib/supabase/isAdmin', () => ({

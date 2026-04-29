@@ -1,3 +1,6 @@
+// SongList component
+// Displays songs in tabs (all vs selected) with sorting and toggle support
+
 import { Song } from '@/src/lib/db';
 import { SongBox } from '../songs/SongBox';
 import { Spinner } from '@/components/ui/spinner';
@@ -22,15 +25,15 @@ export default function SongList({
   isAdded,
   defaultTab = 'all',
 }: PlaylistSongListProps) {
-  // Sort by score first, then alphabetical using Norwegian locale (handles æ, ø, å correctly)
+  // sort songs by score first, then alphabetically (Norwegian locale)
   const sortedSongs = useMemo(() => {
     return [...(songs ?? [])].sort((a, b) => {
       const scoreDiff = b.score - a.score;
 
-      // Higher score = higher priority
+      // higher score = higher priority
       if (scoreDiff !== 0) return scoreDiff;
 
-      // Fallback: alphabetical sorting
+      // fallback alphabetical sorting (handles æ, ø, å)
       return (a.song.title ?? '').trim().localeCompare((b.song.title ?? '').trim(), 'no', {
         sensitivity: 'base',
         numeric: true,
@@ -38,13 +41,17 @@ export default function SongList({
     });
   }, [songs]);
 
+  // error state
   if (error) return <div>Error: {error.message}</div>;
+
+  // initial loading fallback
   if (!songs) return <Spinner message="Laster data" />;
 
+  // split songs into selected and available
   const addedSongs = songs.filter((item) => isAdded(item.song.id));
   const availableSongs = sortedSongs.filter((item) => !isAdded(item.song.id));
 
-  // Function to show a list of songs
+  // reusable renderer for song list
   const renderList = (songs: ScoredSong[]) =>
     songs.map((item: ScoredSong) => (
       <li key={item.song.id} className="flex items-center gap-2">
@@ -63,23 +70,27 @@ export default function SongList({
 
   return (
     <main>
+      {/* loading indicator */}
       {isLoading && <Spinner message="Henter sanger" />}
 
       <Tabs defaultValue={defaultTab}>
-        {/* Tabs navigation */}
+        {/* tab navigation */}
+
         <div className="sticky top-0 z-10 bg-popover isolate">
           <TabsList className="mb-2">
+            {/* all songs tab */}
             <TabsTrigger value="all" className="dark:border-none">
               Alle sanger ({availableSongs.length})
             </TabsTrigger>
 
+            {/* selected songs tab */}
             <TabsTrigger value="selected" className="dark:border-none">
               Valgte sanger ({addedSongs.length})
             </TabsTrigger>
           </TabsList>
         </div>
 
-        {/* All songs tab */}
+        {/* all songs list */}
         <TabsContent value="all">
           <ul className="flex flex-col gap-2 p-2">
             {availableSongs.length > 0 ? (
@@ -90,7 +101,7 @@ export default function SongList({
           </ul>
         </TabsContent>
 
-        {/* Selected songs tab */}
+        {/* selected songs list */}
         <TabsContent value="selected">
           <ul className="flex flex-col gap-2 p-2">
             {addedSongs.length > 0 ? (

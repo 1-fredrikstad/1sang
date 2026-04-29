@@ -12,7 +12,6 @@ type TableName =
   | 'tags'
   | 'playlist_items'
   | 'song_tags'
-  | 'song_links'
   | 'song_suggestions'
   | 'users';
 

@@ -18,6 +18,10 @@ export default function LogoutButton() {
   const { logout } = useAuth();
   const router = useRouter();
 
+  // Handles logout flow:
+  // 1. calls auth logout
+  // 2. shows error if it fails
+  // 3. always redirects to /admin after attempt
   const handleLogout = async () => {
     try {
       await logout();
@@ -31,6 +35,7 @@ export default function LogoutButton() {
 
   return (
     <AlertDialog>
+      {/* Button that opens confirmation dialog */}
       <AlertDialogTrigger asChild>
         <Button
           variant="destructive"
@@ -47,10 +52,14 @@ export default function LogoutButton() {
           <AlertDialogHeader>
             <AlertDialogTitle>Er du sikker på at du vil logge ut?</AlertDialogTitle>
           </AlertDialogHeader>
+
           <AlertDialogFooter>
+            {/* Cancel just closes dialog, no side effects */}
             <AlertDialogCancel variant="outline" aria-label="Avbryt">
               Avbryt
             </AlertDialogCancel>
+
+            {/* Confirm triggers actual logout logic */}
             <AlertDialogAction
               variant="destructive"
               onClick={handleLogout}
