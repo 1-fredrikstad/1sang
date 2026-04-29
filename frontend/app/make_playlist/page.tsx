@@ -19,8 +19,8 @@ export default function MakePlaylistPage() {
       // Success message if playlist was made successfully, else warning if not synced correctly
       if (result.type === 'public') {
         toast.success('Offentlig spilleliste opprettet!');
-      } else if (result.type === 'pending') {
-        toast.warning('Lagret lokalt – vil synkroniseres når du er online');
+        // } else if (result.type === 'pending') {
+        //   toast.warning('Lagret lokalt – vil synkroniseres når du er online');
       } else {
         toast.success('Privat spilleliste lagret lokalt!');
       }
