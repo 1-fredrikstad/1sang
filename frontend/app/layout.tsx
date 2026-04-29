@@ -11,11 +11,9 @@ import { HeaderColorProvider } from '@/src/context/HeaderColorProvider';
 import { TagFilterProvider } from '@/src/context/TagFilterContext';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
-import { getCookie } from 'cookies-next/server';
-import { cookies } from 'next/headers';
-import { HeaderColor, HEADERCOLOR_OPTIONS } from '@/src/types/theme';
 import GlobalSync from '@/src/components/global/GlobalSync';
 import ServiceWorkerRegister from '@/src/components/ServiceWorkerRegister';
+
 import { Toaster } from 'sonner';
 
 const geistSans = Geist({
@@ -43,13 +41,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookie = await getCookie('headerColor', { cookies });
-
-  const headerColor = HEADERCOLOR_OPTIONS.map((o) => o.value).includes(cookie as HeaderColor)
-    ? (cookie as HeaderColor)
-    : undefined;
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
