@@ -12,14 +12,18 @@ export default function Campfire({ message }: Props) {
 
   return (
     <main className="flex flex-col mx-auto items-center justify-center gap-5 text-center min-h-[50vh]">
+      {/* Text section: main message + dynamic status message */}
       <section>
         <h1 className="mb-0!">Du har gått deg vill i skogen</h1>
         <h2 className="mt-0 text-lg text-muted-foreground">{message}</h2>
       </section>
+
+      {/* Interactive campfire area */}
       <section
         className="flex flex-col items-center leading-none cursor-pointer mt-7"
         onClick={trigger}
       >
+        {/* Fire animation element (changes class based on boost state) */}
         <Image
           src="/campfire/only_fire.svg"
           alt="Fire"
@@ -28,7 +32,9 @@ export default function Campfire({ message }: Props) {
           loading="eager"
           className={`allow-transition transition-all z-5 ${boost ? 'fire-boost' : 'fire-idle'}`}
           unoptimized
-        ></Image>
+        />
+
+        {/* Wood visual under fire */}
         <Image
           src="/campfire/wood2.png"
           alt="Wood"
@@ -37,8 +43,10 @@ export default function Campfire({ message }: Props) {
           loading="eager"
           className="-mt-3 fire-idle"
           unoptimized
-        ></Image>
+        />
       </section>
+
+      {/* Hint text for interaction */}
       <p className="text-muted-foreground italic">Trykk for å legge på ved</p>
     </main>
   );
