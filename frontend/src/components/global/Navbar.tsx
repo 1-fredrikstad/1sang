@@ -96,7 +96,7 @@ export default function Navbar() {
           bg-(--navbar-bottom-bg)
           shadow-[0_-1px_3px_rgba(0,0,0,0.12)]
           dark:shadow-[0_-1px_4px_rgba(255,255,255,0.12)]
-          pb-[env(safe-area-inset-bottom)] md:pb-0
+          pb-[calc(env(safe-area-inset-bottom)+5px)] md:pb-0
         "
         aria-label="Bottom navigation"
       >
