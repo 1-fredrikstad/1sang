@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { createClient } from '@/src/lib/supabase/client';
 import { DeletePlaylistButton } from '@/src/components/playlist/DeletePlaylistButton';
 import BackButton from '@/src/components/BackButton';
+import { Spinner } from '@/components/ui/spinner';
 
 type PlaylistResponse = {
   id: string;
@@ -460,7 +461,8 @@ export default function EditPlaylistPage() {
     }
   };
 
-  if (loading || isAdmin === null) return <p className="p-4">Laster...</p>;
+  if (loading || isAdmin === null) return <Spinner message="Laster" />;
+
   if (!initialValues) return <p className="p-4">Fant ikke spilleliste</p>;
 
   return (

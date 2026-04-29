@@ -37,7 +37,7 @@ export default function SongList({
   }, [songs]);
 
   if (error) return <div>Error: {error.message}</div>;
-  if (!songs) return <div>Laster data...</div>;
+  if (!songs) return <Spinner message="Laster data" />;
 
   const addedSongs = songs.filter((item) => isAdded(item.song.id));
   const availableSongs = sortedSongs.filter((item) => !isAdded(item.song.id));
