@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { GET } from '../../../app/api/playlists/[id]/songs/route';
+import { GET } from '@/app/api/playlists/[id]/songs/route';
 
 vi.mock('@/src/lib/supabase/isAdmin', () => ({
   checkAdminAccess: vi.fn(),
@@ -10,7 +10,7 @@ describe('playlists [id] songs route', () => {
     vi.clearAllMocks();
     vi.unstubAllGlobals();
 
-    process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.supabasse.no';
+    process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.supabase.no';
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'anon-key';
   });
 
