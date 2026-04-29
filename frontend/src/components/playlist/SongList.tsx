@@ -11,6 +11,7 @@ export type PlaylistSongListProps = {
   error?: Error | null;
   onToggleSong: (song: Song) => void;
   isAdded: (id: string) => boolean;
+  defaultTab?: 'all' | 'selected';
 };
 
 export default function SongList({
@@ -19,6 +20,7 @@ export default function SongList({
   error,
   onToggleSong,
   isAdded,
+  defaultTab = 'all',
 }: PlaylistSongListProps) {
   // Sort by score first, then alphabetical using Norwegian locale (handles æ, ø, å correctly)
   const sortedSongs = useMemo(() => {
@@ -63,7 +65,7 @@ export default function SongList({
     <main>
       {isLoading && <Spinner message="Henter sanger" />}
 
-      <Tabs defaultValue="all">
+      <Tabs defaultValue={defaultTab}>
         {/* Tabs navigation */}
         <div className="sticky top-0 z-10 bg-popover isolate">
           <TabsList className="mb-2">
