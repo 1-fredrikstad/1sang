@@ -125,10 +125,17 @@ export const AuthProviderInner = ({ children }: { children: ReactNode }) => {
       isMounted.current = false;
       listener.subscription.unsubscribe();
     };
-  }, [[isCypressAdmin]]);
+  }, [isCypressAdmin]);
 
   // Logout handler clears session and resets state
   const logout = async () => {
+    if (isCypressAdmin) {
+      setUser(null);
+      setIsAdmin(false);
+      setIsSuperuser(false);
+      return;
+    }
+
     const supabase = createClient();
     await supabase.auth.signOut();
 
