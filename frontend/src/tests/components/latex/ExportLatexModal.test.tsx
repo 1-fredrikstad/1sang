@@ -1,8 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ExportLatexModal from '@/src/components/latex/ExportLatexModal';
 
+// Mocks
 const { mockUseSongPicker } = vi.hoisted(() => ({
   mockUseSongPicker: vi.fn(),
 }));
@@ -41,7 +42,7 @@ describe('ExportLatexModal', () => {
     mockUseSongPicker.mockReturnValue(defaultPickerState);
   });
 
-  it('calls generateLatex with selected songs and total count on export', async () => {
+  test('calls generateLatex with selected songs and total count on export', async () => {
     const user = userEvent.setup();
     const generateLatex = vi.fn();
 
@@ -59,7 +60,7 @@ describe('ExportLatexModal', () => {
     expect(generateLatex).toHaveBeenCalledWith(expect.any(Array), mockSongs.length);
   });
 
-  it('shows selected count in export button label', () => {
+  test('shows selected count in export button label', () => {
     mockUseSongPicker.mockReturnValue({ ...defaultPickerState, selectedCount: 3 });
 
     render(
@@ -74,7 +75,7 @@ describe('ExportLatexModal', () => {
     expect(screen.getByRole('button', { name: /eksporter \(3\)/i })).toBeInTheDocument();
   });
 
-  it('disables export button when no songs selected', () => {
+  test('disables export button when no songs selected', () => {
     mockUseSongPicker.mockReturnValue({
       ...defaultPickerState,
       selectedCount: 0,

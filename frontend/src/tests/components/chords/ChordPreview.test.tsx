@@ -13,14 +13,14 @@ describe('ChordPreview', () => {
         sections={[
           {
             label: 'Vers 1',
-            value: 'hello world',
+            value: 'hei verden',
             onChange,
           },
         ]}
       />
     );
 
-    await user.click(screen.getByText('hello'));
+    await user.click(screen.getByText('hei'));
     const chordButton = await screen.findByRole('button', { name: 'C' });
 
     await user.click(chordButton);
@@ -36,14 +36,14 @@ describe('ChordPreview', () => {
         sections={[
           {
             label: 'Vers 1',
-            value: 'hello world',
+            value: 'hei verden',
             onChange: vi.fn(),
           },
         ]}
       />
     );
 
-    await user.click(screen.getByText('hello'));
+    await user.click(screen.getByText('hei'));
     expect(screen.getByPlaceholderText('Egen akkord')).toBeInTheDocument();
 
     await user.click(document.body);

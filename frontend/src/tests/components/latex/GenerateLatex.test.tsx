@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { generateLatex } from '../../../components/latex/GenerateLatex';
 
 describe('GenerateLatex', () => {
@@ -19,7 +19,7 @@ describe('GenerateLatex', () => {
     global.URL.revokeObjectURL = vi.fn();
   });
 
-  it('creates a download link and clicks it', () => {
+  test('creates a download link and clicks it', () => {
     const anchor = document.createElement('a');
     const clickSpy = vi.spyOn(anchor, 'click');
 
@@ -31,7 +31,7 @@ describe('GenerateLatex', () => {
     expect(clickSpy).toHaveBeenCalled();
   });
 
-  it('uses correct filename when not all songs', () => {
+  test('uses correct filename when not all songs', () => {
     const anchor = document.createElement('a');
     vi.spyOn(document, 'createElement').mockReturnValue(anchor);
 
@@ -40,7 +40,7 @@ describe('GenerateLatex', () => {
     expect(anchor.download).toBe('sanger_1.tex');
   });
 
-  it('uses "sanger_alle" when all songs are selected', () => {
+  test('uses "sanger_alle" when all songs are selected', () => {
     const anchor = document.createElement('a');
     vi.spyOn(document, 'createElement').mockReturnValue(anchor);
 

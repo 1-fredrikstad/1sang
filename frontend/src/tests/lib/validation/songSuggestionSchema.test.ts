@@ -91,16 +91,16 @@ describe('getFieldValidation', () => {
 describe('normalizeSongInput', () => {
   test('trims whitespace from fields', () => {
     const input = {
-      title: ' My Song  ',
-      melody: ' Traditional   ',
+      title: ' Min Sang  ',
+      melody: ' Tradisjonell   ',
       author: '   Justin Bieber',
       verses: ['  Dette er en gyldig sangtekst med mer enn tjue tegn.   '],
     };
     const result = normalizeSongInput(input);
 
     expect(result).toEqual({
-      title: 'My Song',
-      melody: 'Traditional',
+      title: 'Min Sang',
+      melody: 'Tradisjonell',
       author: 'Justin Bieber',
       chorus: '',
       verses: ['Dette er en gyldig sangtekst med mer enn tjue tegn.'],

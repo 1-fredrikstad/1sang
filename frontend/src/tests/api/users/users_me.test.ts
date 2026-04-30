@@ -29,7 +29,7 @@ describe('GET /api/users/me', () => {
 
   test('returns admin status when token is provided', async () => {
     vi.mocked(checkAdminAccess).mockResolvedValue({
-      userId: 'user-123',
+      userId: 'bruker-123',
       role: 'admin',
       isAdmin: true,
       isSuperuser: false,
@@ -48,7 +48,7 @@ describe('GET /api/users/me', () => {
     expect(res.status).toBe(200);
     expect(body).toEqual({
       ok: true,
-      userId: 'user-123',
+      userId: 'bruker-123',
       role: 'admin',
       isAdmin: true,
       isSuperuser: false,
@@ -74,7 +74,7 @@ describe('GET /api/users/me', () => {
 
   test('returns regular user status', async () => {
     vi.mocked(checkAdminAccess).mockResolvedValue({
-      userId: 'user-123',
+      userId: 'bruker-123',
       role: 'regular',
       isAdmin: false,
       isSuperuser: false,
@@ -93,7 +93,7 @@ describe('GET /api/users/me', () => {
     expect(res.status).toBe(200);
     expect(body).toEqual({
       ok: true,
-      userId: 'user-123',
+      userId: 'bruker-123',
       role: 'regular',
       isAdmin: false,
       isSuperuser: false,
@@ -102,7 +102,7 @@ describe('GET /api/users/me', () => {
 
   test('returns admin user status', async () => {
     vi.mocked(checkAdminAccess).mockResolvedValue({
-      userId: 'user-123',
+      userId: 'bruker-123',
       role: 'admin',
       isAdmin: true,
       isSuperuser: false,
@@ -121,7 +121,7 @@ describe('GET /api/users/me', () => {
     expect(res.status).toBe(200);
     expect(body).toEqual({
       ok: true,
-      userId: 'user-123',
+      userId: 'bruker-123',
       role: 'admin',
       isAdmin: true,
       isSuperuser: false,
@@ -130,7 +130,7 @@ describe('GET /api/users/me', () => {
 
   test('returns superuser status', async () => {
     vi.mocked(checkAdminAccess).mockResolvedValue({
-      userId: 'user-123',
+      userId: 'bruker-123',
       role: 'superuser',
       isAdmin: true,
       isSuperuser: true,
@@ -149,7 +149,7 @@ describe('GET /api/users/me', () => {
     expect(res.status).toBe(200);
     expect(body).toEqual({
       ok: true,
-      userId: 'user-123',
+      userId: 'bruker-123',
       role: 'superuser',
       isAdmin: true,
       isSuperuser: true,

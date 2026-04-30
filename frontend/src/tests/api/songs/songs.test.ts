@@ -88,7 +88,7 @@ describe('songs API', () => {
     const req = new Request('http://localhost', {
       method: 'POST',
       body: JSON.stringify({
-        title: 'test song',
+        title: 'testsang',
         tags: [],
       }),
     });
