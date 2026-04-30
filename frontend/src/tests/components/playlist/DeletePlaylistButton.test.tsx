@@ -25,8 +25,8 @@ vi.mock('@/src/lib/db', () => ({
       where: vi.fn(() => ({
         equals: vi.fn(() => ({
           toArray: vi.fn().mockResolvedValue([
-            { playlist_id: 'playlist-1', song_id: 'song-1' },
-            { playlist_id: 'playlist-1', song_id: 'song-2' },
+            { playlist_id: 'spilleliste-1', song_id: 'sang-1' },
+            { playlist_id: 'spilleliste-1', song_id: 'sang-2' },
           ]),
         })),
       })),
@@ -73,7 +73,7 @@ beforeEach(() => {
 
 describe('DeletePlaylistButton', () => {
   test('renders button', () => {
-    render(<DeletePlaylistButton playlistId="playlist-1" isPublic={false} />);
+    render(<DeletePlaylistButton playlistId="spilleliste-1" isPublic={false} />);
     expect(screen.getByRole('button', { name: /slett spilleliste/i })).toBeInTheDocument();
   });
 
@@ -93,7 +93,7 @@ describe('DeletePlaylistButton', () => {
   test('does nothing when user cancels delete dialog', async () => {
     const user = userEvent.setup();
 
-    render(<DeletePlaylistButton playlistId="playlist-1" isPublic={false} />);
+    render(<DeletePlaylistButton playlistId="spilleliste-1" isPublic={false} />);
     await user.click(screen.getByRole('button', { name: /slett spilleliste/i }));
     await user.click(screen.getByRole('button', { name: /avbryt/i }));
 
@@ -104,16 +104,16 @@ describe('DeletePlaylistButton', () => {
 
   test('deletes private playlist locally and redirects on success', async () => {
     const user = userEvent.setup();
-    sessionStorage.setItem('playlist-password-playlist-1', '1234');
+    sessionStorage.setItem('playlist-password-spilleliste-1', '1234');
 
-    render(<DeletePlaylistButton playlistId="playlist-1" isPublic={false} />);
+    render(<DeletePlaylistButton playlistId="spilleliste-1" isPublic={false} />);
     await user.click(screen.getByRole('button', { name: /slett spilleliste/i }));
     await user.click(screen.getByRole('button', { name: /^slett$/i }));
 
     await waitFor(() => {
-      expect(db.playlist_items.delete).toHaveBeenCalledWith(['playlist-1', 'song-1']);
-      expect(db.playlist_items.delete).toHaveBeenCalledWith(['playlist-1', 'song-2']);
-      expect(db.playlists.delete).toHaveBeenCalledWith('playlist-1');
+      expect(db.playlist_items.delete).toHaveBeenCalledWith(['spilleliste-1', 'sang-1']);
+      expect(db.playlist_items.delete).toHaveBeenCalledWith(['spilleliste-1', 'sang-2']);
+      expect(db.playlists.delete).toHaveBeenCalledWith('spilleliste-1');
       expect(mockToastSuccess).toHaveBeenCalledWith('Spilleliste slettet');
       expect(mockReplace).toHaveBeenCalledWith('/');
     });
@@ -124,18 +124,18 @@ describe('DeletePlaylistButton', () => {
 
   test('deletes public playlist through API and redirects on success', async () => {
     const user = userEvent.setup();
-    sessionStorage.setItem('playlist-password-playlist-1', '1234');
+    sessionStorage.setItem('playlist-password-spilleliste-1', '1234');
 
     vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: vi.fn().mockResolvedValue({ ok: true }),
     } as unknown as Response);
 
-    render(<DeletePlaylistButton playlistId="playlist-1" isPublic={true} />);
+    render(<DeletePlaylistButton playlistId="spilleliste-1" isPublic={true} />);
     await user.click(screen.getByRole('button', { name: /slett spilleliste/i }));
     await user.click(screen.getByRole('button', { name: /^slett$/i }));
 
-    expect(global.fetch).toHaveBeenCalledWith('/api/playlists/playlist-1', {
+    expect(global.fetch).toHaveBeenCalledWith('/api/playlists/spilleliste-1', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -165,7 +165,7 @@ describe('DeletePlaylistButton', () => {
       json: vi.fn().mockResolvedValue({ ok: false }),
     } as unknown as Response);
 
-    render(<DeletePlaylistButton playlistId="playlist-1" isPublic={true} />);
+    render(<DeletePlaylistButton playlistId="spilleliste-1" isPublic={true} />);
     await user.click(screen.getByRole('button', { name: /slett spilleliste/i }));
     await user.click(screen.getByRole('button', { name: /^slett$/i }));
 

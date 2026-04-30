@@ -1,6 +1,7 @@
 import BackButton from '@/src/components/BackButton';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { expect, vi, test } from 'vitest';
+import userEvent from '@testing-library/user-event';
 
 const mockRouter = {
   push: vi.fn(),
@@ -29,11 +30,12 @@ describe('BackButton', () => {
     expect(Button).toBeInTheDocument();
   });
 
-  test('calls router.back() when not on /admin', () => {
+  test('calls router.back() when not on /admin', async () => {
+    const user = userEvent.setup();
     mockUsePathname.mockReturnValue('/songs');
 
     render(<BackButton />);
-    fireEvent.click(screen.getByRole('button', { name: /tilbake/i }));
+    await user.click(screen.getByRole('button', { name: /tilbake/i }));
 
     expect(mockRouter.back).toHaveBeenCalled();
     expect(mockRouter.push).not.toHaveBeenCalled();

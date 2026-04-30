@@ -22,12 +22,12 @@ describe('AuthContext', () => {
   test('AuthProvider renders children', () => {
     render(
       <AuthProvider>
-        <div>Child content</div>
+        <div>Innhold</div>
       </AuthProvider>
     );
 
     expect(screen.getByTestId('auth-provider-inner')).toBeInTheDocument();
-    expect(screen.getByText('Child content')).toBeInTheDocument();
+    expect(screen.getByText('Innhold')).toBeInTheDocument();
   });
 
   test('useAuth returns context value inside provider', () => {
@@ -43,7 +43,7 @@ describe('AuthContext', () => {
     render(
       <AuthContext.Provider
         value={{
-          user: { name: 'Test User', email: 'test@example.com', role: 'superuser' },
+          user: { name: 'Testbruker', email: 'test@eksempel.com', role: 'superuser' },
           isAdmin: true,
           isSuperuser: true,
           logout: vi.fn(),
@@ -53,6 +53,6 @@ describe('AuthContext', () => {
       </AuthContext.Provider>
     );
 
-    expect(screen.getByText('test@example.com / true')).toBeInTheDocument();
+    expect(screen.getByText('test@eksempel.com / true')).toBeInTheDocument();
   });
 });

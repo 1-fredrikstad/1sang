@@ -22,7 +22,12 @@ export function Spinner({ className, message, isLoading = true, ...props }: Spin
         )}
         {...props}
       />
-      {message && <p className="text-md opacity-90 loading-dots allow-animation">{message}</p>}
+      {message && (
+        <p className="text-md opacity-90 allow-animation">
+          <span>{message}</span>
+          <span className="loading-dots inline-block w-[1.5ch] text-left" />
+        </p>
+      )}
     </div>
   );
 }

@@ -21,7 +21,7 @@ export default function TagComponent({ tag }: TagProps) {
     <Badge
       variant="secondary"
       onClick={handleClick}
-      className="p-3 mr-1 text-md hover:bg-secondary/80 transition-colors cursor-pointer"
+      className="p-3 mr-1 text-md hover:bg-secondary/80 dark:hover:bg-secondary/60 transition-colors cursor-pointer"
     >
       {tag.name}
     </Badge>

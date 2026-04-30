@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi, describe, it, expect } from 'vitest';
+import { vi, describe, test, expect } from 'vitest';
 import TagComponent from '@/src/components/TagComponent';
 import { TagFilterProvider } from '@/src/context/TagFilterContext';
 import type { Tag } from '@/src/lib/db';
@@ -32,7 +32,7 @@ describe('TagComponent', () => {
     vi.clearAllMocks();
   });
 
-  it('rendrer tag navnet riktig', () => {
+  test('rendrer tag navnet riktig', () => {
     render(
       <TagFilterProvider>
         <TagComponent tag={mockTag as Tag} />
@@ -42,7 +42,7 @@ describe('TagComponent', () => {
     expect(screen.getByText('Internasjonal')).toBeInTheDocument();
   });
 
-  it('kaller setSingleTag og router push når man klikker på taggen', async () => {
+  test('calls setSingleTag and router push when clicking tag', async () => {
     const user = userEvent.setup();
 
     render(
@@ -61,7 +61,7 @@ describe('TagComponent', () => {
     expect(mockPush).toHaveBeenCalledWith('/');
   });
 
-  it('er klikkbar', () => {
+  test('er klikkbar', () => {
     render(
       <TagFilterProvider>
         <TagComponent tag={mockTag as Tag} />

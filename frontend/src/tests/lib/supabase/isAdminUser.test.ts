@@ -26,7 +26,7 @@ describe('checkAdminAccess', () => {
       .fn()
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ id: 'user-1' }),
+        json: async () => ({ id: 'bruker-1' }),
       } as Response)
       .mockResolvedValueOnce({
         ok: true,
@@ -40,7 +40,7 @@ describe('checkAdminAccess', () => {
     const result = await checkAdminAccess('test-token');
 
     expect(result).toEqual({
-      userId: 'user-1',
+      userId: 'bruker-1',
       role: 'regular',
       isAdmin: false,
       isSuperuser: false,
@@ -53,7 +53,7 @@ describe('checkAdminAccess', () => {
     const result = await checkAdminAccess('test-token');
 
     expect(result).toEqual({
-      userId: 'user-1',
+      userId: 'bruker-1',
       role: 'admin',
       isAdmin: true,
       isSuperuser: false,
@@ -66,7 +66,7 @@ describe('checkAdminAccess', () => {
     const result = await checkAdminAccess('test-token');
 
     expect(result).toEqual({
-      userId: 'user-1',
+      userId: 'bruker-1',
       role: 'superuser',
       isAdmin: true,
       isSuperuser: true,
@@ -79,7 +79,7 @@ describe('checkAdminAccess', () => {
     const result = await checkAdminAccess('test-token');
 
     expect(result).toEqual({
-      userId: 'user-1',
+      userId: 'bruker-1',
       role: null,
       isAdmin: false,
       isSuperuser: false,
@@ -107,7 +107,7 @@ describe('checkAdminAccess', () => {
       .fn()
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ id: 'user-1' }),
+        json: async () => ({ id: 'bruker-1' }),
       } as Response)
       .mockResolvedValueOnce({
         ok: false,

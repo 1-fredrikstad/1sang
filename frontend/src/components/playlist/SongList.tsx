@@ -14,6 +14,7 @@ export type PlaylistSongListProps = {
   error?: Error | null;
   onToggleSong: (song: Song) => void;
   isAdded: (id: string) => boolean;
+  defaultTab?: 'all' | 'selected';
 };
 
 export default function SongList({
@@ -22,6 +23,7 @@ export default function SongList({
   error,
   onToggleSong,
   isAdded,
+  defaultTab = 'all',
 }: PlaylistSongListProps) {
   // sort songs by score first, then alphabetically (Norwegian locale)
   const sortedSongs = useMemo(() => {
@@ -43,7 +45,7 @@ export default function SongList({
   if (error) return <div>Error: {error.message}</div>;
 
   // initial loading fallback
-  if (!songs) return <div>Laster data...</div>;
+  if (!songs) return <Spinner message="Laster data" />;
 
   // split songs into selected and available
   const addedSongs = songs.filter((item) => isAdded(item.song.id));
@@ -69,10 +71,11 @@ export default function SongList({
   return (
     <main>
       {/* loading indicator */}
-      {isLoading && <Spinner message="Synkroniserer med databasen" />}
+      {isLoading && <Spinner message="Henter sanger" />}
 
-      <Tabs defaultValue="all">
+      <Tabs defaultValue={defaultTab}>
         {/* tab navigation */}
+
         <div className="sticky top-0 z-10 bg-popover isolate">
           <TabsList className="mb-2">
             {/* all songs tab */}

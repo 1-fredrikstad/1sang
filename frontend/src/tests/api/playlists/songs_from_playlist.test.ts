@@ -51,6 +51,8 @@ describe('playlists [id] songs route', () => {
   });
 
   test('returns Supabase error when API call fails', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
     const playlistId = '1234567891011';
 
     vi.stubGlobal(

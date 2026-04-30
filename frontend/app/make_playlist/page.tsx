@@ -22,7 +22,11 @@ export default function MakePlaylistPage() {
       } else {
         toast.success('Privat spilleliste lagret lokalt!');
       }
-      router.push('/playlists');
+      router.push(
+        result.type === 'public'
+          ? `/playlists/playlist?id=${result.serverId}`
+          : `/playlists/playlist?id=${result.localId}`
+      );
     } catch (err) {
       console.error(err);
       toast.error(err instanceof Error ? err.message : 'Noe gikk galt');
