@@ -8,7 +8,7 @@ describe('ChordPopover', () => {
     const { container } = render(
       <ChordPopover
         isOpen={false}
-        token={{ word: 'hello' }}
+        token={{ word: 'hei' }}
         onClose={vi.fn()}
         onChordSelect={vi.fn()}
       />
@@ -23,7 +23,7 @@ describe('ChordPopover', () => {
     render(
       <ChordPopover
         isOpen
-        token={{ word: 'hello' }}
+        token={{ word: 'hei' }}
         onClose={vi.fn()}
         onChordSelect={onChordSelect}
       />
@@ -41,7 +41,7 @@ describe('ChordPopover', () => {
     render(
       <ChordPopover
         isOpen
-        token={{ word: 'hello' }}
+        token={{ word: 'hei' }}
         onClose={vi.fn()}
         onChordSelect={onChordSelect}
       />
@@ -61,7 +61,7 @@ describe('ChordPopover', () => {
     render(
       <ChordPopover
         isOpen
-        token={{ word: 'hello', chords: ['C', 'G'] }}
+        token={{ word: 'hei', chords: ['C', 'G'] }}
         onClose={onClose}
         onChordSelect={onChordSelect}
       />

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 
 // Mocks
 const db = vi.hoisted(() => ({
@@ -46,7 +46,7 @@ beforeEach(() => {
 });
 
 describe('syncPlaylists', () => {
-  it('skips sync when offline', async () => {
+  test('skips sync when offline', async () => {
     Object.defineProperty(globalThis, 'navigator', {
       value: { onLine: false },
       configurable: true,

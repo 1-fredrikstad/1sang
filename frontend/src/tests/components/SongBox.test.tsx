@@ -52,9 +52,9 @@ beforeEach(() => {
 describe('SongBox', () => {
   const song: Song = {
     id: 'abc-123',
-    slug: 'test-song',
-    title: 'Test Song',
-    verses: ['Some lyrics'],
+    slug: 'test-sang',
+    title: 'Testsang',
+    verses: ['Noe lyrics'],
     has_chords: false,
   };
 
@@ -63,8 +63,8 @@ describe('SongBox', () => {
 
     render(<SongBox song={song} />);
 
-    expect(screen.getByText('Test Song')).toBeInTheDocument();
-    expect(screen.getByRole('link')).toHaveAttribute('href', '/songs?slug=test-song');
+    expect(screen.getByText('Testsang')).toBeInTheDocument();
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/songs?slug=test-sang');
     expect(screen.getByRole('button', { name: /legg til i favoritter/i })).toBeInTheDocument();
   });
 

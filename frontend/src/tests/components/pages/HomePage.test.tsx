@@ -1,15 +1,15 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi, describe, it, expect } from 'vitest';
+import { vi, describe, test, expect } from 'vitest';
 import { HomePage } from '@/src/components/pages/HomePage';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { TagFilterProvider } from '@/src/context/TagFilterContext';
 import type { SongListProps } from '@/src/types/songList';
 
 const songs: SongListProps['songs'] = [
-  { id: '1', title: 'Song A', chorus: '', verses: [''], has_chords: false },
-  { id: '2', title: 'Song B', chorus: '', verses: [''], has_chords: false },
-  { id: '3', title: 'Song C', chorus: '', verses: [''], has_chords: false },
+  { id: '1', title: 'Sang A', chorus: '', verses: [''], has_chords: false },
+  { id: '2', title: 'Sang B', chorus: '', verses: [''], has_chords: false },
+  { id: '3', title: 'Sang C', chorus: '', verses: [''], has_chords: false },
 ];
 
 // Mock dependencies
@@ -42,7 +42,7 @@ vi.mock('@/src/components/TagSelect', () => ({
 }));
 
 describe('HomePage', () => {
-  it('shows all songs when no tag is selected', async () => {
+  test('shows all songs when no tag is selected', async () => {
     vi.mocked(useLiveQuery).mockReturnValue(undefined);
 
     render(
@@ -51,12 +51,12 @@ describe('HomePage', () => {
       </TagFilterProvider>
     );
 
-    expect(await screen.findByText('Song A')).toBeInTheDocument();
-    expect(await screen.findByText('Song B')).toBeInTheDocument();
-    expect(await screen.findByText('Song C')).toBeInTheDocument();
+    expect(await screen.findByText('Sang A')).toBeInTheDocument();
+    expect(await screen.findByText('Sang B')).toBeInTheDocument();
+    expect(await screen.findByText('Sang C')).toBeInTheDocument();
   });
 
-  it('only displays songs matching a tag', async () => {
+  test('only displays songs matching a tag', async () => {
     const user = userEvent.setup();
 
     vi.mocked(useLiveQuery).mockReturnValueOnce(undefined);
@@ -72,13 +72,13 @@ describe('HomePage', () => {
     await user.click(tagButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Song A')).toBeInTheDocument();
-      expect(screen.queryByText('Song B')).not.toBeInTheDocument();
-      expect(screen.getByText('Song C')).toBeInTheDocument();
+      expect(screen.getByText('Sang A')).toBeInTheDocument();
+      expect(screen.queryByText('Sang B')).not.toBeInTheDocument();
+      expect(screen.getByText('Sang C')).toBeInTheDocument();
     });
   });
 
-  it('shows message when no songs match filter', async () => {
+  test('shows message when no songs match filter', async () => {
     const user = userEvent.setup();
 
     vi.mocked(useLiveQuery).mockReturnValue([]);

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, Mock } from 'vitest';
+import { describe, test, expect, vi, Mock } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Login from '@/src/components/pages/LoginPage';
 import { useAuth } from '@/src/context/AuthContext';
@@ -16,7 +16,7 @@ vi.mock('@/components/ui/spinner', () => ({
 vi.mock('@/src/context/AuthContext');
 
 describe('Login component', () => {
-  it('renders Spinner when user is logged in', () => {
+  test('renders Spinner when user is logged in', () => {
     vi.useFakeTimers();
 
     (useAuth as unknown as Mock).mockReturnValue({ user: { name: 'Test' }, isLoading: false });
@@ -28,7 +28,7 @@ describe('Login component', () => {
     vi.useRealTimers();
   });
 
-  it('renders login form when not loading and no user', () => {
+  test('renders login form when not loading and no user', () => {
     (useAuth as unknown as Mock).mockReturnValue({ user: null, isLoading: false });
     render(<Login />);
     expect(screen.getByText('Admin innlogging')).toBeInTheDocument();

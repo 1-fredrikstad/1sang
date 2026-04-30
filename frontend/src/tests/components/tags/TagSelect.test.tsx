@@ -51,7 +51,7 @@ describe('TagSelect', () => {
     );
   });
 
-  test('renders selected tag names in button', () => {
+  test('renders selected tag names in button', async () => {
     render(
       <TagSelect
         value={[
@@ -63,12 +63,20 @@ describe('TagSelect', () => {
     );
 
     expect(screen.getByRole('button', { name: 'Rock, Pop' })).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalled();
+    });
   });
 
-  test('renders placeholder when no tags are selected', () => {
+  test('renders placeholder when no tags are selected', async () => {
     render(<TagSelect value={[]} onChange={mockOnChange} />);
 
     expect(screen.getByRole('button', { name: 'Velg tags' })).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalled();
+    });
   });
 
   test('fetches and renders tags', async () => {

@@ -50,17 +50,17 @@ describe('SongForm', () => {
   test('renders form with initial heading and submit label', async () => {
     render(
       <TooltipProvider>
-        <SongForm heading="Add Song" submitLabel="Save" onSubmit={mockOnSubmit} />
+        <SongForm heading="Legg til sang" submitLabel="Lagre" onSubmit={mockOnSubmit} />
       </TooltipProvider>
     );
-    expect(screen.getByText('Add Song')).toBeInTheDocument();
-    expect(screen.getByText('Save')).toBeInTheDocument();
+    expect(screen.getByText('Legg til sang')).toBeInTheDocument();
+    expect(screen.getByText('Lagre')).toBeInTheDocument();
   });
 
   test('renders default verse input', async () => {
     render(
       <TooltipProvider>
-        <SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />
+        <SongForm heading="Sang" submitLabel="Lagre" onSubmit={mockOnSubmit} />
       </TooltipProvider>
     );
     expect(screen.getByText('Vers 1')).toBeInTheDocument();
@@ -69,7 +69,7 @@ describe('SongForm', () => {
   test('adds a new verse when "+ Legg til vers" is clicked', async () => {
     render(
       <TooltipProvider>
-        <SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />
+        <SongForm heading="Sang" submitLabel="Lagre" onSubmit={mockOnSubmit} />
       </TooltipProvider>
     );
     const addVerseButton = screen.getByText('+ Legg til vers');
@@ -78,7 +78,7 @@ describe('SongForm', () => {
   });
 
   // TODO: tests for adding chorus and submitting - won't work now
-  // it('adds chorus correctly', async () => {
+  // test('adds chorus correctly', async () => {
   //   render(<SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />);
   //   const addChorusButton = screen.getByText('+ Legg til refreng');
   //   await user.click(addChorusButton);
@@ -87,7 +87,7 @@ describe('SongForm', () => {
   //   expect(chorusInput).toBeInTheDocument();
   // });
 
-  // it('calls onSubmit with form data and triggers toast', async () => {
+  // test('calls onSubmit with form data and triggers toast', async () => {
   //   render(<SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />);
 
   //   const titleInput = screen.getByLabelText(/Tittel\*/i);
@@ -106,7 +106,7 @@ describe('SongForm', () => {
   test('resets form when reset button is clicked', async () => {
     render(
       <TooltipProvider>
-        <SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />
+        <SongForm heading="Sang" submitLabel="Lagre" onSubmit={mockOnSubmit} />
       </TooltipProvider>
     );
     const resetButton = screen.getByText('Nullstill');
