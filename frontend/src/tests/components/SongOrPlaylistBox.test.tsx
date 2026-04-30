@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi, expect, describe } from 'vitest';
+import { vi, expect, describe, test } from 'vitest';
 import SongOrPlaylistBox from '@/src/components/SongOrPlaylistBox';
 
 // mock next/navigation
@@ -17,7 +17,7 @@ describe('SongOrPlaylistBox', () => {
     pushMock.mockClear();
   });
 
-  it('navigates to correct routes when buttons are clicked', async () => {
+  test('navigates to correct routes when buttons are clicked', async () => {
     const user = userEvent.setup();
 
     render(<SongOrPlaylistBox onClose={vi.fn()} songChoice="Legg til sang" />);

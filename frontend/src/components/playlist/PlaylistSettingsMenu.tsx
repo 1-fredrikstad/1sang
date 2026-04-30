@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,8 +23,9 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { EllipsisVerticalIcon, PencilIcon } from '@heroicons/react/24/outline';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+
 import { Playlist } from '@/src/lib/db';
 import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
 
@@ -47,6 +50,20 @@ export default function PlaylistSettingsMenu({
 
   // online/offline state (disables editing when offline)
   const isOnline = useOnlineStatus();
+
+  // password visibility toggle
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Track input to give autofocus
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 0);
+    }
+  }, [open]);
 
   // handles navigation to edit page
   const handleEdit = async () => {
@@ -167,14 +184,34 @@ export default function PlaylistSettingsMenu({
             </AlertDialogDescription>
           </AlertDialogHeader>
 
-          {/* password input */}
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Passord"
-            className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2"
-          />
+          {/* password input with toggle view password */}
+          <div className="relative">
+            <input
+              ref={inputRef}
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Passord"
+              className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  void handleVerify();
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
+            >
+              {showPassword ? (
+                <EyeSlashIcon className="h-5 w-5" />
+              ) : (
+                <EyeIcon className="h-5 w-5" />
+              )}
+            </button>
+          </div>
 
           <AlertDialogFooter>
             <AlertDialogCancel className="hover:cursor-pointer" onClick={() => setPassword('')}>

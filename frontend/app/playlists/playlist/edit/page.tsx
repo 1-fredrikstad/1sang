@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { createClient } from '@/src/lib/supabase/client';
 import { DeletePlaylistButton } from '@/src/components/playlist/DeletePlaylistButton';
 import BackButton from '@/src/components/BackButton';
+import { Spinner } from '@/components/ui/spinner';
 
 type PlaylistResponse = {
   id: string;
@@ -303,7 +304,7 @@ export default function EditPlaylistPage() {
 
         sessionStorage.setItem(`playlist-password-${newPlaylistId}`, passwordToUse);
         toast.success('Spilleliste gjort offentlig');
-        router.push('/playlists');
+        router.push(`/playlists?id=${newPlaylistId}`);
         return;
       }
 
@@ -332,7 +333,7 @@ export default function EditPlaylistPage() {
         await replaceLocalPlaylistItems(id, data.songsInPlaylist);
 
         toast.success('Spilleliste oppdatert');
-        router.push('/playlists');
+        router.push(`/playlists/playlist?id=${id}`);
         return;
       }
 
@@ -351,7 +352,7 @@ export default function EditPlaylistPage() {
             data.newPassword && data.newPassword.trim() !== ''
               ? data.newPassword.trim()
               : authPassword,
-          synced: 0,
+          synced: 1,
           is_public: false,
           expires_at: null,
           created_at: new Date().toISOString(),
@@ -382,7 +383,7 @@ export default function EditPlaylistPage() {
 
         sessionStorage.removeItem(`playlist-password-${id}`);
         toast.success('Spilleliste gjort privat og lagret lokalt');
-        router.push('/playlists');
+        router.push(`/playlists/playlist?id=${id}`);
         return;
       }
 
@@ -467,14 +468,15 @@ export default function EditPlaylistPage() {
       if (!isAdmin) {
         sessionStorage.removeItem(`playlist-password-${id}`);
       }
-      router.push('/playlists');
+      router.push(`/playlists/playlist?id=${id}`);
     } catch (err) {
       console.error('Update playlist error:', err);
       toast.error(err instanceof Error ? err.message : 'Kunne ikke oppdatere spilleliste');
     }
   };
 
-  if (loading || isAdmin === null) return <p className="p-4">Laster...</p>;
+  if (loading || isAdmin === null) return <Spinner message="Laster" />;
+
   if (!initialValues) return <p className="p-4">Fant ikke spilleliste</p>;
 
   return (

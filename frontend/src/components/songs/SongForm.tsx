@@ -369,7 +369,14 @@ export default function SongForm({
 
       {/* Chord-toggle */}
       <Field className="flex flex-row my-4">
-        <FieldLabel>Legg til akkorder</FieldLabel>
+        <FieldLabel>
+          <span className="flex items-center gap-2">
+            Legg til akkorder
+            <MobileTooltip trigger={<QuestionMarkCircleIcon className="h-6 w-6 text-foreground" />}>
+              Du kan bare legge til akkorder etter du har lagt til et vers
+            </MobileTooltip>
+          </span>
+        </FieldLabel>
         <Switch
           size="lg"
           checked={hasChords}

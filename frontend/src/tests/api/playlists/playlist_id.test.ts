@@ -73,7 +73,7 @@ describe('playlist/[id] route', () => {
       const req = new Request('http://localhost', {
         method: 'PATCH',
         body: JSON.stringify({
-          title: 'new title',
+          title: 'ny tittel',
           is_public: true,
         }),
       });
@@ -93,7 +93,7 @@ describe('playlist/[id] route', () => {
       vi.mocked(global.fetch).mockResolvedValueOnce(createResponse({ success: true }, 200));
 
       const req = makeReq({
-        title: 'title',
+        title: 'tittel',
         password: '1234',
         is_public: false,
       });

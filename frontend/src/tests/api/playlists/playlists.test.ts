@@ -85,7 +85,7 @@ describe('playlists API', () => {
         headers: { authorization: 'Bearer token' },
         body: JSON.stringify({
           action: 'create',
-          title: 'hello',
+          title: 'hei',
           password: '123',
           is_public: true,
           expires_at: null,

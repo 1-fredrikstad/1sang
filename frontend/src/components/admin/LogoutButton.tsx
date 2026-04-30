@@ -8,6 +8,7 @@ import {
   AlertDialogFooter,
   AlertDialogCancel,
   AlertDialogAction,
+  AlertDialogDescription,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/src/context/AuthContext';
@@ -51,6 +52,9 @@ export default function LogoutButton() {
         <AlertDialogContent size="sm">
           <AlertDialogHeader>
             <AlertDialogTitle>Er du sikker på at du vil logge ut?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Du må logge inn igjen for å få tilgang til adminsiden.
+            </AlertDialogDescription>
           </AlertDialogHeader>
 
           <AlertDialogFooter>

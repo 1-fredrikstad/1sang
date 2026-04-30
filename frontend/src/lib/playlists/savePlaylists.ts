@@ -107,10 +107,11 @@ export async function savePlaylist(data: PlaylistInputs) {
         }),
       });
     }
-    return {
-      type: 'pending',
-      localId,
-      error: error instanceof Error ? error.message : 'Sync feilet',
-    };
+
+    // Remove the local entry
+    await db.playlist_items.where('playlist_id').equals(localId).delete();
+    await db.playlists.delete(localId);
+
+    throw error;
   }
 }

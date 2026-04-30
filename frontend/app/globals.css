@@ -293,7 +293,6 @@ a[href] .no-underline {
   content: '';
   animation: dots 1.5s steps(1, end) infinite;
   display: inline-block;
-  min-width: 1.2ch;
 }
 
 /* Collapsible animation */

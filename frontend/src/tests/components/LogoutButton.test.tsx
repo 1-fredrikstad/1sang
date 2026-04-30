@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import LogoutButton from '@/src/components/admin/LogoutButton';
@@ -59,7 +59,7 @@ describe('LogoutButton', () => {
     expect(screen.getByRole('button', { name: /Bekreftelse på logg ut/i })).toBeInTheDocument();
   });
 
-  it('calls logout and redirects to /admin when confirming', async () => {
+  test('calls logout and redirects to /admin when confirming', async () => {
     const user = userEvent.setup();
 
     render(<LogoutButton />);
@@ -104,6 +104,7 @@ describe('LogoutButton', () => {
 
   test('still redirects even if logout fails', async () => {
     const user = userEvent.setup();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
 
     // Logout fails
     mockLogout.mockRejectedValueOnce(new Error('Logout failed'));
