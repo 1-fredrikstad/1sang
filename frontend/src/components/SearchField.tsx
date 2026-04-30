@@ -40,7 +40,7 @@ export function SearchField({ value, onChange, isLoading = false }: SearchFieldP
             onChange(trimmed);
           }}
           placeholder="Søk etter sanger..."
-          maxLength={100}
+          maxLength={250}
           className="h-11 pl-9 pr-10 [&::-webkit-search-cancel-button]:appearance-none"
         />
 
