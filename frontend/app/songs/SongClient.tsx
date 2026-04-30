@@ -147,8 +147,8 @@ export default function SongClient() {
 
   return (
     <main {...handlers} className="flex flex-col justify-center gap-4 touch-pan-y">
-      {/* Header */}
-      <div className="flex flex-col gap-1">
+      {/* Topbar */}
+      <section className="flex flex-col gap-1">
         <div className="flex items-center gap-3 relative">
           <BackButton href="/" />
           <div className="absolute right-0 flex items-center gap-2">
@@ -162,44 +162,48 @@ export default function SongClient() {
             )}
           </div>
         </div>
-      </div>
+      </section>
 
       <section className="flex flex-col items-center justify-center">
         <h1 className="title-headline capitalize-first text-center flex-1">{song.title}</h1>
 
-        {/* Song content */}
+        {/* Header - song info */}
+        <section className="flex flex-col items-center justify-center my-2">
+          {/* Melody & link */}
+          {song.melody && <p className="opacity-60">Melodi: {song.melody}</p>}
+          {song.spotify_youtube && (
+            <p className="opacity-60 mt-1 flex items-center gap-2">
+              <span>Link:</span>
+              <a
+                href={song.spotify_youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 font-semibold hover:underline"
+              >
+                {Icon && <Icon className={`w-4 h-4 ${color}`} />}
+                <span>{name}</span>
+              </a>
+            </p>
+          )}
 
-        {/* Melody & link */}
-        {song.melody && <p className="opacity-60 mt-4">Melodi: {song.melody}</p>}
-        {song.spotify_youtube && (
-          <p className="opacity-60 mt-1 flex items-center gap-2">
-            <span>Link:</span>
-            <a
-              href={song.spotify_youtube}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-semibold hover:underline"
-            >
-              {Icon && <Icon className={`w-4 h-4 ${color}`} />}
-              <span>{name}</span>
-            </a>
-          </p>
-        )}
+          {/* Lyrics and chord toggle */}
+          {hasChords && (
+            <div className="flex items-center gap-2 mt-3">
+              <span className="text-md opacity-60">Vis akkorder</span>
 
-        {/* Lyrics and chord toggle */}
-        {hasChords && (
-          <div className="flex items-center gap-2 mt-3">
-            <Switch
-              checked={showChords}
-              onCheckedChange={setShowChords}
-              className="cursor-pointer"
-            />
-            <span className="text-sm opacity-60">Vis akkorder</span>
-          </div>
-        )}
+              <Switch
+                checked={showChords}
+                onCheckedChange={setShowChords}
+                className="cursor-pointer"
+              />
+            </div>
+          )}
+        </section>
 
-        {/* Lyrics */}
-        <pre className="mt-5 flex justify-center text-center whitespace-pre-wrap">
+        {/* --- Song content --- */}
+
+        {/* Lyrics and chorus */}
+        <pre className="mt-3 flex justify-center text-center whitespace-pre-wrap w-full max-w-xl">
           <Lyrics song={song} showChords={showChords} />{' '}
         </pre>
 
@@ -222,7 +226,7 @@ export default function SongClient() {
 
         {/* Next and prev buttons */}
         {playlistId && (
-          <div className="flex justify-center gap-10 mt-10">
+          <div className="flex justify-center gap-20 mt-8">
             <button
               onClick={() => {
                 if (prevSong) {
@@ -232,8 +236,8 @@ export default function SongClient() {
               disabled={!prevSong}
               className="group flex flex-col items-center cursor-pointer text-sm opacity-70 hover:opacity-100 transition-all duration-200 disabled:opacity-30 disabled:cursor-default"
             >
-              <ArrowLeftIcon className="h-5" />
-              <span className="text-[12px] mt-1 opacity-0 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0">
+              <ArrowLeftIcon className="h-6" />
+              <span className="text-[14px] mt-1 transition-all duration-200 opacity-100 md:opacity-0 md:translate-y-1 md:group-hover:opacity-100 md:group-hover:translate-y-0">
                 Forrige
               </span>
             </button>
@@ -247,8 +251,8 @@ export default function SongClient() {
               disabled={!nextSong}
               className="group flex flex-col items-center cursor-pointer text-sm opacity-70 hover:opacity-100 transition-all duration-200 disabled:opacity-30 disabled:cursor-default"
             >
-              <ArrowRightIcon className="h-5" />
-              <span className="text-[12px] mt-1 opacity-0 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0">
+              <ArrowRightIcon className="h-6" />
+              <span className="text-[14px] mt-1 transition-all duration-200 opacity-100 md:opacity-0 md:translate-y-1 md:group-hover:opacity-100 md:group-hover:translate-y-0">
                 Neste
               </span>
             </button>

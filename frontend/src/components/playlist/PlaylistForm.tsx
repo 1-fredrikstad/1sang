@@ -226,7 +226,7 @@ export default function PlaylistForm({
             songs={songs ?? []}
             open={open}
             onOpenChange={setOpen}
-            songsInPlaylist={songsInPlaylist}
+            currentSongsInPlaylist={songsInPlaylist}
             setSongsInPlaylist={(songs) => setValue('songsInPlaylist', songs)}
           />
         </Field>

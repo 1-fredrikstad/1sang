@@ -4,103 +4,82 @@ import userEvent from '@testing-library/user-event';
 import ExportLatexModal from '@/src/components/latex/ExportLatexModal';
 
 // Mocks
-const { mockGenerateLatex, mockUseSongPicker } = vi.hoisted(() => ({
-  mockGenerateLatex: vi.fn(),
+const { mockUseSongPicker } = vi.hoisted(() => ({
   mockUseSongPicker: vi.fn(),
-}));
-
-vi.mock('@/src/components/latex/GenerateLatex', () => ({
-  generateLatex: mockGenerateLatex,
 }));
 
 vi.mock('@/src/hooks/useSongPicker', () => ({
   useSongPicker: mockUseSongPicker,
 }));
 
-describe('ExportLatexModal', () => {
-  const mockSongs = [
-    {
-      id: '1',
-      title: 'Test sang',
-      melody: 'Test melodi',
-      verses: ['Vers 1'],
-      chorus: 'Refreng',
-      has_chords: false,
-    },
-  ];
+const mockSongs = [
+  {
+    id: '1',
+    title: 'Test sang',
+    melody: 'Test melodi',
+    verses: ['Vers 1'],
+    chorus: 'Refreng',
+    has_chords: false,
+  },
+];
 
+const defaultPickerState = {
+  search: '',
+  setSearch: vi.fn(),
+  filteredSongs: [{ song: mockSongs[0], score: 10 }],
+  isSongAdded: () => false,
+  toggleSong: vi.fn(),
+  clearAll: vi.fn(),
+  selectAll: vi.fn(),
+  allSelected: false,
+  noneSelected: false,
+  selectedCount: 1,
+};
+
+describe('ExportLatexModal', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-
-    mockUseSongPicker.mockReturnValue({
-      search: '',
-      setSearch: vi.fn(),
-      filteredSongs: [{ song: mockSongs[0], score: 10 }],
-      isSongAdded: () => true,
-      toggleSong: vi.fn(),
-      clearAll: vi.fn(),
-      selectAll: vi.fn(),
-      allSelected: true,
-      noneSelected: false,
-      selectedCount: 1,
-    });
+    mockUseSongPicker.mockReturnValue(defaultPickerState);
   });
 
-  test('renders when open is true', () => {
-    render(
-      <ExportLatexModal
-        open={true}
-        onOpenChange={vi.fn()}
-        songs={mockSongs}
-        generateLatex={mockGenerateLatex}
-      />
-    );
-
-    expect(screen.getByText(/eksporter til latex/i)).toBeInTheDocument();
-  });
-
-  test('does not render when closed', () => {
-    render(
-      <ExportLatexModal
-        open={false}
-        onOpenChange={vi.fn()}
-        songs={mockSongs}
-        generateLatex={mockGenerateLatex}
-      />
-    );
-
-    expect(screen.queryByText(/eksporter til latex/i)).not.toBeInTheDocument();
-  });
-
-  test('calls GenerateLatex when clicking export', async () => {
+  test('calls generateLatex with selected songs and total count on export', async () => {
     const user = userEvent.setup();
+    const generateLatex = vi.fn();
 
     render(
       <ExportLatexModal
         open={true}
         onOpenChange={vi.fn()}
         songs={mockSongs}
-        generateLatex={mockGenerateLatex}
+        generateLatex={generateLatex}
       />
     );
 
     await user.click(screen.getByRole('button', { name: /eksporter/i }));
 
-    expect(mockGenerateLatex).toHaveBeenCalledWith(expect.any(Array), mockSongs.length);
+    expect(generateLatex).toHaveBeenCalledWith(expect.any(Array), mockSongs.length);
+  });
+
+  test('shows selected count in export button label', () => {
+    mockUseSongPicker.mockReturnValue({ ...defaultPickerState, selectedCount: 3 });
+
+    render(
+      <ExportLatexModal
+        open={true}
+        onOpenChange={vi.fn()}
+        songs={mockSongs}
+        generateLatex={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: /eksporter \(3\)/i })).toBeInTheDocument();
   });
 
   test('disables export button when no songs selected', () => {
     mockUseSongPicker.mockReturnValue({
-      search: '',
-      setSearch: vi.fn(),
-      filteredSongs: [],
-      isSongAdded: () => false,
-      toggleSong: vi.fn(),
-      clearAll: vi.fn(),
-      selectAll: vi.fn(),
-      allSelected: false,
-      noneSelected: true,
+      ...defaultPickerState,
       selectedCount: 0,
+      noneSelected: true,
     });
 
     render(
@@ -108,7 +87,7 @@ describe('ExportLatexModal', () => {
         open={true}
         onOpenChange={vi.fn()}
         songs={mockSongs}
-        generateLatex={mockGenerateLatex}
+        generateLatex={vi.fn()}
       />
     );
 

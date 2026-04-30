@@ -34,8 +34,8 @@ export function SongBox({
     {
       default: '',
       none: 'active:scale-[1] cursor-default',
-      green: 'hover:bg-green-100 dark:hover:bg-green-950/60',
-      red: 'hover:bg-red-100 dark:hover:bg-red-950/60',
+      green: 'hover:bg-[#91c57580] dark:hover:bg-[#91c57554]',
+      red: 'hover:bg-red-100 dark:hover:bg-[#623334]',
     }[hoverVariant] ?? '';
 
   // Shared UI content for both link and select modes

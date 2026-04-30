@@ -58,36 +58,32 @@ export default function Lyrics({ song, showChords = false }: LyricsProps) {
     <section>
       {isSpecialSong
         ? song.verses.map((verse, i) => (
-            <div key={i}>
+            <div key={i} className="mb-5">
               {/* Render verse */}
               {renderSection(verse)}
-              {'\n\n'}
 
               {/* For special songs:
                   show chorus after every verse EXCEPT the final verse */}
               {song.chorus && i !== song.verses.length - 1 && (
-                <>
+                <span className="block my-7">
                   <strong>Ref: </strong>
                   {renderSection(song.chorus)}
-                  {'\n\n'}
-                </>
+                </span>
               )}
             </div>
           ))
         : song.verses.map((verse, i) => (
-            <div key={i}>
+            <div key={i} className="mb-5">
               {/* Render verse */}
               {renderSection(verse)}
-              {'\n\n'}
 
               {/* Standard songs:
                   show chorus after every verse */}
               {song.chorus && (
-                <>
+                <span className="block my-7">
                   <strong>Ref: </strong>
                   {renderSection(song.chorus)}
-                  {'\n\n'}
-                </>
+                </span>
               )}
             </div>
           ))}

@@ -5,7 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import { useWakeLock } from '@/src/hooks/useWakeLock';
 
 export default function WakeLockToggle() {
-  const [enabled, setEnabled] = useState(true);
+  const [enabled, setEnabled] = useState(false);
 
   useWakeLock(enabled);
 
