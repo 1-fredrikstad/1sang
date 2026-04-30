@@ -14,13 +14,26 @@ type AuthUser = {
 };
 
 export const AuthProviderInner = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [isSuperuser, setIsSuperuser] = useState<boolean | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const isCypressAdmin =
+    process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_CYPRESS_ADMIN === 'true';
+
+  const [user, setUser] = useState<AuthUser | null>(
+    isCypressAdmin
+      ? {
+          name: 'Cypress Admin',
+          email: 'cypress-admin@test.no',
+          role: 'admin',
+        }
+      : null
+  );
+
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(isCypressAdmin ? true : null);
+  const [isSuperuser, setIsSuperuser] = useState<boolean | null>(isCypressAdmin ? false : null);
+  const [isInitialized, setIsInitialized] = useState(isCypressAdmin);
   const isMounted = useRef(true);
 
   useEffect(() => {
+    if (isCypressAdmin) return;
     const supabase = createClient();
     isMounted.current = true;
 
@@ -112,7 +125,7 @@ export const AuthProviderInner = ({ children }: { children: ReactNode }) => {
       isMounted.current = false;
       listener.subscription.unsubscribe();
     };
-  }, []);
+  }, [[isCypressAdmin]]);
 
   // Logout handler clears session and resets state
   const logout = async () => {
