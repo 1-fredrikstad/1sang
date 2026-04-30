@@ -100,7 +100,7 @@ describe('AdminSongsuggestionActions', () => {
     cy.contains(title1, { timeout: 20000 }).should('exist').scrollIntoView().should('be.visible');
   });
 
-  it('rejetes song suggestion and vertify that it is gone', () => {
+  it('rejects song suggestion and vertify that it is gone', () => {
     cy.intercept('GET', '**/rest/v1/song_suggestions?select=*', (req) => {
       req.continue((res) => {
         const suggestions = res.body as SongSuggestion[];
