@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "dev:cypress": "NEXT_PUBLIC_CYPRESS=true next dev --webpack",
-    "dev:cypress:admin": "CYPRESS_E2E=true NEXT_PUBLIC_CYPRESS=true NEXT_PUBLIC_CYPRESS_ADMIN=true next dev --webpack",
+    "dev:cypress": "cross-env NEXT_PUBLIC_CYPRESS=true next dev --webpack",
+    "dev:cypress:admin": "cross-env CYPRESS_E2E=true NEXT_PUBLIC_CYPRESS=true NEXT_PUBLIC_CYPRESS_ADMIN=true next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
     "seed:songs": "node --env-file=.env.local ./scripts/seed-songs.mjs",
@@ -65,6 +65,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
+    "cross-env": "^10.1.0",
     "cypress": "^15.11.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
