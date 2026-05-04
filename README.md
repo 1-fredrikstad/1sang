@@ -6,15 +6,15 @@ This is a digital songbook Progressive Web App (PWA) for browsing and viewing sc
 
 ### Hjemmeside
 
-<img src="./docs/screenshots/homepage.png" width="250" />
+<img src="./docs/screenshots/homepage.png" width="250" style="box-shadow:0 2px 8px rgba(0,0,0,0.1); border-radius:8px;" />
 
 ### Sangside
 
-<img src="./docs/screenshots/song_page.png" width="250" />
+<img src="./docs/screenshots/song_page.png" width="250" style="box-shadow:0 2px 8px rgba(0,0,0,0.1); border-radius:8px;" />
 
 ### Legge-til-sang-side
 
-<img src="./docs/screenshots/add_song.png" width="250" />
+<img src="./docs/screenshots/add_song.png" width="250" style="box-shadow:0 2px 8px rgba(0,0,0,0.1); border-radius:8px;" />
 
 ## Tech Stack
 
