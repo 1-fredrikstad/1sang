@@ -77,6 +77,9 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
     [tableName, maxAgeMins]
   );
 
+  /// --- Sync effects ---
+  // intentional suppressions because this is intentional sync behaviour
+
   // sync on mount
   useEffect(() => {
     if (syncOnMount) sync();
@@ -87,6 +90,7 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
     if (isOnline) sync(true);
   }, [isOnline, sync]);
 
+  // stabilize data from useLiveQuery
   useEffect(() => {
     if (data !== undefined) setStableData(data);
   }, [data]);
@@ -98,10 +102,6 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
     const id = window.setInterval(() => sync(), maxAgeMins * 60 * 1000);
     return () => window.clearInterval(id);
   }, [isOnline, maxAgeMins, sync]);
-
-  useEffect(() => {
-    if (data) setStableData(data);
-  }, [data]);
 
   return {
     data: stableData ?? [],
