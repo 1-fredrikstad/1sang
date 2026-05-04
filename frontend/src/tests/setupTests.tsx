@@ -9,6 +9,9 @@ import { vi } from 'vitest';
 //Mock next/image
 vi.mock('next/image', () => ({
   default: ({ unoptimized, priority, fill, ...props }: any) => {
+    void unoptimized;
+    void priority;
+    void fill;
     return <img {...props} />;
   },
 }));
@@ -25,13 +28,14 @@ vi.mock('next/navigation', () => {
   };
 });
 
-// mock ResizeObserver (Needed for Radix UI)
+// Mock ResizeObserver (Needed for Radix UI)
 global.ResizeObserver = class {
   observe() {}
   unobserve() {}
   disconnect() {}
 } as unknown as typeof ResizeObserver;
 
+// Mock IntersectionObserver
 global.IntersectionObserver = class {
   observe() {}
   unobserve() {}
