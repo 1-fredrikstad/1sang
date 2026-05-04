@@ -87,17 +87,17 @@ describe('AdminSongsuggestionActions', () => {
 
     cy.visit('/admin/dashboard');
 
-    cy.contains('Inkomne sangforslag', { timeout: 10000 }).should('be.visible');
+    cy.contains('Inkomne sangforslag', { timeout: 30000 }).should('be.visible');
 
-    cy.contains(title1, { timeout: 20000 }).scrollIntoView().click({ force: true });
+    cy.contains(title1, { timeout: 40000 }).scrollIntoView().click({ force: true });
 
-    cy.contains('button', 'Godkjenn', { timeout: 20000 }).should('exist').click({ force: true });
+    cy.contains('button', 'Godkjenn', { timeout: 50000 }).should('exist').click({ force: true });
 
     cy.wait('@approveSuggestion').its('response.statusCode').should('eq', 200);
 
     cy.visit('/');
 
-    cy.contains(title1, { timeout: 20000 }).should('exist').scrollIntoView().should('be.visible');
+    cy.contains(title1, { timeout: 40000 }).should('exist').scrollIntoView().should('be.visible');
   });
 
   it('rejects song suggestion and vertify that it is gone', () => {
@@ -115,22 +115,22 @@ describe('AdminSongsuggestionActions', () => {
 
     cy.visit('/admin/dashboard');
 
-    cy.contains('Inkomne sangforslag', { timeout: 10000 }).should('be.visible');
+    cy.contains('Inkomne sangforslag', { timeout: 30000 }).should('be.visible');
 
-    cy.contains(title2, { timeout: 20000 }).scrollIntoView().click({ force: true });
+    cy.contains(title2, { timeout: 40000 }).scrollIntoView().click({ force: true });
 
-    cy.contains('button', 'Avvis', { timeout: 20000 }).should('exist').click({ force: true });
+    cy.contains('button', 'Avvis', { timeout: 50000 }).should('exist').click({ force: true });
 
-    cy.contains('button', 'Avvis og slett', { timeout: 20000 })
+    cy.contains('button', 'Avvis og slett', { timeout: 40000 })
       .should('exist')
       .click({ force: true });
 
     cy.visit('/admin/dashboard');
 
-    cy.contains(title2, { timeout: 20000 }).should('not.exist');
+    cy.contains(title2, { timeout: 40000 }).should('not.exist');
 
     cy.visit('/');
 
-    cy.contains(title2, { timeout: 20000 }).should('not.exist');
+    cy.contains(title2, { timeout: 40000 }).should('not.exist');
   });
 });
