@@ -1,5 +1,6 @@
 import type { NextConfig } from 'next';
 import withSerwistInit from '@serwist/next';
+import path from 'path';
 
 // Init Serwist service worker
 const withSerwist = withSerwistInit({
@@ -43,7 +44,7 @@ const withSerwist = withSerwistInit({
 });
 
 const nextConfig: NextConfig = {
-  outputFileTracingRoot: __dirname,
+  outputFileTracingRoot: path.join(__dirname, '../'),
   reactStrictMode: true,
 };
 
