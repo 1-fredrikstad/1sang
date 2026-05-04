@@ -22,13 +22,6 @@ vi.mock('sonner', () => ({
   },
 }));
 
-// Mock TagSelect and SectionInput with proper prop types
-// vi.mock('@/src/components/TagSelect', () => ({
-//   default: ({ value, onChange }: { value: unknown; onChange: (tags: unknown) => void }) => (
-//     <div data-testid="tag-select">Tags</div>
-//   ),
-// }));
-
 vi.mock('@/src/components/songs/SectionInput', () => ({
   default: ({ label }: { label?: string }) => (
     <div data-testid="section-input">{label ?? 'SectionInput'}</div>
@@ -50,17 +43,17 @@ describe('SongForm', () => {
   test('renders form with initial heading and submit label', async () => {
     render(
       <TooltipProvider>
-        <SongForm heading="Add Song" submitLabel="Save" onSubmit={mockOnSubmit} />
+        <SongForm heading="Legg til sang" submitLabel="Lagre" onSubmit={mockOnSubmit} />
       </TooltipProvider>
     );
-    expect(screen.getByText('Add Song')).toBeInTheDocument();
-    expect(screen.getByText('Save')).toBeInTheDocument();
+    expect(screen.getByText('Legg til sang')).toBeInTheDocument();
+    expect(screen.getByText('Lagre')).toBeInTheDocument();
   });
 
   test('renders default verse input', async () => {
     render(
       <TooltipProvider>
-        <SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />
+        <SongForm heading="Sang" submitLabel="Lagre" onSubmit={mockOnSubmit} />
       </TooltipProvider>
     );
     expect(screen.getByText('Vers 1')).toBeInTheDocument();
@@ -69,7 +62,7 @@ describe('SongForm', () => {
   test('adds a new verse when "+ Legg til vers" is clicked', async () => {
     render(
       <TooltipProvider>
-        <SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />
+        <SongForm heading="Sang" submitLabel="Lagre" onSubmit={mockOnSubmit} />
       </TooltipProvider>
     );
     const addVerseButton = screen.getByText('+ Legg til vers');
@@ -77,36 +70,10 @@ describe('SongForm', () => {
     expect(screen.getByText('Vers 2')).toBeInTheDocument();
   });
 
-  // TODO: tests for adding chorus and submitting - won't work now
-  // it('adds chorus correctly', async () => {
-  //   render(<SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />);
-  //   const addChorusButton = screen.getByText('+ Legg til refreng');
-  //   await user.click(addChorusButton);
-
-  //   const chorusInput = await screen.findByTestId('section-input');
-  //   expect(chorusInput).toBeInTheDocument();
-  // });
-
-  // it('calls onSubmit with form data and triggers toast', async () => {
-  //   render(<SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />);
-
-  //   const titleInput = screen.getByLabelText(/Tittel\*/i);
-  //   await user.type(titleInput, 'My Song');
-
-  //   const submitButton = screen.getByText('Save');
-  //   await user.click(submitButton);
-
-  //   await new Promise(process.nextTick);
-
-  //   expect(mockOnSubmit).toHaveBeenCalled();
-  //   expect(toast.success).toHaveBeenCalled();
-  //   expect(mockPush).toHaveBeenCalledWith('/');
-  // });
-
   test('resets form when reset button is clicked', async () => {
     render(
       <TooltipProvider>
-        <SongForm heading="Song" submitLabel="Save" onSubmit={mockOnSubmit} />
+        <SongForm heading="Sang" submitLabel="Lagre" onSubmit={mockOnSubmit} />
       </TooltipProvider>
     );
     const resetButton = screen.getByText('Nullstill');

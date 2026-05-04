@@ -27,7 +27,7 @@ export default function BackButton({ fallback, href }: { fallback?: string; href
       className="hover:cursor-pointer"
       aria-label="Tilbake"
     >
-      <ArrowLongLeftIcon className="size-6" />
+      <ArrowLongLeftIcon className="size-8" />
     </button>
   );
 }
