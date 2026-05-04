@@ -77,18 +77,22 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
     [tableName, maxAgeMins]
   );
 
+  /// --- Sync effects ---
+  // intentional suppressions because this is intentional sync behaviour
+
   // sync on mount
   useEffect(() => {
-    if (syncOnMount) sync();
+    if (syncOnMount) sync(); // eslint-disable-line react-hooks/set-state-in-effect
   }, [syncOnMount, sync]);
 
   // sync when connection comes back
   useEffect(() => {
-    if (isOnline) sync(true);
+    if (isOnline) sync(true); // eslint-disable-line react-hooks/set-state-in-effect
   }, [isOnline, sync]);
 
+  // stabilize data from useLiveQuery
   useEffect(() => {
-    if (data !== undefined) setStableData(data);
+    if (data !== undefined) setStableData(data); // eslint-disable-line react-hooks/set-state-in-effect
   }, [data]);
 
   // periodic sync while online
@@ -98,10 +102,6 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
     const id = window.setInterval(() => sync(), maxAgeMins * 60 * 1000);
     return () => window.clearInterval(id);
   }, [isOnline, maxAgeMins, sync]);
-
-  useEffect(() => {
-    if (data) setStableData(data);
-  }, [data]);
 
   return {
     data: stableData ?? [],
