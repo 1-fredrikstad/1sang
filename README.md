@@ -2,6 +2,20 @@
 
 This is a digital songbook Progressive Web App (PWA) for browsing and viewing scout songs. The PWA was made for [1. Fredrikstad speidergruppe](https://1fredrikstad.speiding.no/) as a bachelor project by students in the subject IT2901 at NTNU.
 
+## Demo
+
+### Hjemmeside
+
+<img src="./docs/screenshots/homepage.png" width="250" />
+
+### Sangside
+
+<img src="./docs/screenshots/song_page.png" width="250" />
+
+### Legge-til-sang-side
+
+<img src="./docs/screenshots/add_song.png" width="250" />
+
 ## Tech Stack
 
 - **Next.js** -Fullstack React framework providing routing, server-side rendering and overall app structure.
@@ -63,10 +77,16 @@ NEXT_PUBLIC_SUPABASE_URL=
 
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 
+NEXT_SERVICE_ROLE_KEY=
+
 You can find these values in your Supabase Dashboard under:
 Project Settings → API.
 
 Do not commit your .env.local file to GitHub.
+
+### Documentation
+
+Detailed setup & architecture (Supabase, frontend and Vercel): [`/docs/setup.pdf`](./docs/setup.pdf)
 
 ## How to install the PWA as an app
 
@@ -118,8 +138,12 @@ frontend/
 ├── public/              # Static assets (icons, images, fonts)
 ├── src/
 │   ├── components/      # Reusable UI components
+|   ├── context/         # Global state (React context)
 │   ├── hooks/           # Custom React hooks for shared logic and state handling
 │   └── lib/             # Utility functions and external service setup (Supabase)
+|   ├── providers/       # App-wide providers (theme)
+|   ├── tests/           # Unit/integration tests
+|   ├── types/           # Typescript types
 ```
 
 ## Testing
@@ -147,3 +171,13 @@ pnpm test:e2e
 ```
 
 This should start a development server: `http://localhost:3000/`, and open cypress. Here, you choose "E2E Testing" and, then, the test you want to run, e.g. themetoggle-cy.ts.
+
+## Exporting to LaTeX
+
+On /admin/dashboard, admins will have the option to export song-files into LaTeX. Admins can choose which songs to export - all songs, or pick and choose which song(s) they want. This way, a scout group can decide to export and download or print however many songs best fits their needs. The songs will be exported as a .tex file and named according to the amount of songs exported.
+
+The format of the .tex file is based on the physical songsbooks this app is developed out of, and include all info about songs (including chords, if they are attached to a song). The format lays within frontend/src/components/GenerateLatex.tsx. and includes preamble, config, and escaping LaTeX special characters. This file can be tweaked and changed to fit better a scout group’s preferences. If the exported content is pasted into a LaTeX program such as Overleaf, the format can be viewed and changed live as well.
+
+Here is an example of some songs export
+
+[[Legg til bilde her]]
