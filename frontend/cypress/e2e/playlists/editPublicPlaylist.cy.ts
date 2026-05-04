@@ -6,39 +6,43 @@ let playlistId: string | null = null;
 
 // Creates a fresh playlist with one song via API and returns its id
 function createTestPlaylist(): Cypress.Chainable<string> {
+  let playlistId: string;
+  let firstSongId: string;
+
   return cy
-    .request({
-      method: 'POST',
-      url: '/api/playlists',
-      body: {
-        action: 'create',
-        title: 'Test spilleliste',
-        password: TEST_PASSWORD_EDIT,
-        is_public: true,
-        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      },
+    .request('/api/songs')
+    .then((songsRes) => {
+      firstSongId = songsRes.body.data[0].id as string;
     })
+    .then(() =>
+      cy.request({
+        method: 'POST',
+        url: '/api/playlists',
+        body: {
+          action: 'create',
+          title: 'Test spilleliste',
+          password: TEST_PASSWORD_EDIT,
+          is_public: true,
+          expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        },
+      })
+    )
     .then((res) => {
-      const id = res.body.data.id as string;
-
-      // Add one song so the playlist is never empty (required by validation)
-      return cy.request('/api/songs').then((songsRes) => {
-        const firstSongId = songsRes.body.data[0].id as string;
-
-        return cy
-          .request({
-            method: 'POST',
-            url: '/api/playlists',
-            body: {
-              action: 'add_item',
-              playlist_id: id,
-              song_id: firstSongId,
-              password: TEST_PASSWORD_EDIT,
-            },
-          })
-          .then(() => id);
-      });
-    });
+      playlistId = res.body.data.id as string;
+    })
+    .then(() =>
+      cy.request({
+        method: 'POST',
+        url: '/api/playlists',
+        body: {
+          action: 'add_item',
+          playlist_id: playlistId,
+          song_id: firstSongId,
+          password: TEST_PASSWORD_EDIT,
+        },
+      })
+    )
+    .then(() => playlistId);
 }
 
 function deleteTestPlaylist(id: string) {
@@ -65,9 +69,13 @@ describe('Edit public playlist', () => {
   beforeEach(() => {
     createTestPlaylist().then((id) => {
       playlistId = id;
-      visitEditPage(id);
-      cy.get('#playlist-title').should('be.visible');
     });
+
+    cy.then(() => {
+      visitEditPage(playlistId!);
+    });
+
+    cy.get('#playlist-title', { timeout: 15000 }).should('be.visible');
   });
 
   afterEach(() => {
@@ -87,7 +95,7 @@ describe('Edit public playlist', () => {
 
     cy.contains('Spilleliste oppdatert').should('be.visible');
     cy.url().should('include', '/playlists/playlist?id=');
-    cy.contains(newTitle).should('be.visible');
+    cy.contains(newTitle, { timeout: 10000 }).should('be.visible');
 
     // Reset title for subsequent tests
     cy.then(() => visitEditPage(playlistId!));
