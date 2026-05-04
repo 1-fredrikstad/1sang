@@ -130,7 +130,7 @@ html:not(.animations-ready) * {
 
 html.animations-ready {
   --theme-transition-glide: background 300ms ease;
-  --theme-transition-snap: color 0s !important border-color 0s !important;
+  --theme-transition-snap: color 0s !important, border-color 0s !important;
 }
 
 html.animations-ready body,
