@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "rm -rf .next && next build --webpack",
+    "dev:cypress": "cross-env NEXT_PUBLIC_CYPRESS=true next dev --webpack",
+    "dev:cypress:admin": "cross-env CYPRESS_E2E=true NEXT_PUBLIC_CYPRESS=true NEXT_PUBLIC_CYPRESS_ADMIN=true next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "seed:songs": "node --env-file=.env.local ./scripts/seed-songs.mjs",
     "lint": "eslint",
@@ -13,7 +15,7 @@
     "prepare": "node -e \"if (process.env.VERCEL !== '1') { require('child_process').execSync('husky', {stdio: 'inherit'}) }\"",
     "test": "vitest",
     "cypress": "cypress open",
-    "test:e2e": "start-server-and-test dev http://localhost:3000 cypress"
+    "test:e2e": "start-server-and-test dev:cypress http://localhost:3000 cypress"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -58,6 +60,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@types/uuid": "^10.0.0",
+    "cross-env": "^10.1.0",
     "cypress": "^15.14.2",
     "eslint": "^9.39.4",
     "eslint-config-next": "16.1.6",

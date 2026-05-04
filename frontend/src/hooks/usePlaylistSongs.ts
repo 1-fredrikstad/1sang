@@ -26,7 +26,7 @@ export function usePlaylistSongs(id?: string): State {
 
   useEffect(() => {
     if (!id || id.length < 10 || id === 'undefined') {
-      setIsLoading(false); // eslint-disable-line react-hooks/set-state-in-effect
+      setIsLoading(false);
       setData([]);
       return;
     }

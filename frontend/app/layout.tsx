@@ -47,34 +47,36 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Avoid hydration mismatch when cypress runs
+  const isCypress = process.env.NEXT_PUBLIC_CYPRESS === 'true';
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Inline script runs BEFORE React hydration for instant theme application */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-            (function() {
-              try {
-                var d = document.documentElement;
+        {!isCypress && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function() {
+                  try {
+                    var d = document.documentElement;
 
-                d.classList.remove('theme-ready');
+                    d.classList.remove('theme-ready');
 
-                // 2. Immediate header color
-                 var match = document.cookie.match(/(?:^|;\\s*)headerColor=([^;]+)/);
-                  if (match && match[1]) {
-                    d.setAttribute('data-theme', match[1]);
-                  }
-                
-                // 3. Mark as ready
-                d.classList.add('theme-ready');
-              } catch (e) {}
-            })();
-          `,
-          }}
-        />
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+                    var match = document.cookie.match(/(?:^|;\\s*)headerColor=([^;]+)/);
+                    if (match && match[1]) {
+                      d.setAttribute('data-theme', match[1]);
+                    }
+
+                    d.classList.add('theme-ready');
+                  } catch (e) {}
+                })();
+              `,
+            }}
+          />
+        )}
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />

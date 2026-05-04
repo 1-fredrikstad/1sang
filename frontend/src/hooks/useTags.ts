@@ -25,7 +25,7 @@ export function useTags() {
   const syncDexieTags = () => syncService.syncTable('tags', { forceFresh: true });
 
   useEffect(() => {
-    fetchTags(); // eslint-disable-line react-hooks/set-state-in-effect
+    fetchTags();
   }, []);
 
   // Check if tag name already exists (case-insensitive)

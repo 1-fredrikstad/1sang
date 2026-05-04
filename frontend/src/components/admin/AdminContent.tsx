@@ -69,7 +69,7 @@ export default function AdminContent() {
   // Load users only if superadmin (avoids unnecessary API calls)
   useEffect(() => {
     if (isSuperuser) {
-      loadUsers(); // eslint-disable-line react-hooks/set-state-in-effect
+      loadUsers();
     }
   }, [isSuperuser, loadUsers]);
 
