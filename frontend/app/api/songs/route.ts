@@ -96,7 +96,13 @@ export async function POST(req: Request) {
 
     let isAdmin = false;
 
-    if (token) {
+    if (
+      process.env.NODE_ENV !== 'production' &&
+      process.env.CYPRESS_E2E === 'true' &&
+      process.env.NEXT_PUBLIC_CYPRESS_ADMIN === 'true'
+    ) {
+      isAdmin = true;
+    } else if (token) {
       const access = await checkAdminAccess(token);
       isAdmin = access.isAdmin;
     }

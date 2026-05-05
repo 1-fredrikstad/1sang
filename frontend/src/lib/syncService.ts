@@ -39,21 +39,40 @@ class SyncService {
       // update dexie cache with fresh data
       if (data) {
         const table = db.table(tableName);
-        await table.bulkPut(data);
+
+        // Normalize verses from JSON-string to string[] for songs and song_suggestions
+        const tablesWithVerses: TableName[] = ['songs', 'song_suggestions'];
+        const normalized = tablesWithVerses.includes(tableName)
+          ? (data as Record<string, unknown>[]).map((row) => ({
+              ...row,
+              verses:
+                typeof row.verses === 'string'
+                  ? (() => {
+                      try {
+                        return JSON.parse(row.verses as string);
+                      } catch {
+                        return [row.verses];
+                      }
+                    })()
+                  : row.verses,
+            }))
+          : data;
+
+        await table.bulkPut(normalized);
 
         const tablesWithTwoIds: TableName[] = ['song_tags', 'playlist_items'];
 
         if (tablesWithTwoIds.includes(tableName)) {
           // enkel strategi
           await table.clear();
-          await table.bulkPut(data);
+          await table.bulkPut(normalized);
         } else {
           // behold eksisterende diff-logikk
-          await table.bulkPut(data);
+          await table.bulkPut(normalized);
 
           type RowWithId = { id: string };
 
-          const remoteRows = data as RowWithId[];
+          const remoteRows = normalized as RowWithId[];
 
           const remoteIds = new Set(remoteRows.map((row) => row.id));
 

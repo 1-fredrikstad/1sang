@@ -25,16 +25,16 @@ importers:
         version: 9.5.11(next@16.1.6(@babel/core@7.29.0)(babel-plugin-macros@3.1.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
       '@serwist/precaching':
         specifier: ^9.5.11
-        version: 9.5.11(browserslist@4.28.2)(typescript@5.9.3)
+        version: 9.5.11(browserslist@4.28.1)(typescript@5.9.3)
       '@serwist/sw':
         specifier: ^9.5.11
-        version: 9.5.11(browserslist@4.28.2)(typescript@5.9.3)
+        version: 9.5.11(browserslist@4.28.1)(typescript@5.9.3)
       '@supabase/ssr':
         specifier: ^0.8.0
-        version: 0.8.0(@supabase/supabase-js@2.105.2)
+        version: 0.8.0(@supabase/supabase-js@2.105.3)
       '@supabase/supabase-js':
         specifier: ^2.105.1
-        version: 2.105.2
+        version: 2.105.3
       '@vercel/analytics':
         specifier: ^2.0.1
         version: 2.0.1(next@16.1.6(@babel/core@7.29.0)(babel-plugin-macros@3.1.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
@@ -73,7 +73,7 @@ importers:
         version: 0.4.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       postcss:
         specifier: ^8.5.13
-        version: 8.5.13
+        version: 8.5.14
       radix-ui:
         specifier: ^1.4.3
         version: 1.4.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -97,7 +97,7 @@ importers:
         version: 0.0.1
       serwist:
         specifier: ^9.5.11
-        version: 9.5.11(browserslist@4.28.2)(typescript@5.9.3)
+        version: 9.5.11(browserslist@4.28.1)(typescript@5.9.3)
       shadcn:
         specifier: ^4.6.0
         version: 4.6.0(@types/node@20.19.39)(babel-plugin-macros@3.1.0)(typescript@5.9.3)
@@ -1907,23 +1907,23 @@ packages:
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
-  '@supabase/auth-js@2.105.2':
-    resolution: {integrity: sha512-CpbqX05URyiSZjMeeJ9Op/dlWOd2oB3b7WbPkFYhkRGHeX6QEvBcjllBdPWEmHEzVKpDW6N1QkE5Rq2h6sPqDg==}
+  '@supabase/auth-js@2.105.3':
+    resolution: {integrity: sha512-hMFuzP++mjRfe0/BUq4/e82CXIDgyjUgg0khLN8waol/gzoM1t2iGmhfJSGvQHQ1dr3XqWpP6ThAw4bLHMot5Q==}
     engines: {node: '>=20.0.0'}
 
-  '@supabase/functions-js@2.105.2':
-    resolution: {integrity: sha512-MToj3KvxquzYm//shCQPJj5Wtc9pltgne72KrAptIh0T4zZz3pU2cLL+sHb1w/s/gECcDQCQlfDSPfxpxqvXNg==}
+  '@supabase/functions-js@2.105.3':
+    resolution: {integrity: sha512-KyutUwLLUZ9fRXsiFACL6lq7akBVHFl0fnqQnrxjbsPco8jeb4EyirQuvr52QCLnikzjMRC0uxAHOSM54aDrZA==}
     engines: {node: '>=20.0.0'}
 
   '@supabase/phoenix@0.4.1':
     resolution: {integrity: sha512-hWGJkDAfWUNY8k0C080u3sGNFd2ncl9erhKgP7hnGkgJWEfT5Pd/SXal4QmWXBECVlZrannMAc9sBaaRyWpiUA==}
 
-  '@supabase/postgrest-js@2.105.2':
-    resolution: {integrity: sha512-LQykk8LLUAnoShOlpJZzSRq50c2Vvwy8cxZ0jCXwHMaN7YFQUFunLstwz/dF7B3s6fLVHa+lNbw31mD0wLlaXg==}
+  '@supabase/postgrest-js@2.105.3':
+    resolution: {integrity: sha512-jFVYRHcri0ZMcTzKpQ2r2wWOB8/rPsbj92kxmCmVJUiRrdgiMtuYlkS06Fhs8UJZhEOL0UpGhh06XDwh8JwtBQ==}
     engines: {node: '>=20.0.0'}
 
-  '@supabase/realtime-js@2.105.2':
-    resolution: {integrity: sha512-FcQP1Ki1vAFwBcOlpz+Qbw9afP6t+R6mLPNVp6ap0XQIf4vo7/1Qv5VPCpb8skpMrbcPNzqA97rAjyzmN2g+NA==}
+  '@supabase/realtime-js@2.105.3':
+    resolution: {integrity: sha512-L+qPiJlq1RKh3QD2fORGCFo2RKDKlvG9mjvPtUEQJ2tMixrx70VIV6j8BdWzQkbc1Nao6mvTWajyDhX3TFgljw==}
     engines: {node: '>=20.0.0'}
 
   '@supabase/ssr@0.8.0':
@@ -1931,12 +1931,12 @@ packages:
     peerDependencies:
       '@supabase/supabase-js': ^2.76.1
 
-  '@supabase/storage-js@2.105.2':
-    resolution: {integrity: sha512-OgPJxGOF4gCbp3uHGJmqZZ0Rg2qCoDZajfkczvG+HD61sQQOiKnf4RkWD8rx2mili5zMUJt6/bQrd5Zj7pgLug==}
+  '@supabase/storage-js@2.105.3':
+    resolution: {integrity: sha512-M7oPCCcHim/FsR6rKIs10Nd9mW051N2SQvA27jiVLa7oQMFFb7faX5dCQRV4GS5QeFsBcV5J/fWl4Ppoaw8cBQ==}
     engines: {node: '>=20.0.0'}
 
-  '@supabase/supabase-js@2.105.2':
-    resolution: {integrity: sha512-sKP5nVgBrHoCLjQ3MY1wFWT5LCaFFzm/SRecRTQ90BRQ3Z3uWBq0XBVeH/SVrLSA8wrGce5vUORg3bjhrk68Ww==}
+  '@supabase/supabase-js@2.105.3':
+    resolution: {integrity: sha512-5Dm9+I61LAWwjw+0zcqXhSmTxUJaYHBPyHwMCIBH4TBUNwDn2pYUIsi6oUu0I5r9HtLtaFl7w4wa+DV9gRsbDg==}
     engines: {node: '>=20.0.0'}
 
   '@swc/helpers@0.5.15':
@@ -4396,8 +4396,8 @@ packages:
     resolution: {integrity: sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==}
     engines: {node: ^10 || ^12 || >=14}
 
-  postcss@8.5.13:
-    resolution: {integrity: sha512-qif0+jGGZoLWdHey3UFHHWP0H7Gbmsk8T5VEqyYFbWqPr1XqvLGBbk/sl8V5exGmcYJklJOhOQq1pV9IcsiFag==}
+  postcss@8.5.14:
+    resolution: {integrity: sha512-SoSL4+OSEtR99LHFZQiJLkT59C5B1amGO1NzTwj7TT1qCUgUO6hxOvzkOYxD+vMrXBM3XJIKzokoERdqQq/Zmg==}
     engines: {node: ^10 || ^12 || >=14}
 
   powershell-utils@0.1.0:
@@ -7007,21 +7007,25 @@ snapshots:
     transitivePeerDependencies:
       - webpack
 
-  '@serwist/precaching@9.5.11(browserslist@4.28.2)(typescript@5.9.3)':
+  '@serwist/precaching@9.5.11(browserslist@4.28.1)(typescript@5.9.3)':
     dependencies:
-      serwist: 9.5.11(browserslist@4.28.2)(typescript@5.9.3)
+      serwist: 9.5.11(browserslist@4.28.1)(typescript@5.9.3)
     optionalDependencies:
       typescript: 5.9.3
     transitivePeerDependencies:
       - browserslist
 
-  '@serwist/sw@9.5.11(browserslist@4.28.2)(typescript@5.9.3)':
+  '@serwist/sw@9.5.11(browserslist@4.28.1)(typescript@5.9.3)':
     dependencies:
-      serwist: 9.5.11(browserslist@4.28.2)(typescript@5.9.3)
+      serwist: 9.5.11(browserslist@4.28.1)(typescript@5.9.3)
     optionalDependencies:
       typescript: 5.9.3
     transitivePeerDependencies:
       - browserslist
+
+  '@serwist/utils@9.5.11(browserslist@4.28.1)':
+    optionalDependencies:
+      browserslist: 4.28.1
 
   '@serwist/utils@9.5.11(browserslist@4.28.2)':
     optionalDependencies:
@@ -7051,21 +7055,21 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@supabase/auth-js@2.105.2':
+  '@supabase/auth-js@2.105.3':
     dependencies:
       tslib: 2.8.1
 
-  '@supabase/functions-js@2.105.2':
+  '@supabase/functions-js@2.105.3':
     dependencies:
       tslib: 2.8.1
 
   '@supabase/phoenix@0.4.1': {}
 
-  '@supabase/postgrest-js@2.105.2':
+  '@supabase/postgrest-js@2.105.3':
     dependencies:
       tslib: 2.8.1
 
-  '@supabase/realtime-js@2.105.2':
+  '@supabase/realtime-js@2.105.3':
     dependencies:
       '@supabase/phoenix': 0.4.1
       '@types/ws': 8.18.1
@@ -7075,23 +7079,23 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@supabase/ssr@0.8.0(@supabase/supabase-js@2.105.2)':
+  '@supabase/ssr@0.8.0(@supabase/supabase-js@2.105.3)':
     dependencies:
-      '@supabase/supabase-js': 2.105.2
+      '@supabase/supabase-js': 2.105.3
       cookie: 1.1.1
 
-  '@supabase/storage-js@2.105.2':
+  '@supabase/storage-js@2.105.3':
     dependencies:
       iceberg-js: 0.8.1
       tslib: 2.8.1
 
-  '@supabase/supabase-js@2.105.2':
+  '@supabase/supabase-js@2.105.3':
     dependencies:
-      '@supabase/auth-js': 2.105.2
-      '@supabase/functions-js': 2.105.2
-      '@supabase/postgrest-js': 2.105.2
-      '@supabase/realtime-js': 2.105.2
-      '@supabase/storage-js': 2.105.2
+      '@supabase/auth-js': 2.105.3
+      '@supabase/functions-js': 2.105.3
+      '@supabase/postgrest-js': 2.105.3
+      '@supabase/realtime-js': 2.105.3
+      '@supabase/storage-js': 2.105.3
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -7166,7 +7170,7 @@ snapshots:
       '@alloc/quick-lru': 5.2.0
       '@tailwindcss/node': 4.2.4
       '@tailwindcss/oxide': 4.2.4
-      postcss: 8.5.13
+      postcss: 8.5.14
       tailwindcss: 4.2.4
 
   '@testing-library/dom@10.4.1':
@@ -9674,7 +9678,7 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  postcss@8.5.13:
+  postcss@8.5.14:
     dependencies:
       nanoid: 3.3.11
       picocolors: 1.1.1
@@ -10039,6 +10043,15 @@ snapshots:
 
   server-only@0.0.1: {}
 
+  serwist@9.5.11(browserslist@4.28.1)(typescript@5.9.3):
+    dependencies:
+      '@serwist/utils': 9.5.11(browserslist@4.28.1)
+      idb: 8.0.3
+    optionalDependencies:
+      typescript: 5.9.3
+    transitivePeerDependencies:
+      - browserslist
+
   serwist@9.5.11(browserslist@4.28.2)(typescript@5.9.3):
     dependencies:
       '@serwist/utils': 9.5.11(browserslist@4.28.2)
@@ -10097,7 +10110,7 @@ snapshots:
       node-fetch: 3.3.2
       open: 11.0.0
       ora: 8.2.0
-      postcss: 8.5.13
+      postcss: 8.5.14
       postcss-selector-parser: 7.1.1
       prompts: 2.4.2
       recast: 0.23.11
@@ -10630,7 +10643,7 @@ snapshots:
       esbuild: 0.27.3
       fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
-      postcss: 8.5.13
+      postcss: 8.5.14
       rollup: 4.59.0
       tinyglobby: 0.2.15
     optionalDependencies:

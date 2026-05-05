@@ -50,7 +50,11 @@ export function SongBox({
 
       {/* Favorite/star icon (hidden in select mode) */}
       {!config.hideStar && (
-        <StarIcon songId={song.id} className="absolute right-2 top-1/2 -translate-y-1/2" />
+        <StarIcon
+          songId={song.id}
+          className="absolute right-2 top-1/2 -translate-y-1/2"
+          aria-label="Favorittstjerne-knapp"
+        />
       )}
     </article>
   );
