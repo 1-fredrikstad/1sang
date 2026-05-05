@@ -1,4 +1,4 @@
-type Song = {
+type AdminSong = {
   id: string;
   slug: string;
 };
@@ -28,7 +28,7 @@ describe('Admin edit song', () => {
     }).then((res) => {
       expect(res.status).to.eq(201);
       expect(res.body).to.have.property('destination', 'songs');
-      const song = res.body.data as Song;
+      const song = res.body.data as AdminSong;
       songSlug = song.slug;
     });
   });
