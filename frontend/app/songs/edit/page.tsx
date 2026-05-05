@@ -77,16 +77,23 @@ export default function EditSongPage() {
 
     const token = session?.access_token;
 
-    if (!token) {
+    const isCypressAdmin =
+      process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_CYPRESS_ADMIN === 'true';
+
+    if (!token && !isCypressAdmin) {
       throw new Error('Ikke logget inn');
+    }
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
     }
 
     const res = await fetch(`/api/songs/${song.id}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+      headers,
       body: JSON.stringify(data),
     });
 
