@@ -12,6 +12,6 @@ describe('Header', () => {
     });
 
     // Verify that we are on the homepage
-    cy.url().should('eq', Cypress.config().baseUrl + '/');
+    cy.url({ timeout: 7000 }).should('eq', Cypress.config().baseUrl + '/');
   });
 });

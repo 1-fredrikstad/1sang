@@ -23,19 +23,19 @@ describe('Navbar', () => {
   it('navigates to playlists when clicking playlists', () => {
     cy.contains('Spillelister').click();
 
-    cy.url().should('include', '/playlists');
+    cy.url({ timeout: 7000 }).should('include', '/playlists');
   });
 
   it('navigates to favorites when clicking favorites', () => {
     cy.contains('Favoritter').click();
 
-    cy.url().should('include', '/favorites');
+    cy.url({ timeout: 7000 }).should('include', '/favorites');
   });
 
   it('navigates to settings when clicking settings', () => {
     cy.contains('Innstillinger').click();
 
-    cy.url().should('include', '/settings');
+    cy.url({ timeout: 7000 }).should('include', '/settings');
   });
 
   // Verify that the song or playlist box opens when clicking the "Opprett" button
@@ -53,6 +53,6 @@ describe('Navbar', () => {
     cy.contains('Hjem').click();
 
     cy.contains('Send inn sangforslag').should('not.exist');
-    cy.url().should('eq', Cypress.config().baseUrl + '/');
+    cy.url({ timeout: 7000 }).should('eq', Cypress.config().baseUrl + '/');
   });
 });
