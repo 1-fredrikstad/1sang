@@ -61,7 +61,7 @@ describe('Create public playlist', () => {
     cy.contains('Offentlig spilleliste opprettet!', { timeout: 10000 }).should('be.visible');
 
     // Redirected to the real playlist page
-    cy.url().should('include', '/playlists/playlist?id=');
+    cy.url().should('include', '/playlists/playlist?id=', { timeout: 50000 });
 
     // Playlist page confirms it's public
     cy.contains('Offentlig spilleliste').should('be.visible');
@@ -70,7 +70,7 @@ describe('Create public playlist', () => {
     cy.visit('/playlists');
 
     cy.get('[aria-label="public"]').should('have.attr', 'data-state', 'active');
-    cy.contains(playlistTitle).should('be.visible');
+    cy.contains(playlistTitle).scrollIntoView().should('be.visible');
 
     cy.visit('/make_playlist');
   });

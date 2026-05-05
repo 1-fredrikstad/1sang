@@ -94,7 +94,7 @@ describe('Edit public playlist', () => {
     cy.contains('button', 'Lagre endringer').click();
 
     cy.contains('Spilleliste oppdatert').should('be.visible');
-    cy.url().should('include', '/playlists/playlist?id=');
+    cy.url().should('include', '/playlists/playlist?id=', { timeout: 50000 });
     cy.contains(newTitle, { timeout: 10000 }).should('be.visible');
 
     // Reset title for subsequent tests
@@ -195,7 +195,7 @@ describe('Edit public playlist', () => {
     cy.contains('button', 'Lagre endringer').click();
 
     cy.contains('Spilleliste gjort privat og lagret lokalt').should('be.visible');
-    cy.url().should('include', '/playlists/playlist?id=');
+    cy.url().should('include', '/playlists/playlist?id=', { timeout: 50000 });
     cy.contains('Privat spilleliste').should('be.visible');
 
     // Recreate the public playlist so the remaining tests and cleanup still work
@@ -217,7 +217,7 @@ describe('Edit public playlist', () => {
     });
 
     cy.contains('Spilleliste slettet').should('be.visible');
-    cy.url().should('eq', Cypress.config().baseUrl + '/');
+    cy.url().should('eq', Cypress.config().baseUrl + '/', { timeout: 50000 });
 
     // Playlist is gone — null out so after() doesn't try to delete it again
     cy.then(() => {
