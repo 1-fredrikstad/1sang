@@ -17,7 +17,9 @@ describe('Private playlist', () => {
     });
 
     // Make a private playlist
-    cy.visit('/make_playlist');
+    cy.visit('/');
+    cy.contains('Opprett', { timeout: 10000 }).click();
+    cy.contains('Lag ny spilleliste', { timeout: 10000 }).click();
     cy.get('#playlist-title').type(playlistTitle);
     cy.get('#playlist-password').type('Test1234');
     cy.contains('button', 'Velg sanger').click();
