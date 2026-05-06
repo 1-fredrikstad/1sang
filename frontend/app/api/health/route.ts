@@ -6,7 +6,7 @@ export async function GET() {
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
   );
 
-  const { data, error } = await supabase.from('songs').select('id').limit(1);
+  const { error } = await supabase.from('songs').select('id').limit(1);
 
   if (error) {
     console.error('SUPABASE ERROR:', error);
@@ -15,5 +15,5 @@ export async function GET() {
 
   console.log('Supabase hit at', new Date().toISOString());
 
-  return Response.json({ ok: true, data });
+  return new Response('ok');
 }
