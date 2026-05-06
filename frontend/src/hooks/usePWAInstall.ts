@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import ls from 'localstorage-slim';
 
+// Keys used to persist state in local storage
 const DISMISSED_KEY = 'pwaBannerDismissed';
 const DISMISSED_TTL = 7 * 24 * 60 * 60; // 7 days
 
