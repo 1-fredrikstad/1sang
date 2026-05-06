@@ -2,15 +2,17 @@
 
 This is a digital songbook Progressive Web App (PWA) for browsing and viewing scout songs. The PWA was made for [1. Fredrikstad speidergruppe](https://1fredrikstad.speiding.no/) as a bachelor project by students in the subject IT2901 at NTNU.
 
+The app is available at [Sanger under liljen](https://sangerunderliljen.vercel.app/).
+
 ## Demo
 
 ### Home page, song page, and add-song page
 
-<img src="./docs/screenshots/homepage.png" width="250" />
-<img src="./docs/screenshots/song_page.png" width="250" />
-<img src="./docs/screenshots/add_song.png" width="250" />
+<img src="./docs/screenshots/lightmode/homepage.png" width="250" />
+<img src="./docs/screenshots/lightmode/song_page.png" width="250" />
+<img src="./docs/screenshots/lightmode/add_song.png" width="250" />
 
-Images of the rest of the pages are located in [/docs/screenshots](./docs/screenshots/)
+Images of the rest of the pages are located in (both lightmode and darkmode) [/docs/screenshots](./docs/screenshots/).
 
 ## Tech Stack
 
