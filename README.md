@@ -4,17 +4,11 @@ This is a digital songbook Progressive Web App (PWA) for browsing and viewing sc
 
 ## Demo
 
-### Hjemmeside
+### Home page, song page, and add-song page
 
-<img src="./docs/screenshots/homepage.png" width="250" style="box-shadow:0 2px 8px rgba(0,0,0,0.1); border-radius:8px;" />
-
-### Sangside
-
-<img src="./docs/screenshots/song_page.png" width="250" style="box-shadow:0 2px 8px rgba(0,0,0,0.1); border-radius:8px;" />
-
-### Legge-til-sang-side
-
-<img src="./docs/screenshots/add_song.png" width="250" style="box-shadow:0 2px 8px rgba(0,0,0,0.1); border-radius:8px;" />
+<img src="./docs/screenshots/homepage.png" width="250" />
+<img src="./docs/screenshots/song_page.png" width="250" />
+<img src="./docs/screenshots/add_song.png" width="250" />
 
 ## Tech Stack
 
@@ -27,6 +21,13 @@ This is a digital songbook Progressive Web App (PWA) for browsing and viewing sc
 - **Vercel** - Hosting platform optimized for Next.js with automatic deployment and scaling.
 
 ## How to run the project
+
+### Environment variables
+
+This project requires Supabase environment variables to run.
+
+Create a `.env.local` file inside the `frontend` folder. Use the [.env.example](/frontend/.env.example) as template and fill in the values. These values can be found in your Supabase Dashboard under:
+Project Settings → API.
 
 First, clone the repository.
 
@@ -66,23 +67,6 @@ And run:
 pnpm build
 pnpm start
 ```
-
-### Environment variables
-
-This project requires Supabase environment variables to run.
-
-Create a `.env.local` file inside the `frontend` folder and add:
-
-NEXT_PUBLIC_SUPABASE_URL=
-
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
-
-NEXT_SERVICE_ROLE_KEY=
-
-You can find these values in your Supabase Dashboard under:
-Project Settings → API.
-
-Do not commit your .env.local file to GitHub.
 
 ### Documentation
 
@@ -143,7 +127,7 @@ frontend/
 │   └── lib/             # Utility functions and external service setup (Supabase)
 |   ├── providers/       # App-wide providers (theme)
 |   ├── tests/           # Unit/integration tests
-|   ├── types/           # Typescript types
+|   └── types/           # Typescript types
 ```
 
 ## Testing
@@ -151,7 +135,7 @@ frontend/
 Go into frontend folder:
 
 ```bash
-cd fronted
+cd frontend
 ```
 
 ### How to test (Vitest)
@@ -164,10 +148,36 @@ pnpm test
 
 ### How to test (E2E - Cypress)
 
-Run in terminal:
+#### Change environment variables and add `cypress.env.json`
+
+In your `.env.local`, commment out the environment variables for normal use and uncomment the environment variables for cypress testing. Fill in from your test database.
+
+Create a `cypress.env.json` file inside `frontend`, and use [cypress.env.example.json](./frontend/cypress.env.example.json) as template. Fill in the values from Supabase.
+
+#### To test admin-functionality
 
 ```bash
-pnpm test:e2e
+pnpm dev:cypress:admin
+```
+
+Open a new terminal and run:
+
+```bash
+npx cypress open
+```
+
+#### To test all non-admin-functionality
+
+Open one terminal and run:
+
+```bash
+pnpm dev:cypress
+```
+
+Open a new terminal and run:
+
+```bash
+npx cypress open
 ```
 
 This should start a development server: `http://localhost:3000/`, and open cypress. Here, you choose "E2E Testing" and, then, the test you want to run, e.g. themetoggle-cy.ts.
@@ -178,6 +188,5 @@ On /admin/dashboard, admins will have the option to export song-files into LaTeX
 
 The format of the .tex file is based on the physical songsbooks this app is developed out of, and include all info about songs (including chords, if they are attached to a song). The format lays within frontend/src/components/GenerateLatex.tsx. and includes preamble, config, and escaping LaTeX special characters. This file can be tweaked and changed to fit better a scout group’s preferences. If the exported content is pasted into a LaTeX program such as Overleaf, the format can be viewed and changed live as well.
 
-Here is an example of some songs export
-
-[[Legg til bilde her]]
+Here is an example of an exported song: <br>
+<img src="./docs/screenshots/scoutsong_example.png" width="250" />
