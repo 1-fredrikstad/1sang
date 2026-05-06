@@ -10,6 +10,8 @@ This is a digital songbook Progressive Web App (PWA) for browsing and viewing sc
 <img src="./docs/screenshots/song_page.png" width="250" />
 <img src="./docs/screenshots/add_song.png" width="250" />
 
+Images of the rest of the pages are located in [/docs/screenshots](./docs/screenshots/)
+
 ## Tech Stack
 
 - **Next.js** -Fullstack React framework providing routing, server-side rendering and overall app structure.
