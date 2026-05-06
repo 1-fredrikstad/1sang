@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+
 import Header from '@/src/components/global/Header';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -16,10 +18,7 @@ vi.mock('next/image', () => ({
     width: number;
     height: number;
     className?: string;
-  }) => {
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} width={width} height={height} className={className} />;
-  },
+  }) => <img src={src} alt={alt} width={width} height={height} className={className} />,
 }));
 
 describe('Header', () => {
