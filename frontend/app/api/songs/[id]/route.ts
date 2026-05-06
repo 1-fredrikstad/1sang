@@ -72,7 +72,12 @@ export async function PATCH(req: Request, ctx: Ctx) {
     const authHeader = req.headers.get('authorization');
     const token = authHeader?.replace(/^Bearer\s+/i, '');
 
-    if (!token) {
+    const isCypressAdmin =
+      process.env.NODE_ENV !== 'production' &&
+      process.env.CYPRESS_E2E === 'true' &&
+      process.env.NEXT_PUBLIC_CYPRESS_ADMIN === 'true';
+
+    if (!token && !isCypressAdmin) {
       return NextResponse.json({ ok: false, error: 'Mangler token' }, { status: 401 });
     }
 
@@ -96,7 +101,12 @@ export async function PATCH(req: Request, ctx: Ctx) {
       ? json.tags.filter((tagId: unknown): tagId is string => typeof tagId === 'string')
       : [];
 
-    const { isAdmin } = await checkAdminAccess(token);
+    let isAdmin = false;
+    if (isCypressAdmin) {
+      isAdmin = true;
+    } else if (token) {
+      ({ isAdmin } = await checkAdminAccess(token));
+    }
 
     // Only admins are allowed to modify songs
     if (!isAdmin) {

@@ -124,7 +124,7 @@ export default function AdminContent() {
             onClick={() => setOpen(true)}
             className="text-md cursor-pointer"
           >
-            Export
+            Eksporter
           </Button>
 
           <ExportLatexModal

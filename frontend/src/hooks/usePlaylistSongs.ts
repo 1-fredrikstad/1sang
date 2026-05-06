@@ -49,14 +49,22 @@ export function usePlaylistSongs(id?: string): State {
       };
 
       try {
-        // 1. Fallback to Dexie if we know we are offline
+        // 1. Check Dexie first, if the playlist is local, use it and skip the API
+        const localPlaylist = await db.playlists.get(id);
+        if (localPlaylist) {
+          const localSongs = await getFromDexie();
+          setData(localSongs);
+          return;
+        }
+
+        // 2. Fallback to Dexie if we know we are offline
         if (!navigator.onLine) {
           const localSongs = await getFromDexie();
           setData(localSongs);
           return;
         }
 
-        // 2. Try fetching from the API
+        // 3. Try fetching from the API (for remote/public playlists)
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000);
 
@@ -77,7 +85,7 @@ export function usePlaylistSongs(id?: string): State {
       } catch (err) {
         console.error(err);
 
-        // 3. Fallback to Dexie if the fetch fails (e.g. poor connection)
+        // 4. Fallback to Dexie if the fetch fails (e.g. poor connection)
         try {
           const localSongs = await getFromDexie();
           if (localSongs.length > 0) {
