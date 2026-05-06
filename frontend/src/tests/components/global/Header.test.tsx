@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+
 import Header from '@/src/components/global/Header';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

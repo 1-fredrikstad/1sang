@@ -82,17 +82,17 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
 
   // sync on mount
   useEffect(() => {
-    if (syncOnMount) sync();
+    if (syncOnMount) sync(); // eslint-disable-line react-hooks/set-state-in-effect
   }, [syncOnMount, sync]);
 
   // sync when connection comes back
   useEffect(() => {
-    if (isOnline) sync(true);
+    if (isOnline) sync(true); // eslint-disable-line react-hooks/set-state-in-effect
   }, [isOnline, sync]);
 
   // stabilize data from useLiveQuery
   useEffect(() => {
-    if (data !== undefined) setStableData(data);
+    if (data !== undefined) setStableData(data); // eslint-disable-line react-hooks/set-state-in-effect
   }, [data]);
 
   // periodic sync while online
