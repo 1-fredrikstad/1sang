@@ -2,6 +2,18 @@
 
 This is a digital songbook Progressive Web App (PWA) for browsing and viewing scout songs. The PWA was made for [1. Fredrikstad speidergruppe](https://1fredrikstad.speiding.no/) as a bachelor project by students in the subject IT2901 at NTNU.
 
+The app is available at [Sanger under liljen](https://sangerunderliljen.vercel.app/).
+
+## Demo
+
+### Home page, song page, and add-song page
+
+<img src="./docs/screenshots/lightmode/homepage.png" width="250" />
+<img src="./docs/screenshots/lightmode/song_page.png" width="250" />
+<img src="./docs/screenshots/lightmode/add_song.png" width="250" />
+
+Images of the rest of the pages are located in (both lightmode and darkmode) [/docs/screenshots](./docs/screenshots/).
+
 ## Tech Stack
 
 - **Next.js** -Fullstack React framework providing routing, server-side rendering and overall app structure.
@@ -13,6 +25,13 @@ This is a digital songbook Progressive Web App (PWA) for browsing and viewing sc
 - **Vercel** - Hosting platform optimized for Next.js with automatic deployment and scaling.
 
 ## How to run the project
+
+### Environment variables
+
+This project requires Supabase environment variables to run.
+
+Create a `.env.local` file inside the `frontend` folder. Use the [.env.example](/frontend/.env.example) as template and fill in the values. These values can be found in your Supabase Dashboard under:
+Project Settings → API.
 
 First, clone the repository.
 
@@ -53,20 +72,9 @@ pnpm build
 pnpm start
 ```
 
-### Environment variables
+### Documentation
 
-This project requires Supabase environment variables to run.
-
-Create a `.env.local` file inside the `frontend` folder and add:
-
-NEXT_PUBLIC_SUPABASE_URL=
-
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
-
-You can find these values in your Supabase Dashboard under:
-Project Settings → API.
-
-Do not commit your .env.local file to GitHub.
+Detailed setup & architecture (Supabase, frontend and Vercel): [`/docs/setup.pdf`](./docs/setup.pdf)
 
 ## How to install the PWA as an app
 
@@ -118,6 +126,71 @@ frontend/
 ├── public/              # Static assets (icons, images, fonts)
 ├── src/
 │   ├── components/      # Reusable UI components
+|   ├── context/         # Global state (React context)
 │   ├── hooks/           # Custom React hooks for shared logic and state handling
 │   └── lib/             # Utility functions and external service setup (Supabase)
+|   ├── providers/       # App-wide providers (theme)
+|   ├── tests/           # Unit/integration tests
+|   └── types/           # Typescript types
 ```
+
+## Testing
+
+Go into frontend folder:
+
+```bash
+cd frontend
+```
+
+### How to test (Vitest)
+
+Run in terminal:
+
+```bash
+pnpm test
+```
+
+### How to test (E2E - Cypress)
+
+#### Change environment variables and add `cypress.env.json`
+
+In your `.env.local`, commment out the environment variables for normal use and uncomment the environment variables for cypress testing. Fill in from your test database.
+
+Create a `cypress.env.json` file inside `frontend`, and use [cypress.env.example.json](./frontend/cypress.env.example.json) as template. Fill in the values from Supabase.
+
+#### To test admin-functionality
+
+```bash
+pnpm dev:cypress:admin
+```
+
+Open a new terminal and run:
+
+```bash
+npx cypress open
+```
+
+#### To test all non-admin-functionality
+
+Open one terminal and run:
+
+```bash
+pnpm dev:cypress
+```
+
+Open a new terminal and run:
+
+```bash
+npx cypress open
+```
+
+This should start a development server: `http://localhost:3000/`, and open cypress. Here, you choose "E2E Testing" and, then, the test you want to run, e.g. themetoggle-cy.ts.
+
+## Exporting to LaTeX
+
+On /admin/dashboard, admins will have the option to export song-files into LaTeX. Admins can choose which songs to export - all songs, or pick and choose which song(s) they want. This way, a scout group can decide to export and download or print however many songs best fits their needs. The songs will be exported as a .tex file and named according to the amount of songs exported.
+
+The format of the .tex file is based on the physical songsbooks this app is developed out of, and include all info about songs (including chords, if they are attached to a song). The format lays within frontend/src/components/GenerateLatex.tsx. and includes preamble, config, and escaping LaTeX special characters. This file can be tweaked and changed to fit better a scout group’s preferences. If the exported content is pasted into a LaTeX program such as Overleaf, the format can be viewed and changed live as well.
+
+Here is an example of an exported song: <br>
+<img src="./docs/screenshots/scoutsong_example.png" width="250" />

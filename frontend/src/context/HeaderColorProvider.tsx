@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useContext, useEffect, createContext } from 'react';
+import { useState, useContext, useLayoutEffect, createContext } from 'react';
 import { setCookie, deleteCookie } from 'cookies-next/client';
 import type { HeaderColor } from '../types/theme';
-import { useMounted } from '../hooks/useMounted';
+import { useTheme } from 'next-themes';
 
 type Context = {
   headerColor: HeaderColor | undefined;
@@ -12,38 +12,45 @@ type Context = {
 
 const HeaderColorContext = createContext<Context | null>(null);
 
-export function HeaderColorProvider({
-  children,
-  initialColor,
-}: {
-  children: React.ReactNode;
-  initialColor?: HeaderColor;
-}) {
-  const mounted = useMounted();
-  const [headerOverride, setHeaderOverride] = useState<HeaderColor | undefined>(() => initialColor);
+export function HeaderColorProvider({ children }: { children: React.ReactNode }) {
+  const { resolvedTheme } = useTheme();
 
-  // Derived header color
-  // const headerColor = headerOverride ?? (resolvedTheme === 'dark' ? 'dark_gray' : 'light_yellow');
-
-  const headerColor = headerOverride ?? initialColor;
-
-  // --- Update DOM ---
-  useEffect(() => {
-    if (mounted && typeof document !== 'undefined') {
-      if (headerColor) {
-        document.documentElement.setAttribute('data-theme', headerColor);
-      } else {
-        document.documentElement.removeAttribute('data-theme');
-      }
-
-      const timer = setTimeout(() => {
-        document.documentElement.classList.add('theme-ready');
-      }, 50);
-
-      return () => clearTimeout(timer);
+  // Read initial header override from cookie on first render
+  const [headerOverride, setHeaderOverride] = useState<HeaderColor | undefined>(() => {
+    if (typeof document !== 'undefined') {
+      const match = document.cookie.match(/(?:^|;\s*)headerColor=([^;]+)/);
+      if (match) return match[1] as HeaderColor;
     }
-  }, [headerColor, mounted]);
+    return undefined;
+  });
 
+  // Resolve final header color (cookie override > theme fallback)
+  const headerColor =
+    headerOverride ??
+    (resolvedTheme === 'dark'
+      ? 'dark_gray'
+      : resolvedTheme === 'light'
+        ? 'light_yellow'
+        : undefined);
+
+  // Apply header color + CSS readiness classes as early as possible
+  useLayoutEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    if (headerColor) {
+      document.documentElement.setAttribute('data-theme', headerColor);
+    }
+
+    document.documentElement.classList.add('theme-ready');
+
+    const timer = setTimeout(() => {
+      document.documentElement.classList.add('animations-ready');
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [headerColor]);
+
+  // Update cookie + state when user selects a new header color
   function setHeaderColor(color: HeaderColor | null) {
     if (color === null) {
       deleteCookie('headerColor');
@@ -66,7 +73,7 @@ export function HeaderColorProvider({
   );
 }
 
-// Helper hook
+// Safe hook for consuming header color context
 export function useHeaderColor() {
   const ctx = useContext(HeaderColorContext);
   if (!ctx) throw new Error('useHeaderColor must be used inside HeaderColorProvider');

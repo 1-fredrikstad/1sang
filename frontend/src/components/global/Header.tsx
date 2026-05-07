@@ -4,14 +4,10 @@ import Image from 'next/image';
 export default function Header() {
   // Responsive header: centered for desktop (lg) and left-aligned for mobile
   return (
-    <header className="w-full  bg-navbar-bg">
-      <div className="mx-auto px-4 py-3">
-        <div className="mx-auto max-w-md lg:max-w-4xl">
-          <Link
-            href="/"
-            aria-label="Go to homepage"
-            className="flex items-center gap-3 justify-start lg:justify-center"
-          >
+    <header className="w-full bg-navbar-bg">
+      <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="flex items-center gap-3 justify-start lg:justify-center">
+          <Link href="/" aria-label="Go to homepage" className="flex items-center gap-3">
             <Image
               src="/favicon/favicon.svg"
               alt="Scout Logo"
@@ -19,6 +15,7 @@ export default function Header() {
               height={200}
               className="h-14.5 w-auto"
               priority
+              unoptimized
             />
 
             <span className="text-navbar-title text-base leading-tight flex flex-col lg:flex-row lg:items-baseline lg:gap-2 lg:text-lg">

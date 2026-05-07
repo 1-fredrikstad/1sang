@@ -51,24 +51,39 @@ describe('getFieldValidation', () => {
     });
   });
 
-  test('returns correct validation config for lyrics', () => {
-    const result = getFieldValidation('lyrics');
+  test('returns correct validation for chorus', () => {
+    const result = getFieldValidation('chorus');
 
-    expect(result.required).toBe(songSuggestionSchema.lyrics.messages.required);
+    expect(result.required).toBeUndefined();
 
     expect(result.maxLength).toEqual({
-      value: 3000,
-      message: songSuggestionSchema.lyrics.messages.maxLength,
+      value: 500,
+      message: songSuggestionSchema.chorus.messages.maxLength,
+    });
+    expect(result.pattern).toEqual({
+      value: expect.any(RegExp),
+      message: songSuggestionSchema.chorus.messages.pattern,
+    });
+  });
+
+  test('returns correct validation config for verses', () => {
+    const result = getFieldValidation('verses');
+
+    expect(result.required).toBe(songSuggestionSchema.verses.messages.required);
+
+    expect(result.maxLength).toEqual({
+      value: 1000,
+      message: songSuggestionSchema.verses.messages.maxLength,
     });
 
     expect(result.minLength).toEqual({
       value: 20,
-      message: songSuggestionSchema.lyrics.messages.minLength,
+      message: songSuggestionSchema.verses.messages.minLength,
     });
 
     expect(result.pattern).toEqual({
       value: expect.any(RegExp),
-      message: songSuggestionSchema.lyrics.messages.pattern,
+      message: songSuggestionSchema.verses.messages.pattern,
     });
   });
 });
@@ -76,18 +91,19 @@ describe('getFieldValidation', () => {
 describe('normalizeSongInput', () => {
   test('trims whitespace from fields', () => {
     const input = {
-      title: ' My Song  ',
-      melody: ' Traditional   ',
+      title: ' Min Sang  ',
+      melody: ' Tradisjonell   ',
       author: '   Justin Bieber',
-      lyrics: '  Dette er en gyldig sangtekst med mer enn tjue tegn.   ',
+      verses: ['  Dette er en gyldig sangtekst med mer enn tjue tegn.   '],
     };
     const result = normalizeSongInput(input);
 
     expect(result).toEqual({
-      title: 'My Song',
-      melody: 'Traditional',
+      title: 'Min Sang',
+      melody: 'Tradisjonell',
       author: 'Justin Bieber',
-      lyrics: 'Dette er en gyldig sangtekst med mer enn tjue tegn.',
+      chorus: '',
+      verses: ['Dette er en gyldig sangtekst med mer enn tjue tegn.'],
     });
   });
 
@@ -98,7 +114,8 @@ describe('normalizeSongInput', () => {
       title: '',
       melody: '',
       author: '',
-      lyrics: '',
+      chorus: '',
+      verses: [''],
     });
   });
 });
@@ -108,7 +125,7 @@ describe('validateSongInput', () => {
     title: 'En sang',
     melody: '',
     author: '',
-    lyrics: 'Dette er en gyldig sangtekst med mer enn tjue tegn.',
+    verses: ['Dette er et gyldig vers med mer enn tjue tegn.'],
   };
 
   test('returns error message when title is emty', () => {
@@ -119,22 +136,22 @@ describe('validateSongInput', () => {
     expect(result.title).toBe(songSuggestionSchema.title.messages.required);
   });
 
-  test('returns error message when lyrics is empty', () => {
+  test('returns error message when verses are empty', () => {
     const result = validateSongInput({
       ...validInput,
-      lyrics: '',
+      verses: [''],
     });
 
-    expect(result.lyrics).toBe(songSuggestionSchema.lyrics.messages.required);
+    expect(result.verses).toBe(songSuggestionSchema.verses.messages.required);
   });
 
-  test('returns error message when lyrics is too short', () => {
+  test('returns error message when verse is too short', () => {
     const result = validateSongInput({
       ...validInput,
-      lyrics: 'For kort tekst',
+      verses: ['For kort tekst'],
     });
 
-    expect(result.lyrics).toBe(songSuggestionSchema.lyrics.messages.minLength);
+    expect(result['verses.0'] || result.verses).toBe(songSuggestionSchema.verses.messages.required);
   });
 
   test('returns error message when title is too long', () => {

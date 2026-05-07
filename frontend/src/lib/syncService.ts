@@ -1,4 +1,5 @@
 import { db } from './db';
+import { syncPlaylists } from './playlists/syncPlaylists';
 import { createClient } from './supabase/client';
 
 type TableName =
@@ -7,9 +8,8 @@ type TableName =
   | 'tags'
   | 'playlist_items'
   | 'song_tags'
-  | 'song_links'
   | 'song_suggestions'
-  | 'admin_users';
+  | 'users';
 
 type SyncOptions = { forceFresh?: boolean };
 
@@ -23,6 +23,10 @@ class SyncService {
   }
 
   async syncTable(tableName: TableName, options: SyncOptions = {}) {
+    if (!options.forceFresh) {
+      const stale = await this.isTableStale(tableName, 5);
+      if (!stale) return;
+    }
     if (this.syncing.has(tableName) && !options.forceFresh) return;
 
     this.syncing.add(tableName);
@@ -35,7 +39,53 @@ class SyncService {
       // update dexie cache with fresh data
       if (data) {
         const table = db.table(tableName);
-        table.bulkPut(data);
+
+        // Normalize verses from JSON-string to string[] for songs and song_suggestions
+        const tablesWithVerses: TableName[] = ['songs', 'song_suggestions'];
+        const normalized = tablesWithVerses.includes(tableName)
+          ? (data as Record<string, unknown>[]).map((row) => ({
+              ...row,
+              verses:
+                typeof row.verses === 'string'
+                  ? (() => {
+                      try {
+                        return JSON.parse(row.verses as string);
+                      } catch {
+                        return [row.verses];
+                      }
+                    })()
+                  : row.verses,
+            }))
+          : data;
+
+        await table.bulkPut(normalized);
+
+        const tablesWithTwoIds: TableName[] = ['song_tags', 'playlist_items'];
+
+        if (tablesWithTwoIds.includes(tableName)) {
+          // enkel strategi
+          await table.clear();
+          await table.bulkPut(normalized);
+        } else {
+          // behold eksisterende diff-logikk
+          await table.bulkPut(normalized);
+
+          type RowWithId = { id: string };
+
+          const remoteRows = normalized as RowWithId[];
+
+          const remoteIds = new Set(remoteRows.map((row) => row.id));
+
+          const localRows = (await table.toArray()) as RowWithId[];
+
+          const idsToDelete = localRows
+            .filter((row) => row.id != null && !remoteIds.has(row.id))
+            .map((row) => row.id);
+
+          if (idsToDelete.length > 0) {
+            await table.bulkDelete(idsToDelete);
+          }
+        }
       }
 
       await db.sync_metadata.put({
@@ -57,6 +107,40 @@ class SyncService {
     const last = await this.getLastSyncTime(tableName);
     if (!last) return true;
     return Date.now() - last.getTime() > maxAgeMins * 60 * 1000;
+  }
+
+  // Auto sync every 3 minutes
+  startAutoSync(intervalMs = 180000) {
+    const tables: TableName[] = ['songs', 'tags', 'song_tags', 'song_suggestions', 'users'];
+
+    const run = async () => {
+      if (!navigator.onLine) return;
+
+      try {
+        // Sync playlists
+        await syncPlaylists();
+
+        // Sync all other tables
+        await Promise.all(tables.map((table) => this.syncTable(table)));
+      } catch (err) {
+        console.error('Auto sync failed:', err);
+      }
+    };
+
+    // run immediately
+    run();
+
+    // periodic sync
+    const interval = setInterval(run, intervalMs);
+
+    // sync when back online
+    window.addEventListener('online', run);
+
+    // cleanup
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('online', run);
+    };
   }
 }
 

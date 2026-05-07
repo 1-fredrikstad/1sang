@@ -1,16 +1,21 @@
 'use client';
+
 import { createClient } from '../../lib/supabase/client';
 import Image from 'next/image';
 
 export default function GoogleLoginButton() {
   const handleLogin = async () => {
     const supabase = createClient();
+
+    // Starts Google OAuth flow via Supabase
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/admin`, // redirect here after login
+        // Where Supabase redirects after successful login
+        redirectTo: `${window.location.origin}/admin`,
       },
     });
+
     if (error) console.error('Login error:', error);
   };
 
@@ -19,7 +24,9 @@ export default function GoogleLoginButton() {
       onClick={handleLogin}
       className="flex items-center gap-2 bg-[#F2F2F2] rounded-3xl py-2 px-3 hover:cursor-pointer text-black"
     >
-      <Image src="/google_logo.png" alt="Google logo" width={20} height={20} />
+      {/* Google logo icon */}
+      <Image src="/google_logo.png" alt="Google logo" width={20} height={20} unoptimized />
+      {/* Button label */}
       Logg inn med Google
     </button>
   );

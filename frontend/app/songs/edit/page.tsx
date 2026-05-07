@@ -1,0 +1,165 @@
+'use client';
+
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db, type Song } from '@/src/lib/db';
+import SongForm from '@/src/components/songs/SongForm';
+import { useAuth } from '@/src/context/AuthContext';
+import BackButton from '@/src/components/BackButton';
+import { createClient } from '@/src/lib/supabase/client';
+import { DeleteSongButton } from '@/src/components/DeleteSongButton';
+import { useState } from 'react';
+import { Spinner } from '@/components/ui/spinner';
+
+export default function EditSongPage() {
+  const searchParams = useSearchParams();
+  const slug = searchParams.get('slug');
+  const router = useRouter();
+  const { isAdmin } = useAuth();
+  const [isDeletingSong, setIsDeletingSong] = useState(false);
+
+  // Load song from Dexie cache
+  const song = useLiveQuery<Song | undefined>(
+    () => (slug ? db.songs.where('slug').equals(slug).first() : undefined),
+    [slug]
+  );
+
+  // Resolve related tags for this song
+  const songTags = useLiveQuery(async () => {
+    if (!song?.id) return [];
+
+    const relations = await db.song_tags.where('song_id').equals(song?.id).toArray();
+    const tagIds = relations.map((r) => r.tag_id);
+
+    if (tagIds.length === 0) return [];
+
+    const resolvedTags = await db.tags.where('id').anyOf(tagIds).toArray();
+
+    return resolvedTags;
+  }, [song?.id]);
+
+  const isLoading = song === undefined || songTags === undefined;
+  const notFound = song === null;
+
+  // Guard admin-only page
+  if (!isAdmin) {
+    return <p className="text-center mt-10">Ingen tilgang.</p>;
+  }
+
+  // Hide page while delete flow runs
+  if (isDeletingSong) return null;
+
+  // Wait until both song + tags are loaded
+  if (isLoading) {
+    return <Spinner message="Laster inn redigeringsside" />;
+  }
+
+  // Wait until both song + tags are loaded
+  if (notFound) {
+    return <p className="text-center mt-10">Fant ikke sang.</p>;
+  }
+
+  const handleSubmit = async (data: {
+    title: string;
+    melody?: string;
+    author?: string;
+    chorus?: string;
+    verses: string[];
+    tags?: string[];
+    has_chords: boolean;
+  }) => {
+    const supabase = createClient();
+
+    // Get access token for protected API route
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    const token = session?.access_token;
+
+    const isCypressAdmin =
+      process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_CYPRESS_ADMIN === 'true';
+
+    if (!token && !isCypressAdmin) {
+      throw new Error('Ikke logget inn');
+    }
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const res = await fetch(`/api/songs/${song.id}`, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify(data),
+    });
+
+    const body = await res.json().catch(() => null);
+
+    if (!res.ok) {
+      console.log('Kunne ikke oppdatere sang:', body);
+      throw new Error(typeof body?.error === 'string' ? body.error : 'Kunne ikke oppdatere sang');
+    }
+
+    const updatedSong = body?.data;
+
+    const finalTagIds = data.tags ?? [];
+
+    // Update tag relations locally
+    await db.songs.update(song.id, {
+      title: data.title,
+      melody: data.melody || undefined,
+      author: data.author || undefined,
+      chorus: data.chorus || undefined,
+      verses: data.verses,
+    });
+
+    // Replace tag relations
+    await db.song_tags.where('song_id').equals(song?.id).delete();
+
+    if (finalTagIds.length > 0) {
+      await db.song_tags.bulkAdd(
+        finalTagIds.map((tagId) => ({
+          song_id: song?.id,
+          tag_id: tagId,
+        }))
+      );
+    }
+
+    router.replace(`/songs?slug=${updatedSong?.slug ?? song.slug}`);
+  };
+
+  return (
+    <main>
+      <BackButton fallback={`/songs?slug=${slug}`} />
+
+      <SongForm
+        heading="Rediger sang"
+        submitLabel="Lagre endringer"
+        toastSuccessMessage="Sang oppdatert"
+        showTags={isAdmin}
+        initialValues={{
+          title: song.title,
+          melody: song.melody ?? '',
+          author: song.author ?? '',
+          chorus: song.chorus ?? '',
+          verses: song.verses,
+          spotify_youtube: song.spotify_youtube ?? '',
+          tags: songTags ?? [],
+          has_chords: song.has_chords,
+        }}
+        onSubmit={handleSubmit}
+      />
+      <section className="mx-auto max-w-2xl mt-4">
+        <DeleteSongButton
+          songId={song.id}
+          className="danger"
+          onDeletingChange={setIsDeletingSong}
+        />
+      </section>
+    </main>
+  );
+}

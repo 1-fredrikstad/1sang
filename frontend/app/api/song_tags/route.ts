@@ -1,3 +1,4 @@
+// Manages many-to-many relationship between songs and tags
 import { NextResponse } from 'next/server';
 
 function getEnv() {
@@ -16,6 +17,7 @@ export async function GET(req: Request) {
 
     const { supabaseUrl, anonKey } = getEnv();
 
+    // Defensive check (already validated in getEnv)
     if (!supabaseUrl || !anonKey) {
       return NextResponse.json(
         { ok: false, error: 'Missing Supabase env variables' },
@@ -58,6 +60,7 @@ export async function POST(req: Request) {
         apikey: anonKey,
         Authorization: `Bearer ${anonKey}`,
         'Content-Type': 'application/json',
+        // Return inserted row for client state sync
         Prefer: 'return=representation',
       },
       body: JSON.stringify({ song_id, tag_id }),
@@ -73,6 +76,7 @@ export async function POST(req: Request) {
   }
 }
 
+// Supabase DELETE requires filtering via query params
 export async function DELETE(req: Request) {
   try {
     const { supabaseUrl, anonKey } = getEnv();
@@ -107,6 +111,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ ok: false, error: body }, { status: res.status });
     }
 
+    // No rows affected → treat as not found or blocked by RLS
     if (!Array.isArray(body) || body.length === 0) {
       return NextResponse.json(
         { ok: false, error: 'Nothing deleted (not found or RLS blocked)' },

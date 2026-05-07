@@ -1,4 +1,7 @@
-export const TEXT_PATTERN = /^[a-zA-ZæøåÆØÅ0-9\s.\-/:;,'’*!?()"…–]+$/;
+import { capitalizeFirst } from '../utils/capitalizeFormat';
+
+export const TEXT_PATTERN = /^[a-zA-ZæøåöÖÆØÅ0-9\s.\-/:;,'’*!?()"…–]+$/;
+export const LYRICS_PATTERN = /^[\s\S]+$/;
 
 export const songSuggestionSchema = {
   title: {
@@ -26,15 +29,33 @@ export const songSuggestionSchema = {
       pattern: 'Låtskriver inneholder ugyldige tegn',
     },
   },
-  lyrics: {
+  chorus: {
+    required: false,
+    minLength: 10,
+    maxLength: 500,
+    messages: {
+      minLength: 'Refrenget må være minst 10 tegn',
+      maxLength: 'Refrenget kan maks være 500 tegn',
+      pattern: 'Refrenget inneholder ugyldige tegn',
+    },
+  },
+  verses: {
     required: true,
     minLength: 20,
-    maxLength: 3000,
+    maxLength: 1000,
     messages: {
-      required: 'Du må skrive inn sangtekst',
-      minLength: 'Sangteksten må være minst 20 tegn',
-      maxLength: 'Sangteksten kan maks være 3000 tegn',
-      pattern: 'Sangteksten inneholder ugyldige tegn',
+      required: 'Du må legge til minst ett vers',
+      minLength: 'Verset må være minst 20 tegn',
+      maxLength: 'Verset kan maks være 1000 tegn',
+      pattern: 'Verset inneholder ugyldige tegn',
+    },
+  },
+  spotify_youtube: {
+    required: false,
+    maxLength: 200,
+    messages: {
+      maxLength: 'Lenken kan maks være 200 tegn',
+      validate: 'Lenken må være en gyldig Spotify- eller YouTube-lenke',
     },
   },
 } as const;
@@ -43,6 +64,14 @@ type SongFieldKey = keyof typeof songSuggestionSchema;
 
 export function getFieldValidation(field: SongFieldKey) {
   const config = songSuggestionSchema[field];
+
+  let pattern: RegExp | undefined;
+
+  if (field === 'title' || field === 'author' || field === 'melody') {
+    pattern = TEXT_PATTERN;
+  } else if (field === 'chorus' || field === 'verses') {
+    pattern = LYRICS_PATTERN;
+  }
 
   return {
     ...('required' in config && config.required ? { required: config.messages.required } : {}),
@@ -62,10 +91,26 @@ export function getFieldValidation(field: SongFieldKey) {
           },
         }
       : {}),
-    pattern: {
-      value: TEXT_PATTERN,
-      message: config.messages.pattern,
-    },
+    ...(pattern && 'pattern' in config.messages
+      ? { pattern: { value: pattern, message: config.messages.pattern } }
+      : {}),
+
+    validate:
+      field === 'spotify_youtube' && 'validate' in config.messages
+        ? (value: string) => {
+            if (!value) return true;
+
+            const isValid =
+              /^(https?:\/\/)?(www\.)?([a-z]+\.)?spotify\.com\/.+$|^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/.test(
+                value
+              );
+
+            return (
+              isValid ||
+              (config.messages as typeof songSuggestionSchema.spotify_youtube.messages).validate
+            );
+          }
+        : undefined,
   };
 }
 
@@ -73,17 +118,21 @@ export type SongInput = {
   title: string;
   melody: string;
   author: string;
-  lyrics: string;
+  chorus: string;
+  verses: string[];
 };
 
-export type SongValidationErrors = Partial<Record<keyof SongInput, string>>;
+export type SongValidationErrors = Partial<Record<keyof SongInput | `verses.${number}`, string>>;
 
 export function normalizeSongInput(input: Partial<SongInput>): SongInput {
   return {
-    title: typeof input.title === 'string' ? input.title.trim() : '',
-    melody: typeof input.melody === 'string' ? input.melody.trim() : '',
-    author: typeof input.author === 'string' ? input.author.trim() : '',
-    lyrics: typeof input.lyrics === 'string' ? input.lyrics.trim() : '',
+    title: typeof input.title === 'string' ? capitalizeFirst(input.title.trim()) : '',
+    melody: typeof input.melody === 'string' ? capitalizeFirst(input.melody.trim()) : '',
+    author: typeof input.author === 'string' ? capitalizeFirst(input.author.trim()) : '',
+    chorus: typeof input.chorus === 'string' ? input.chorus.trim() : '',
+    verses: Array.isArray(input.verses)
+      ? input.verses.map((v) => (typeof v === 'string' ? v.trim() : ''))
+      : [''],
   };
 }
 
@@ -111,15 +160,44 @@ export function validateSongInput(input: Partial<SongInput>): SongValidationErro
     errors.melody = songSuggestionSchema.melody.messages.pattern;
   }
 
-  if (songSuggestionSchema.lyrics.required && !data.lyrics) {
-    errors.lyrics = songSuggestionSchema.lyrics.messages.required;
-  } else if (data.lyrics.length < songSuggestionSchema.lyrics.minLength) {
-    errors.lyrics = songSuggestionSchema.lyrics.messages.minLength;
-  } else if (data.lyrics.length > songSuggestionSchema.lyrics.maxLength) {
-    errors.lyrics = songSuggestionSchema.lyrics.messages.maxLength;
-  } else if (!TEXT_PATTERN.test(data.lyrics)) {
-    errors.lyrics = songSuggestionSchema.lyrics.messages.pattern;
+  if (data.chorus) {
+    if (data.chorus.length < songSuggestionSchema.chorus.minLength) {
+      errors.chorus = songSuggestionSchema.chorus.messages.minLength;
+    } else if (data.chorus.length > songSuggestionSchema.chorus.maxLength) {
+      errors.chorus = songSuggestionSchema.chorus.messages.maxLength;
+    } else if (!LYRICS_PATTERN.test(data.chorus)) {
+      errors.chorus = songSuggestionSchema.chorus.messages.pattern;
+    }
   }
+
+  const isValidVerse = (verse: string) =>
+    verse.trim().length >= songSuggestionSchema.verses.minLength &&
+    verse.trim().length <= songSuggestionSchema.verses.maxLength &&
+    LYRICS_PATTERN.test(verse);
+
+  const hasValidVerse = data.verses.some(isValidVerse);
+
+  if (!hasValidVerse) {
+    errors.verses = songSuggestionSchema.verses.messages.required;
+    return errors;
+  }
+
+  data.verses.forEach((verse, i) => {
+    const trimmed = verse.trim();
+
+    if (trimmed.length === 0) return;
+
+    if (trimmed.length < songSuggestionSchema.verses.minLength) {
+      errors[`verses.${i}` as keyof SongValidationErrors] =
+        songSuggestionSchema.verses.messages.minLength;
+    } else if (trimmed.length > songSuggestionSchema.verses.maxLength) {
+      errors[`verses.${i}` as keyof SongValidationErrors] =
+        songSuggestionSchema.verses.messages.maxLength;
+    } else if (!LYRICS_PATTERN.test(trimmed)) {
+      errors[`verses.${i}` as keyof SongValidationErrors] =
+        songSuggestionSchema.verses.messages.pattern;
+    }
+  });
 
   return errors;
 }

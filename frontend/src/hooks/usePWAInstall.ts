@@ -3,8 +3,11 @@
 import { useState, useEffect } from 'react';
 import ls from 'localstorage-slim';
 
+// Keys used to persist state in local storage
 const DISMISSED_KEY = 'pwaBannerDismissed';
 const DISMISSED_TTL = 7 * 24 * 60 * 60; // 7 days
+
+const CLOSED_KEY = 'closedPWABanner';
 
 interface IBeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -24,6 +27,12 @@ export function usePWAInstall() {
     if (typeof window === 'undefined') return false;
     const dismissed = ls.get(DISMISSED_KEY); // Returns NULL if 7 days has passed, TRUE if not
     return !!dismissed;
+  });
+
+  const [isClosed, setIsClosed] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const closed = sessionStorage.getItem(CLOSED_KEY); // Only flags the key
+    return !!closed;
   });
 
   // --- Initial checks ---
@@ -87,12 +96,18 @@ export function usePWAInstall() {
     setIsDismissed(true);
   };
 
+  const close = () => {
+    sessionStorage.setItem(CLOSED_KEY, 'true');
+    setIsClosed(true);
+  };
+
   // --- Derived boolean ---
 
-  const showInstallButton = !!promptEvent && !isInstalled && !isDismissed;
+  const showInstallButton = !!promptEvent && !isInstalled && !isDismissed && !isClosed;
   return {
     install,
     dismiss,
+    close,
     showInstallButton,
   };
 }

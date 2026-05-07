@@ -1,52 +1,40 @@
 'use client';
 
-import Switch from '@mui/material/Switch';
-import LightModeIcon from '@mui/icons-material/LightMode';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
+import { Switch } from '@/components/ui/theme-switch';
 import { useTheme } from 'next-themes';
+import { SunIcon } from '@heroicons/react/24/outline';
+import { MoonIcon } from '@heroicons/react/24/outline';
 import { useMounted } from '../hooks/useMounted';
 
 export default function ThemeToggleButton() {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const mounted = useMounted();
-  const isDark = theme === 'dark';
 
+  // Avoid mismatch between server and client theme rendering
   if (!mounted) return null;
 
+  const isDark = resolvedTheme === 'dark';
+
   return (
-    <div className="flex justify-center gap-2 w-full">
-      <section className=" w-full max-w-3xs justify-between flex items-center">
-        <span className="whitespace-nowrap">
-          {isDark ? 'Bytt til lys modus' : 'Bytt til mørk modus'}
-        </span>
-        <Switch
-          onChange={() => setTheme(isDark ? 'light' : 'dark')}
-          checked={isDark}
-          icon={
-            <LightModeIcon
-              fontSize="small"
-              style={{
-                color: 'white',
-                backgroundColor: '#d8d8d8',
-                borderRadius: '50%',
-                padding: '3px',
-              }}
-            />
-          }
-          checkedIcon={
-            <DarkModeIcon
-              fontSize="small"
-              style={{
-                color: '#161616',
-                backgroundColor: 'white',
-                borderRadius: '50%',
-                padding: '3px',
-              }}
-            />
-          }
-          color={'default'}
-        />
-      </section>
-    </div>
+    <section className="flex flex-row justify-between">
+      {/* Dynamic label based on current theme */}
+      <label className="whitespace-nowrap">
+        {isDark ? 'Bytt til lys modus' : 'Bytt til mørk modus'}
+      </label>
+
+      {/* Theme switch toggle */}
+      <Switch
+        size="lg"
+        checked={isDark}
+        onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+        thumbContent={
+          isDark ? (
+            <MoonIcon className="text-white p-0.5 opacity-90" />
+          ) : (
+            <SunIcon className="text-black p-0.5 opacity-90" />
+          )
+        }
+      />
+    </section>
   );
 }

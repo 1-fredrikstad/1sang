@@ -1,17 +1,18 @@
 {
-  "name": "1sang",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.7.0",
-  "devDependencies": {
-    "husky": "^9.1.7"
-  }
+	"name": "1sang",
+	"version": "1.0.0",
+	"packageManager": "pnpm@10.7.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"prepare": "node -e \"if (process.env.NODE_ENV !== 'production') { require('child_process').execSync('husky', {stdio: 'inherit'}) }\""
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"husky": "^9.1.7",
+		"next": "16.1.6"
+	}
 }
