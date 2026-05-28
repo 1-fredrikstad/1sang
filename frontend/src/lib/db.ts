@@ -76,6 +76,19 @@ export interface FavoriteSong {
   created_at: string;
 }
 
+export interface SuggestionDraft {
+  id: string;
+  title: string;
+  author?: string;
+  melody?: string;
+  chorus?: string;
+  verses: string[];
+  spotify_youtube?: string;
+  has_chords: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export class AppDatabase extends Dexie {
   songs!: Table<Song, string>;
   playlists!: Table<Playlist, string>;
@@ -86,6 +99,7 @@ export class AppDatabase extends Dexie {
   users!: Table<AdminUser, string>;
   sync_metadata!: Table<SyncMetadata, string>;
   favorites!: Table<FavoriteSong, string>;
+  suggestion_drafts!: Table<SuggestionDraft, string>;
 
   constructor() {
     super('1sang');
@@ -135,6 +149,19 @@ export class AppDatabase extends Dexie {
       users: 'user_id',
       sync_metadata: 'id, table_name',
       favorites: 'song_id, created_at',
+    });
+
+    this.version(5).stores({
+      songs: 'id, slug',
+      playlists: 'id, &server_id, synced',
+      playlist_items: '[playlist_id+song_id], playlist_id, song_id, position',
+      tags: 'id, name',
+      song_tags: '[song_id+tag_id], song_id, tag_id',
+      song_suggestions: 'id, status',
+      users: 'user_id',
+      sync_metadata: 'id, table_name',
+      favorites: 'song_id, created_at',
+      suggestion_drafts: 'id, updated_at',
     });
   }
 }

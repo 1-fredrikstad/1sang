@@ -1,15 +1,16 @@
 import { useRouter } from 'next/navigation';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
+import { useAuth } from '../context/AuthContext';
 
 type SongOrPlaylistBoxProps = {
   onClose: () => void;
   songChoice: string;
 };
 
-// Component for an admin to choose between adding a new song or creating a new playlist
 export default function SongOrPlaylistBox({ onClose, songChoice }: SongOrPlaylistBoxProps) {
   const router = useRouter();
   const isOnline = useOnlineStatus();
+  const { isAdmin } = useAuth();
 
   return (
     <section
@@ -33,6 +34,19 @@ export default function SongOrPlaylistBox({ onClose, songChoice }: SongOrPlaylis
           {songChoice}
           {!isOnline && <span className="block text-xs opacity-60">Ikke tilgjengelig offline</span>}
         </button>
+        {/* Edit song suggestion drafts — only for non-admin users */}
+        {!isAdmin && (
+          <button
+            className="cursor-pointer hover:bg-secondary w-full py-6"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+              router.push('/add/drafts');
+            }}
+          >
+            Mine sangforslag-utkast
+          </button>
+        )}
         {/* Create new playlist button */}
         <button
           className="cursor-pointer hover:bg-secondary w-full py-6"

@@ -43,6 +43,8 @@ type SongFormProps = {
   showTags?: boolean;
   onSubmit: (data: Omit<Inputs, 'tags'> & { tags?: string[] }) => Promise<void> | void;
   toastSuccessMessage?: string;
+  onSaveDraft?: (data: Partial<Inputs>) => Promise<void> | void;
+  saveDraftLabel?: string;
 };
 
 type Tag = {
@@ -61,6 +63,8 @@ export default function SongForm({
   showTags,
   onSubmit,
   toastSuccessMessage = 'Lagret',
+  onSaveDraft,
+  saveDraftLabel = 'Lagre utkast',
 }: SongFormProps) {
   /**
    * React Hook Form setup:
@@ -75,6 +79,7 @@ export default function SongForm({
     reset,
     setValue,
     clearErrors,
+    getValues,
   } = useForm<Inputs>({
     defaultValues: {
       title: '',
@@ -389,8 +394,18 @@ export default function SongForm({
       {hasChords && <ChordPreview sections={chordSections} />}
 
       {/* Submit and reset */}
-      <div className="flex gap-4 mt-4">
+      <div className="flex gap-4 mt-4 flex-wrap">
         <SubmitButton submitLabel={submitLabel} disabled={isSubmitting} />
+        {onSaveDraft && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onSaveDraft(getValues())}
+            className="cursor-pointer"
+          >
+            {saveDraftLabel}
+          </Button>
+        )}
         <Button type="button" variant="outline" onClick={() => reset()} className="cursor-pointer">
           Nullstill
         </Button>
