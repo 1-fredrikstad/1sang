@@ -12,7 +12,6 @@
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
-		"husky": "^9.1.7",
-		"next": "16.1.6"
+		"husky": "^9.1.7"
 	}
 }

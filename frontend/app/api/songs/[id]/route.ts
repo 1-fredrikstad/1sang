@@ -75,7 +75,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
     const isCypressAdmin =
       process.env.NODE_ENV !== 'production' &&
       process.env.CYPRESS_E2E === 'true' &&
-      process.env.NEXT_PUBLIC_CYPRESS_ADMIN === 'true';
+      process.env.CYPRESS_ADMIN === 'true';
 
     if (!token && !isCypressAdmin) {
       return NextResponse.json({ ok: false, error: 'Mangler token' }, { status: 401 });
