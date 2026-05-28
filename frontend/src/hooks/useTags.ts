@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { syncService } from '@/src/lib/syncService';
+import { createClient } from '@/src/lib/supabase/client';
 
 export type Tag = {
   id: string;
@@ -23,6 +24,12 @@ export function useTags() {
 
   // Sync Dexie so offline/local cache stays consistent
   const syncDexieTags = () => syncService.syncTable('tags', { forceFresh: true });
+
+  const getAuthHeader = async (): Promise<Record<string, string>> => {
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    return session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {};
+  };
 
   useEffect(() => {
     fetchTags(); // eslint-disable-line react-hooks/set-state-in-effect
@@ -47,9 +54,10 @@ export function useTags() {
 
     setIsPending(true);
     try {
+      const authHeader = await getAuthHeader();
       const res = await fetch('/api/tags', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeader },
         body: JSON.stringify({ name: name.trim() }),
       });
 
@@ -102,9 +110,10 @@ export function useTags() {
 
     setIsPending(true);
     try {
+      const authHeader = await getAuthHeader();
       const res = await fetch('/api/tags', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeader },
         body: JSON.stringify({ id: tag.id }),
       });
 
