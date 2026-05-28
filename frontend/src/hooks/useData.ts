@@ -105,7 +105,7 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
 
   return {
     data: stableData ?? [],
-    isLoading: isLoading || stableData === undefined,
+    isLoading: stableData === undefined,
     error,
     isOnline,
   };

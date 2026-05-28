@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-export function useDelayedLoading(isLoading: boolean, delay = 400, minDisplayTime = 900) {
+export function useDelayedLoading(isLoading: boolean, delay = 200, minDisplayTime = 200) {
   const [showSpinner, setShowSpinner] = useState(false);
   const startTimeRef = useRef<number | null>(null);
 

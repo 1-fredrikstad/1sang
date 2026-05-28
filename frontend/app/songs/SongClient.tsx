@@ -9,7 +9,7 @@ import { useAuth } from '@/src/context/AuthContext';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import { FaSpotify, FaYoutube } from 'react-icons/fa';
 import Lyrics from '@/src/components/songs/Lyrics';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { StarIcon } from '@/src/components/songs/StarIcon';
 import { useSearchParams } from 'next/navigation';
@@ -87,16 +87,8 @@ export default function SongClient() {
   // --- Loading logic ---
   // useLiveQuery returns undefined while it's querying
   const isQuerying = song === undefined;
-  const [showBuffer, setShowBuffer] = useState(true);
 
-  useEffect(() => {
-    if (!isQuerying && song) {
-      const timeout = setTimeout(() => setShowBuffer(false), 300);
-      return () => clearTimeout(timeout);
-    }
-  }, [isQuerying, song]);
-
-  if (isQuerying || showBuffer) {
+  if (isQuerying) {
     return (
       <main className="flex flex-col justify-center gap-4">
         <BackButton href="/" />

@@ -12,7 +12,7 @@ export function Spinner({ className, message, isLoading = true, ...props }: Spin
   if (!show) return null;
 
   return (
-    <div className="flex flex-col items-center justify-center gap-3 fixed inset-0">
+    <div className="flex flex-col items-center justify-center gap-3 fixed inset-0 bg-background">
       <SunIcon
         role="status"
         aria-label="Loading"
