@@ -62,7 +62,6 @@ const serwist = new Serwist({
       matcher: ({ request, url }) => {
         const isDocument = request.destination === 'document';
 
-        // Define routes that should behave like an app shell
         const isAppShellRoute =
           url.pathname === '/' ||
           url.pathname.startsWith('/songs') ||
@@ -70,13 +69,17 @@ const serwist = new Serwist({
 
         return isDocument && isAppShellRoute;
       },
-      // Serve cached version first, update in background
-      handler: new StaleWhileRevalidate({
+      // Network first — always fetch fresh HTML when online, fall back to cache offline
+      handler: new NetworkFirst({
         cacheName: 'app-html-shells',
+        networkTimeoutSeconds: 3,
         matchOptions: {
-          ignoreSearch: true, // ignore query params
+          ignoreSearch: true,
         },
-        plugins: [new CacheableResponsePlugin({ statuses: [0, 200] })],
+        plugins: [
+          new CacheableResponsePlugin({ statuses: [0, 200] }),
+          new ExpirationPlugin({ maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 }),
+        ],
       }),
     },
 
