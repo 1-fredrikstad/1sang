@@ -19,15 +19,27 @@ export async function getCurrentUserRole() {
 
   if (!user) return { isUser: false, role: null };
 
-  const { data, error } = await supabase
-    .from('users')
-    .select('role')
-    .eq('user_id', user.id)
-    .maybeSingle();
+  // Use service role key to bypass RLS on the users table
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (error) throw new Error('Could not fetch role');
+  if (!supabaseUrl || !serviceRoleKey) return { isUser: false, role: null };
 
-  return { isUser: !!data, role: data?.role ?? null };
+  const res = await fetch(
+    `${supabaseUrl}/rest/v1/users?user_id=eq.${encodeURIComponent(user.id)}&select=role&limit=1`,
+    {
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+        Accept: 'application/json',
+      },
+    }
+  );
+
+  const body = await res.json().catch(() => null);
+  const role = Array.isArray(body) && body.length > 0 ? body[0].role : null;
+
+  return { isUser: role !== null, role };
 }
 
 export async function requireAdmin() {
