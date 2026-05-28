@@ -64,10 +64,12 @@ export function useTags() {
       const body = await res.json();
       if (!res.ok) throw new Error(body?.error ?? 'Opprettelse feilet');
 
-      toast.success('Tag opprettet');
+      // Update local state directly from API response — no re-fetch needed
+      const created = Array.isArray(body.data) ? body.data[0] : body.data;
+      if (created) setTags((prev) => [...prev, created]);
 
-      // Refresh local + offline cache
-      await Promise.all([fetchTags(), syncDexieTags()]);
+      toast.success('Tag opprettet');
+      await syncDexieTags();
       return true;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Kunne ikke opprette tag');
@@ -92,9 +94,10 @@ export function useTags() {
       const body = await res.json();
       if (!res.ok) throw new Error(body?.error ?? 'Oppdatering feilet');
 
-      toast.success('Tag oppdatert');
+      setTags((prev) => prev.map((t) => (t.id === id ? { ...t, name: name.trim() } : t)));
 
-      await Promise.all([fetchTags(), syncDexieTags()]);
+      toast.success('Tag oppdatert');
+      await syncDexieTags();
       return true;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Kunne ikke oppdatere tag');
@@ -120,9 +123,10 @@ export function useTags() {
       const body = await res.json().catch(() => null);
       if (!res.ok) throw new Error(body?.error ?? 'Sletting feilet');
 
-      toast.success('Tag slettet');
+      setTags((prev) => prev.filter((t) => t.id !== tag.id));
 
-      await Promise.all([fetchTags(), syncDexieTags()]);
+      toast.success('Tag slettet');
+      await syncDexieTags();
       return true;
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Kunne ikke slette tag');

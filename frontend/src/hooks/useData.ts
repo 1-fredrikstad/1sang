@@ -95,13 +95,8 @@ export function useData<T>(tableName: TableName, options: UseDataOptions = {}) {
     if (data !== undefined) setStableData(data); // eslint-disable-line react-hooks/set-state-in-effect
   }, [data]);
 
-  // periodic sync while online
-  useEffect(() => {
-    if (!isOnline) return;
-    if (typeof window === 'undefined') return;
-    const id = window.setInterval(() => sync(), maxAgeMins * 60 * 1000);
-    return () => window.clearInterval(id);
-  }, [isOnline, maxAgeMins, sync]);
+  // Periodic sync is handled globally by syncService.startAutoSync() in useGlobalSync.
+  // No per-component interval needed.
 
   return {
     data: stableData ?? [],

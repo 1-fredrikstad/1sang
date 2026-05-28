@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/src/lib/db';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,27 +22,8 @@ export type TagSelectProps = {
 
 // Multi-select dropdown for choosing tags
 export default function TagSelect({ value, onChange, triggerClassName }: TagSelectProps) {
-  const [tags, setTags] = useState<Tag[]>([]);
-
-  // Fetch all tags once on mount
-  useEffect(() => {
-    const fetchTags = async () => {
-      if (typeof navigator !== 'undefined' && !navigator.onLine) {
-        // if offline: get tags from IndexedDB
-        const localTags = await db.tags.toArray();
-        setTags(localTags);
-      } else {
-        // if online: get tags from API
-        const res = await fetch('/api/tags');
-        const body = await res.json();
-        if (body.ok) {
-          setTags(body.data);
-        }
-      }
-    };
-
-    fetchTags();
-  }, []);
+  // Tags are already synced to Dexie by auto-sync — no API fetch needed
+  const tags = useLiveQuery(() => db.tags.toArray(), []) ?? [];
 
   const selectedIds = useMemo(() => value.map((t) => t.id), [value]);
   const [open, setOpen] = useState(false);
