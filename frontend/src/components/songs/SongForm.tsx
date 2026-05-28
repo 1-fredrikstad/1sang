@@ -75,7 +75,7 @@ export default function SongForm({
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
     control,
     reset,
     setValue,
@@ -429,6 +429,13 @@ export default function SongForm({
           Nullstill
         </Button>
       </div>
+
+      {/* Sticky save bar — shown when form has unsaved changes */}
+      {isDirty && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center p-4 bg-background/90 backdrop-blur border-t border-border shadow-lg">
+          <SubmitButton submitLabel={submitLabel} disabled={isSubmitting} />
+        </div>
+      )}
     </form>
   );
 }
