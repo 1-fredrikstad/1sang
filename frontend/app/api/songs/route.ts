@@ -30,7 +30,12 @@ function getServiceEnv() {
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    const limit = url.searchParams.get('limit');
+    const limitParam = url.searchParams.get('limit');
+    const limit = limitParam !== null ? parseInt(limitParam, 10) : null;
+
+    if (limit !== null && (!Number.isInteger(limit) || limit < 1 || limit > 10000)) {
+      return NextResponse.json({ ok: false, error: 'Invalid limit' }, { status: 400 });
+    }
 
     const { supabaseUrl, anonKey } = getPublicEnv();
 
@@ -41,7 +46,7 @@ export async function GET(req: Request) {
       );
     }
 
-    const target = `${supabaseUrl}/rest/v1/songs?select=*${limit ? `&limit=${limit}` : ''}`;
+    const target = `${supabaseUrl}/rest/v1/songs?select=*${limit !== null ? `&limit=${limit}` : ''}`;
 
     const res = await fetch(target, {
       headers: {
@@ -99,7 +104,7 @@ export async function POST(req: Request) {
     if (
       process.env.NODE_ENV !== 'production' &&
       process.env.CYPRESS_E2E === 'true' &&
-      process.env.NEXT_PUBLIC_CYPRESS_ADMIN === 'true'
+      process.env.CYPRESS_ADMIN === 'true'
     ) {
       isAdmin = true;
     } else if (token) {

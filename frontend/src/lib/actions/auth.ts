@@ -6,7 +6,7 @@ export async function getCurrentUserRole() {
   if (
     process.env.NODE_ENV !== 'production' &&
     process.env.CYPRESS_E2E === 'true' &&
-    process.env.NEXT_PUBLIC_CYPRESS_ADMIN === 'true'
+    process.env.CYPRESS_ADMIN === 'true'
   ) {
     return { isUser: true, role: 'admin' };
   }
