@@ -67,6 +67,7 @@ export default function EditSongPage() {
     verses: string[];
     tags?: string[];
     has_chords: boolean;
+    song_number?: number | null;
   }) => {
     const supabase = createClient();
 
@@ -115,6 +116,7 @@ export default function EditSongPage() {
       author: data.author || undefined,
       chorus: data.chorus || undefined,
       verses: data.verses,
+      song_number: data.song_number ?? null,
     });
 
     // Replace tag relations
@@ -150,6 +152,7 @@ export default function EditSongPage() {
           spotify_youtube: song.spotify_youtube ?? '',
           tags: songTags ?? [],
           has_chords: song.has_chords,
+          song_number: song.song_number ?? null,
         }}
         onSubmit={handleSubmit}
       />

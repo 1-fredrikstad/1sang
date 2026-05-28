@@ -9,7 +9,7 @@ import { useAuth } from '@/src/context/AuthContext';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import { FaSpotify, FaYoutube } from 'react-icons/fa';
 import Lyrics from '@/src/components/songs/Lyrics';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { StarIcon } from '@/src/components/songs/StarIcon';
 import { useSearchParams } from 'next/navigation';
@@ -20,6 +20,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { useOnlineStatus } from '@/src/hooks/useOnlineStatus';
 import NotFound from '../not-found';
 import TagComponent from '@/src/components/TagComponent';
+import { type Song } from '@/src/lib/db';
 
 export default function SongClient() {
   const searchParams = useSearchParams();
@@ -58,27 +59,49 @@ export default function SongClient() {
   const { songs: playlistSongs } = usePlaylistDetails(playlistId || '');
   const safePlaylistSongs = playlistSongs ?? [];
 
-  const currentIndex = safePlaylistSongs.findIndex((s) => s.slug === song?.slug);
+  // --- Global navigation (all songs sorted by number then alpha) ---
+  const allSongs = useLiveQuery(() => db.songs.toArray(), []);
 
-  const prevSong = currentIndex > 0 ? safePlaylistSongs[currentIndex - 1] : null;
+  const sortedAllSongs = useMemo(() => {
+    if (!allSongs) return [];
+    return [...allSongs].sort((a, b) => {
+      const aHasNum = a.song_number != null;
+      const bHasNum = b.song_number != null;
+      if (aHasNum && !bHasNum) return -1;
+      if (!aHasNum && bHasNum) return 1;
+      if (aHasNum && bHasNum) return a.song_number! - b.song_number!;
+      return (a.title ?? '').localeCompare(b.title ?? '', 'no', { sensitivity: 'base' });
+    });
+  }, [allSongs]);
 
-  const nextSong =
-    currentIndex >= 0 && currentIndex < safePlaylistSongs.length - 1
-      ? safePlaylistSongs[currentIndex + 1]
+  const playlistIndex = safePlaylistSongs.findIndex((s) => s.slug === song?.slug);
+  const globalIndex = sortedAllSongs.findIndex((s) => s.slug === song?.slug);
+
+  const prevSong = playlistId
+    ? playlistIndex > 0 ? safePlaylistSongs[playlistIndex - 1] : null
+    : globalIndex > 0 ? sortedAllSongs[globalIndex - 1] : null;
+
+  const nextSong = playlistId
+    ? playlistIndex >= 0 && playlistIndex < safePlaylistSongs.length - 1
+      ? safePlaylistSongs[playlistIndex + 1]
+      : null
+    : globalIndex >= 0 && globalIndex < sortedAllSongs.length - 1
+      ? sortedAllSongs[globalIndex + 1]
       : null;
+
+  const navigateTo = (target: Song | null) => {
+    if (!target?.slug) return;
+    if (playlistId) {
+      router.push(`/songs?slug=${target.slug}&playlistId=${playlistId}`);
+    } else {
+      router.push(`/songs?slug=${target.slug}`);
+    }
+  };
 
   // Enable swipe actions for next and prev navigation
   const handlers = useSwipeable({
-    onSwipedLeft: () => {
-      if (nextSong) {
-        router.push(`/songs?slug=${nextSong.slug}&playlistId=${playlistId}`);
-      }
-    },
-    onSwipedRight: () => {
-      if (prevSong) {
-        router.push(`/songs?slug=${prevSong.slug}&playlistId=${playlistId}`);
-      }
-    },
+    onSwipedLeft: () => navigateTo(nextSong),
+    onSwipedRight: () => navigateTo(prevSong),
     trackTouch: true,
     trackMouse: false,
     delta: 50,
@@ -157,6 +180,9 @@ export default function SongClient() {
       </section>
 
       <section className="flex flex-col items-center justify-center">
+        {song.song_number != null && (
+          <p className="opacity-50 text-sm mb-1">Nr. {song.song_number}</p>
+        )}
         <h1 className="title-headline capitalize-first text-center flex-1">{song.title}</h1>
 
         {/* Header - song info */}
@@ -217,39 +243,29 @@ export default function SongClient() {
         </div>
 
         {/* Next and prev buttons */}
-        {playlistId && (
-          <div className="flex justify-center gap-20 mt-8">
-            <button
-              onClick={() => {
-                if (prevSong) {
-                  router.push(`/songs?slug=${prevSong.slug}&playlistId=${playlistId}`);
-                }
-              }}
-              disabled={!prevSong}
-              className="group flex flex-col items-center cursor-pointer text-sm opacity-70 hover:opacity-100 transition-all duration-200 disabled:opacity-30 disabled:cursor-default"
-            >
-              <ArrowLeftIcon className="h-6" />
-              <span className="text-[14px] mt-1 transition-all duration-200 opacity-100 md:opacity-0 md:translate-y-1 md:group-hover:opacity-100 md:group-hover:translate-y-0">
-                Forrige
-              </span>
-            </button>
+        <div className="flex justify-center gap-20 mt-8">
+          <button
+            onClick={() => navigateTo(prevSong)}
+            disabled={!prevSong}
+            className="group flex flex-col items-center cursor-pointer text-sm opacity-70 hover:opacity-100 transition-all duration-200 disabled:opacity-30 disabled:cursor-default"
+          >
+            <ArrowLeftIcon className="h-6" />
+            <span className="text-[14px] mt-1 transition-all duration-200 opacity-100 md:opacity-0 md:translate-y-1 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+              Forrige
+            </span>
+          </button>
 
-            <button
-              onClick={() => {
-                if (nextSong) {
-                  router.push(`/songs?slug=${nextSong.slug}&playlistId=${playlistId}`);
-                }
-              }}
-              disabled={!nextSong}
-              className="group flex flex-col items-center cursor-pointer text-sm opacity-70 hover:opacity-100 transition-all duration-200 disabled:opacity-30 disabled:cursor-default"
-            >
-              <ArrowRightIcon className="h-6" />
-              <span className="text-[14px] mt-1 transition-all duration-200 opacity-100 md:opacity-0 md:translate-y-1 md:group-hover:opacity-100 md:group-hover:translate-y-0">
-                Neste
-              </span>
-            </button>
-          </div>
-        )}
+          <button
+            onClick={() => navigateTo(nextSong)}
+            disabled={!nextSong}
+            className="group flex flex-col items-center cursor-pointer text-sm opacity-70 hover:opacity-100 transition-all duration-200 disabled:opacity-30 disabled:cursor-default"
+          >
+            <ArrowRightIcon className="h-6" />
+            <span className="text-[14px] mt-1 transition-all duration-200 opacity-100 md:opacity-0 md:translate-y-1 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+              Neste
+            </span>
+          </button>
+        </div>
       </section>
     </main>
   );

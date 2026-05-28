@@ -30,6 +30,7 @@ type Inputs = {
   tags?: Tag[];
   spotify_youtube: string;
   has_chords: boolean;
+  song_number?: number | null;
 };
 
 /**
@@ -111,6 +112,7 @@ export default function SongForm({
       spotify_youtube: initialValues.spotify_youtube ?? '',
       tags: initialValues.tags ?? [],
       has_chords: initialValues.has_chords ?? false,
+      song_number: initialValues.song_number ?? null,
     });
   }, [initialValues, reset]);
 
@@ -276,6 +278,23 @@ export default function SongForm({
           />
           {errors.spotify_youtube && <FieldError errors={[errors.spotify_youtube]} />}
         </Field>
+
+        {/* Song number (admin only) */}
+        {showTags && (
+          <Field>
+            <FieldLabel htmlFor="form-add-song-number">Sangnummer</FieldLabel>
+            <Input
+              id="form-add-song-number"
+              type="number"
+              min={1}
+              {...register('song_number', {
+                setValueAs: (v) => (v === '' || v === null || v === undefined ? null : Number(v)),
+              })}
+              placeholder="Valgfritt – kun for trykt versjon"
+              className="focus-visible:ring-1 text-sm"
+            />
+          </Field>
+        )}
 
         {/* Tags */}
         {showTags && (

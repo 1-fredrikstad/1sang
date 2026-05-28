@@ -13,6 +13,7 @@ export interface Song {
   deleted_at?: string | null;
   spotify_youtube?: string;
   has_chords: boolean;
+  song_number?: number | null;
 }
 
 export interface Playlist {

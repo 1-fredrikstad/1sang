@@ -86,14 +86,20 @@ export function HomePage({ songs = [], isLoading, error }: SongListProps) {
       ? searchedSongs
       : searchedSongs.filter((item) => matchingSongIds.includes(item.song.id));
 
-  // Sort by score first, then Norwegian alphabetical order
+  // Sort by score first, then numbered songs before unnumbered, then alphabetical
   const sortedSongs = useMemo(() => {
     return [...filteredSongs].sort((a, b) => {
-      // Primary sort: relevance score
       const scoreDiff = b.score - a.score;
       if (scoreDiff !== 0) return scoreDiff;
 
-      // Secondary sort: stable alphabetical ordering
+      const aHasNum = a.song.song_number != null;
+      const bHasNum = b.song.song_number != null;
+
+      if (aHasNum && !bHasNum) return -1;
+      if (!aHasNum && bHasNum) return 1;
+
+      if (aHasNum && bHasNum) return a.song.song_number! - b.song.song_number!;
+
       return (a.song.title ?? '').trim().localeCompare((b.song.title ?? '').trim(), 'no', {
         sensitivity: 'base',
         numeric: true,

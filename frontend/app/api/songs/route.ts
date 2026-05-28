@@ -97,6 +97,7 @@ export async function POST(req: Request) {
       spotify_youtube:
         typeof json.spotify_youtube === 'string' ? json.spotify_youtube.trim() || null : null,
       has_chords: typeof json.has_chords === 'boolean' ? json.has_chords : false,
+      song_number: typeof json.song_number === 'number' ? json.song_number : null,
     };
 
     let isAdmin = false;

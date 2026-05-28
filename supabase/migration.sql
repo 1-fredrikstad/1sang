@@ -18,6 +18,7 @@ create table songs (
   verses text[] not null default '{}',
   spotify_youtube text,
   has_chords boolean not null default false,
+  song_number int,
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
   deleted_at timestamptz

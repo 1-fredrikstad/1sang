@@ -45,6 +45,9 @@ export function SongBox({
     >
       {/* Song title */}
       <div className="block w-full py-4 pr-10 pl-4 text-left capitalize-first">
+        {song.song_number != null && (
+          <span className="opacity-50 mr-1 text-sm not-capitalize">{song.song_number}.</span>
+        )}
         {song.title ?? '(uten tittel)'}
       </div>
 
